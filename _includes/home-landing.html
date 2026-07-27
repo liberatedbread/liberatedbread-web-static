@@ -1,25 +1,18 @@
----
-layout: base
----
 {%- comment -%}
   ============================================================================
-  NOT PUBLISHED. This is the Phase 1 full landing page (DESIGN §14.2, Prompt B).
+  NOT PUBLISHED WHILE `phase0: true`. The Phase 1 landing page (DESIGN §14.2).
   ============================================================================
 
-  Jekyll never emits `_layouts/*` as a page, so nothing in this file is
-  reachable on the live site until a page opts into it. Today no page does —
-  index.md uses `layout: coming-soon`.
+  Rendered by _layouts/home.html only when `phase0: false` in _config.yml.
+  Setting that flag to false in the same edit also restores full sitemap
+  coverage and the devices-feed autodiscovery link — the three cannot be
+  half-flipped, and script/check-phase0.rb fails the build if the emitted site
+  ever disagrees with the flag. See PHASE0.md.
 
-  TO GO LIVE: edit exactly one line in index.md —
-      layout: coming-soon   ->   layout: landing
-  That is the whole switch. There is no config flag, no environment variable,
-  and no build-time toggle, precisely so this cannot ship by accident. See
-  PHASE0.md for the checklist that should be green before flipping it.
-
-  DESIGN §9.6 gates the flip on the device catalog reaching 5+ guides. As of
-  this commit _data/devices.yml has 2, and the four cards below are still the
-  hardcoded placeholders from §14.2 — two of them (Kasa, Wyze) have no guide
-  yet and are commented out rather than left as dead links.
+  DESIGN §9.6 gates the launch on the device catalog reaching 5+ guides;
+  _data/devices.yml currently has 2. The grid below is driven by that file
+  rather than the hardcoded four cards in §14.2, so it can never link to a
+  guide nobody wrote.
 {%- endcomment -%}
 
 {% include header.html %}

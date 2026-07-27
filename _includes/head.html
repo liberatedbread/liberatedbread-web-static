@@ -18,14 +18,41 @@
   <link rel="icon" href="{{ '/assets/favicon.ico' | relative_url }}" sizes="any">
   <link rel="icon" type="image/png" href="{{ '/assets/logo.png' | relative_url }}" sizes="128x128">
   <link rel="apple-touch-icon" href="{{ '/assets/logo.png' | relative_url }}">
-  <meta name="theme-color" content="#112545">
+  {%- comment -%}
+    Read from _data/brand.yml, which script/sync-brand-data.rb generates from
+    the :root block in src/input.css. No brand hex is written by hand here —
+    updating the logo updates this too (DESIGN §3.3).
+  {%- endcomment -%}
+  <meta name="theme-color" content="{{ site.data.brand.base }}">
 
+  {%- comment -%}
+    The site feed is always advertised everywhere: DESIGN §9.6 explicitly wants
+    the coming-soon page linking a valid-but-empty /feed.xml.
+
+    The devices feed is suppressed on ONE page — the Phase 0 teaser. It carries
+    full titles for guides that have not launched, so advertising it from the
+    only page anyone is pointed at hands every feed reader the unlaunched
+    catalog: clean to a human, leaking to a machine.
+
+    Every other page still advertises it. During Phase 0 those pages are
+    reachable but unlinked, so a visitor who is already reading /devices/ has
+    found the guides anyway, and suppressing it there would only break the feed
+    for the people we do want to serve.
+
+    Gated transitively on `phase0`: when it is false the root page is the
+    landing page, this condition stops matching, and / advertises the devices
+    feed like everything else. Nothing separate to remember at launch.
+  {%- endcomment -%}
+  {%- assign is_phase0_teaser = false -%}
+  {%- if site.phase0 and page.url == '/' -%}{%- assign is_phase0_teaser = true -%}{%- endif -%}
   <link rel="alternate" type="application/atom+xml"
         title="Liberated Bread"
         href="{{ '/feed.xml' | absolute_url }}">
+  {%- unless is_phase0_teaser %}
   <link rel="alternate" type="application/atom+xml"
         title="Liberated Bread — Newly Freed Devices"
         href="{{ '/feed/devices.xml' | absolute_url }}">
+  {%- endunless %}
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="{{ site.title }}">

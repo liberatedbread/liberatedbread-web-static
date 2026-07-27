@@ -1,3 +1,23 @@
+# ============================================================================
+#  PHASE 0 MASTER SWITCH — DESIGN §9.6
+#
+#    true   / is the coming-soon teaser, and the unlaunched site is not
+#           advertised to machines
+#    false  full launch
+#
+#  This ONE flag gates all three launch behaviours. There is nothing else to
+#  remember, and no way to half-flip it:
+#
+#    1. the root page ............ _layouts/home.html dispatches on it
+#    2. sitemap coverage ......... sitemap.xml lists only / while it is true
+#    3. feed autodiscovery ....... _includes/head.html omits the devices feed
+#
+#  script/check-phase0.rb asserts the BUILT site agrees with this flag, in both
+#  positions, and runs in CI. Flipping the flag and forgetting something is a
+#  build failure, not a silent leak. See PHASE0.md.
+# ============================================================================
+phase0: true
+
 title: Liberated Bread
 description: >-
   Reclaim your household hardware. Step-by-step guides for liberating abandoned

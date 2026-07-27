@@ -1,0 +1,11 @@
+# GENERATED FILE — DO NOT EDIT.
+# Mirrors the --bread-* colour tokens from src/input.css so templates can read
+# them where CSS custom properties cannot reach (e.g. <meta name="theme-color">).
+# Regenerate with: npm run build:css   (or: ruby script/sync-brand-data.rb)
+base: "#112545"
+accent: "#ee900a"
+accent-bright: "#ee6a08"
+sky: "#5bbee3"
+base-dark: "#0b182d"
+steel: "#5f8499"
+khaki: "#f3d09a"

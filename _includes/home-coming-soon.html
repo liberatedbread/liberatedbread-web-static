@@ -1,12 +1,10 @@
----
-layout: base
----
 {%- comment -%}
   PHASE 0 — the live root page. DESIGN §9.6 / §14.1 (Prompt A).
 
-  This is the currently-published `/`. To go live with the full site, change a
-  single line in index.md: `layout: coming-soon` -> `layout: landing`.
-  See PHASE0.md.
+  Rendered by _layouts/home.html when `phase0: true` in _config.yml. That same
+  flag also drops this page's sitemap coverage down to `/` alone and removes
+  the devices-feed autodiscovery link, so the unlaunched guides are not
+  advertised to crawlers or feed readers either. See PHASE0.md.
 
   Deliberately absent, per §9.6 "What's NOT on the page":
     no navigation bar, no device grid, no 3-step plan, no "how it works",
@@ -45,7 +43,7 @@ layout: base
 
     </div>
 
-    <footer class="text-center mt-8 text-xs text-bread-khaki/50 space-y-1">
+    <footer class="text-center mt-8 text-xs text-bread-khaki/70 space-y-1">
       <p>
         Liberated Bread is a project by
         <a href="https://pigscanfly.ca" target="_blank" rel="noopener">Pigs Can Fly Labs LLC</a>.

@@ -1,74 +1,96 @@
 # Phase 0 — the coming-soon root page
 
 The site is fully built. Every page in the [site map](DESIGN-finalized.md#92-site-map)
-exists, builds, and is reachable by direct URL. Only **`/` is different**: it
-serves a single-purpose teaser instead of the full landing page.
+exists, builds, and is reachable by direct URL. Two things are different while
+Phase 0 is on:
 
-This is deliberate, per [DESIGN §9.6](DESIGN-finalized.md#96-coming-soon-landing-page-phase-0).
-Phase 0 gets the domain, DNS, TLS and the pcfweb subscribe pipeline validated
-with real traffic before we commit to the full landing page layout.
+1. **`/` serves a single-purpose teaser** instead of the full landing page.
+2. **The unlaunched site is not advertised to machines** — the sitemap lists
+   only `/`, and the teaser does not carry autodiscovery for the device-guide
+   feed.
 
-## What is live at `/`
+Both are deliberate, per [DESIGN §9.6](DESIGN-finalized.md#96-coming-soon-landing-page-phase-0).
+Phase 0 validates the domain, DNS, TLS and the pcfweb subscribe pipeline with
+real traffic before we commit to the full landing page.
 
-Logo, serif wordmark, the tagline, one sentence of description, the subscribe
-form, a social row, and a footer. No navigation bar, no device grid, no 3-step
-plan, no "how it works", and no JavaScript.
+> **Point 2 is the easy one to get wrong.** A teaser that looks perfectly clean
+> in a browser can still hand a crawler the whole unlaunched catalog through
+> `sitemap.xml`, or hand a feed reader every guide title through
+> `<link rel="alternate">`. Clean to a human, leaking to a machine. That is why
+> all of it hangs off one flag and why CI asserts it.
 
-## What is live everywhere else
+## The master switch
 
-Nothing is hidden — these are simply not linked from `/`:
+Everything is gated by **one line** in [`_config.yml`](_config.yml):
 
-| URL | Source |
-|---|---|
-| `/devices/` | `devices.md` (reads `_data/devices.yml`) |
-| `/devices/<slug>/` | `_devices/<slug>.md` |
-| `/ha-plugins/` | `ha-plugins/index.md` |
-| `/about/` | `about.md` |
-| `/contribute/` | `contribute/index.md` |
-| `/contribute/device-template/` | `contribute/device-template.md` |
-| `/thanks/` | `thanks.md` — where pcfweb redirects after signup |
-| `/disclaimer/` | `disclaimer.md` |
-| `/feed.xml` | jekyll-feed (site feed; empty until there are posts) |
-| `/feed/devices.xml` | jekyll-feed (device guides) |
-| `/rss/` | `rss.md` — redirects to `/feed.xml` |
-
-## Going live: change one line
-
-The full landing page is already written and already builds. It lives in
-[`_layouts/landing.html`](_layouts/landing.html). Jekyll never emits a layout as
-a page, so it is unreachable until something opts into it.
-
-**To ship it, edit [`index.md`](index.md) and change exactly one line:**
-
-```diff
--layout: coming-soon
-+layout: landing
+```yaml
+phase0: true
 ```
 
-That is the entire switch. Commit, push to `main`, GitHub Pages rebuilds.
+| It gates | Where | `phase0: true` | `phase0: false` |
+|---|---|---|---|
+| The root page | [`_layouts/home.html`](_layouts/home.html) | `_includes/home-coming-soon.html` | `_includes/home-landing.html` |
+| Sitemap coverage | [`sitemap.xml`](sitemap.xml) | `/` only | all pages + all device guides |
+| Devices-feed autodiscovery | [`_includes/head.html`](_includes/head.html) | omitted on `/` | present on `/`, as everywhere else |
 
-To go back, change the line back. Nothing else moves.
+There is nothing else to remember. No second file to edit, no plugin to
+re-add, no front-matter defaults to delete.
 
-### Why it's a layout and not a config flag
+### Why one flag and not three toggles
 
-A `site.coming_soon` boolean would mean the live page depends on config state
-that is easy to flip by accident, easy to set differently in dev and prod, and
-invisible in a diff that touches `_config.yml` for unrelated reasons. Pointing
-`index.md` at a named layout makes the change explicit, atomic, and obvious in
-review: if a PR does not touch `index.md`, it cannot change what `/` serves.
+An earlier revision made the root page a layout swap in `index.md` and left the
+sitemap and the feed link as separate concerns. That is three independent
+things to remember at launch, and the two that are easy to forget are exactly
+the two that are invisible in a browser — so the failure mode was "we launched
+six weeks ago and Google has never indexed us," discovered late.
 
-### Preview it before flipping
+Front-matter `defaults` with `sitemap: false` were the obvious way to do the
+sitemap half, but Jekyll defaults are static YAML and cannot read `phase0`,
+which is why [`sitemap.xml`](sitemap.xml) is a source file instead. Read the
+comment at the top of it before touching it — `jekyll-sitemap` is still
+installed and still generates `robots.txt`, and it takes sitemap generation
+back the moment that file disappears.
+
+## Going live
+
+1. **Check the pre-launch list below is green.**
+2. Edit [`_config.yml`](_config.yml):
+   ```diff
+   -phase0: true
+   +phase0: false
+   ```
+3. Rebuild and verify — all three must reverse together:
+   ```bash
+   bundle exec jekyll build --strict_front_matter
+   ruby script/check-phase0.rb _site     # asserts the built site matches the flag
+   ruby script/check-links.rb  _site     # no broken internal links
+   ```
+   `check-phase0.rb` fails the build if the flag and the emitted site disagree
+   in either direction, so a half-flip cannot ship. CI runs it against **both**
+   settings on every PR, which also means the launched site is being built and
+   link-checked continuously while Phase 0 is still on.
+4. Commit and push to `main`. GitHub Pages rebuilds.
+5. **After deploy**, confirm on the live site:
+   - `https://liberatedbread.com/` is the full landing page
+   - `https://liberatedbread.com/sitemap.xml` lists every page, not just `/`
+   - `view-source:` on `/` shows `rel="alternate"` for `/feed/devices.xml`
+   - Resubmit the sitemap in Google Search Console — it has been serving a
+     one-URL sitemap and will not re-crawl promptly on its own.
+
+To roll back, set the flag to `true` again. Nothing else moves.
+
+### Preview before flipping
 
 ```bash
 bundle exec jekyll serve
-# edit index.md -> layout: landing, save, reload http://127.0.0.1:4000/
-# revert index.md when you're done
+# flip phase0 to false in _config.yml, save, reload http://127.0.0.1:4000/
+# revert when you're done — `git diff _config.yml` should be empty
 ```
 
-## Before you flip the switch
+## Pre-launch checklist
 
 - [ ] `_data/devices.yml` has **5 or more** devices, each with a real guide in
-      `_devices/` (DESIGN §9.6 gates the flip on this; it currently has 2)
+      `_devices/` (DESIGN §9.6 gates launch on this; it currently has 2)
 - [ ] Real device photos have replaced the generated placeholders in
       `assets/devices/` — see the note at the top of `_data/devices.yml`
 - [ ] The subscribe form has been tested end-to-end against pcfweb: the
@@ -81,9 +103,13 @@ bundle exec jekyll serve
 - [ ] `bundle exec jekyll build` and `npm run build:css` are both clean, and CI
       is green
 
-## The subscribe form is in both versions
+## What stays the same across the switch
 
-`_includes/subscribe-form.html` is shared by `_layouts/coming-soon.html` and
-`_layouts/landing.html`. Switching layouts does not change the form, the
-endpoint, the honeypot, or the `interest` slug — so no subscriber is lost and
-nothing needs re-testing on the pcfweb side.
+`_includes/subscribe-form.html` is shared by both root-page bodies. Flipping
+`phase0` does not change the form, the endpoint, the honeypot, or the `interest`
+slug — no subscriber is lost and nothing needs re-testing on the pcfweb side.
+
+The pages that are unlinked-but-reachable during Phase 0 do **not** change
+either. They keep their devices-feed autodiscovery the whole time: someone
+reading `/devices/` has already found the guides, and breaking the feed for
+them would serve nobody. Only the teaser is quiet.

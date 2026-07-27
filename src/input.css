@@ -49,6 +49,10 @@
      instead — which is also what DESIGN §14.1's "never use #FFF" asks for.
    --------------------------------------------------------------------------- */
 
+/* This :root block is parsed by script/sync-brand-data.rb, which mirrors the
+   --bread-* values into _data/brand.yml so Jekyll templates can read them where
+   CSS cannot reach (currently <meta name="theme-color">). Keep the
+   `--bread-name: #hex;` shape. */
 :root {
   /* sampled from assets/logo.png */
   --bread-base:          #112545;

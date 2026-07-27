@@ -8,9 +8,10 @@ Jekyll, deployed by GitHub Pages on push to `main`. No backend: the only dynamic
 piece is the newsletter form, which POSTs to pcfweb's mailing list
 ([DESIGN §6.3](DESIGN-finalized.md#63-pcfweb-mailing-list-integration)).
 
-> **Phase 0:** `/` currently serves a coming-soon teaser by design. Everything
-> else is built and reachable by direct URL. See **[PHASE0.md](PHASE0.md)** —
-> going live is a one-line change to `index.md`.
+> **Phase 0:** `/` currently serves a coming-soon teaser by design, and the
+> unlaunched site is not advertised to crawlers or feed readers. Everything is
+> built and reachable by direct URL. All of it hangs off the single `phase0`
+> flag in `_config.yml` — see **[PHASE0.md](PHASE0.md)** before launching.
 
 ## Local development
 
@@ -32,13 +33,16 @@ npm run watch:css
 ### Before you push
 
 ```bash
-npm run build:css                    # rebuild assets/tailwind.css, minified
+npm run build:css                    # rebuild assets/tailwind.css + _data/brand.yml
 bundle exec jekyll build --strict_front_matter
-ruby script/check-links.rb _site     # no broken internal links
+ruby script/check-links.rb  _site    # no broken internal links
+ruby script/check-phase0.rb _site    # built site matches the phase0 flag
 ```
 
-CI runs exactly these, plus a check that the committed `assets/tailwind.css`
-matches `src/input.css`. A stale stylesheet fails the build.
+CI runs exactly these, plus a check that the committed `assets/tailwind.css` and
+`_data/brand.yml` match `src/input.css`, plus a build of the *opposite* phase so
+the launched site is link-checked continuously too. A stale stylesheet or a
+half-flipped `phase0` fails the build.
 
 ## How the styling works
 
@@ -49,11 +53,13 @@ there with the derivation. [`tailwind.config.js`](tailwind.config.js) maps the
 neither does any layout or page.
 
 ```
-assets/logo.png  ──sampled──▶  :root{--bread-*}  ──▶  tailwind.config.js
-                                (src/input.css)          (bread-* utilities)
-                                       │
-                                       ▼
-                          assets/tailwind.css  (built, minified, committed)
+                                                    ┌─▶ tailwind.config.js ─┐
+assets/logo.png ──sampled──▶ :root{--bread-*} ──────┤   (bread-* utilities) ├──▶ assets/tailwind.css
+                              (src/input.css)       │                       │    (built, committed)
+                                                    └─▶ _data/brand.yml ────┘
+                                                        (generated; for markup
+                                                         CSS can't reach, e.g.
+                                                         <meta theme-color>)
 ```
 
 If the logo changes, re-sample it (the command is in the comment at the top of
@@ -93,14 +99,20 @@ _layouts/
   base.html                <html> shell only
   default.html             base + header/footer, for prose pages
   device.html              metadata bar, safety block, video, protocol links
-  coming-soon.html         Phase 0 root page  <-- currently live at /
-  landing.html             Phase 1 root page  <-- written, not published
-_includes/                 head, header, footer, safety-block, device-card,
+  home.html                dispatches / on the phase0 flag
+_includes/
+  home-coming-soon.html    Phase 0 root page  <-- currently live at /
+  home-landing.html        Phase 1 root page  <-- built and CI-checked, not live
+  ...                      head, header, footer, safety-block, device-card,
                            subscribe-form, social-links, video-embed
+sitemap.xml                Phase 0-aware; jekyll-sitemap defers to it
+_data/brand.yml            GENERATED from src/input.css — do not hand-edit
 src/input.css              Brand tokens + component styles (source of truth)
 tailwind.config.js         Maps bread-* utilities onto the tokens
 assets/tailwind.css        Built, minified, committed — served in production
 script/check-links.rb      Offline internal-link checker used by CI
+script/check-phase0.rb     Asserts the built site matches the phase0 flag
+script/sync-brand-data.rb  Regenerates _data/brand.yml from src/input.css
 CNAME                      liberatedbread.com
 DESIGN-finalized.md        Authoritative design document
 PHASE0.md                  What's live at /, and how to go to Phase 1

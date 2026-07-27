@@ -1,0 +1,18 @@
+---
+layout: base
+---
+{%- comment -%}
+  The root page. Which of the two bodies renders is decided by `phase0` in
+  _config.yml — the single master switch (DESIGN §9.6). See PHASE0.md.
+
+  Both bodies are real, both build, and both are exercised by CI. The one that
+  is not selected is simply not emitted.
+
+  This layout deliberately contains no content of its own, so that "what does /
+  serve?" has exactly one answer and it lives in one place.
+{%- endcomment -%}
+{% if site.phase0 %}
+  {% include home-coming-soon.html %}
+{% else %}
+  {% include home-landing.html %}
+{% endif %}
