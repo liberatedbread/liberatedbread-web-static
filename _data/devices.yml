@@ -1,0 +1,48 @@
+# _data/devices.yml — Device catalog for Liberated Bread
+# Schema version: 1 (DESIGN Appendix B)
+#
+# Drives /devices/ and the device grid in _layouts/landing.html. Every entry
+# needs a matching guide at _devices/<slug>.md — the cards link to
+# /devices/<slug>/ and CI fails the build if that page does not exist.
+#
+# `image` is optional. The files currently referenced are generated brand
+# placeholders (assets/devices/*.webp), not photographs; replace them
+# file-for-file when a contributor supplies original photos. Omitting `image`
+# entirely is also fine — the card renders a "No photo yet" tile instead.
+
+devices:
+  - slug: wemo-switch
+    name: "Belkin WeMo Insight Switch"
+    model: "F7C029"
+    type: software
+    difficulty: 1
+    time_minutes: 15
+    firmware: "WeMo_WW_2.00.11426.PVT-OWRT-SNS"
+    last_verified: "2026-07-25"
+    short_desc: "Keep your WeMo switches working locally after Belkin's cloud goes dark in January 2026."
+    image: "/assets/devices/wemo-hero.webp"
+    ha_integration: "pywemo"
+    safety_block: false
+    tags: ["wemo", "belkin", "smart-plug", "wifi"]
+    opengreeniot_spec: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs/blob/main/device-specs/devices/wemo-devices.yaml"
+    opengreeniot_docs: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs/blob/main/docs/devices/wemo-devices.md"
+
+  - slug: eufy-mount
+    name: "Eufy Indoor Cam Mount Replacement"
+    model: "T8400"
+    type: hardware
+    difficulty: 2
+    time_minutes: 45
+    last_verified: "2026-07-25"
+    short_desc: "Replace the flimsy stock mount with an articulating 3D-printed arm."
+    image: "/assets/devices/eufy-mount.webp"
+    safety_block: true
+    stl_files:
+      - filename: "wall-mount-v2.stl"
+        description: "Articulating wall mount (PLA, 20% infill)"
+      - filename: "ball-joint.stl"
+        description: "Ball joint connector (PETG, 50% infill)"
+    tags: ["eufy", "camera", "mount", "3d-print"]
+
+last_updated: "2026-07-25"
+total_devices: 2
