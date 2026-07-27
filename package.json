@@ -1,0 +1,16 @@
+{
+  "name": "liberatedbread-web-static",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Build tooling for the Liberated Bread static site. Jekyll renders the HTML; this only produces assets/tailwind.css.",
+  "license": "MIT",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/input.css -o ./assets/tailwind.css --minify && ruby script/sync-brand-data.rb",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./assets/tailwind.css --watch",
+    "check:css": "npm run build:css && git diff --exit-code -- assets/tailwind.css _data/brand.yml"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}

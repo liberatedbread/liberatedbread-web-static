@@ -1,0 +1,53 @@
+{%- comment -%}
+  pcfweb mailing-list subscribe form (DESIGN §6.3, §8.1).
+
+  This is a plain <form method="post"> and works with JavaScript disabled —
+  that is the *only* supported path, deliberately. An earlier draft added a
+  fetch() enhancement, but pcfweb sends no CORS headers, so the fetch promise
+  always rejects *after* the POST has already been delivered; its fallback then
+  re-submitted the form and subscribed the visitor twice. There is no JS here.
+
+  Field contract with pcfweb's MailingListSubscribeView:
+    email     required, the subscriber address
+    interest  the InterestArea slug — "liberatedbread"
+    website   honeypot; bots fill it, humans and screen readers never see it
+    next      post-signup redirect, allow-listed by MAILING_LIST_ALLOWED_NEXT_HOSTS
+  `name` is optional upstream and is deliberately NOT collected here (§9.6).
+
+  The honeypot uses an inline `display:none` rather than a stylesheet class on
+  purpose: if assets/tailwind.css ever fails to load, an external class would
+  leave the trap visible to real people. Inline style degrades correctly.
+
+  Optional includes:
+    include.id     — unique suffix when more than one form is on a page
+    include.label  — label text (default: "Get notified when we launch:")
+{%- endcomment -%}
+{%- assign fid = include.id | default: 'subscribe' -%}
+
+<form action="{{ site.mailing_list.endpoint }}" method="post" class="mt-3">
+  <label for="{{ fid }}-email" class="block text-bread-khaki text-sm mb-2">
+    {{ include.label | default: 'Get notified when we launch:' }}
+  </label>
+
+  <div class="flex flex-col sm:flex-row gap-2">
+    <input type="email" name="email" id="{{ fid }}-email" required
+           autocomplete="email" placeholder="you@example.com"
+           class="flex-1 min-w-0 px-3 py-2 rounded-md bg-bread-base-dark border border-bread-steel text-bread-khaki placeholder:text-bread-khaki/60 focus:border-bread-sky transition-colors">
+
+    <button type="submit"
+            class="px-4 py-2 rounded-md bg-bread-accent hover:bg-bread-accent-bright text-bread-base font-semibold whitespace-nowrap transition-colors">
+      Notify Me &rarr;
+    </button>
+  </div>
+
+  <input type="hidden" name="interest" value="{{ site.mailing_list.interest }}">
+  <input type="hidden" name="next" value="{{ site.mailing_list.next }}">
+
+  <!-- Honeypot. Hidden from humans (display:none) and from assistive tech
+       (aria-hidden), unreachable by keyboard (tabindex), never autofilled. -->
+  <div style="display:none" aria-hidden="true">
+    <input type="text" name="website" tabindex="-1" autocomplete="off" value="">
+  </div>
+
+  <p class="text-bread-khaki/60 text-xs mt-3">No spam, ever. Unsubscribe anytime. Zero tracking.</p>
+</form>

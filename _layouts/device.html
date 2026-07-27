@@ -1,0 +1,93 @@
+---
+layout: base
+---
+{% include header.html %}
+
+<main id="content" class="flex-1 w-full max-w-4xl mx-auto px-4 py-10">
+
+  <nav aria-label="Breadcrumb" class="text-sm text-bread-khaki/60 mb-4">
+    <a href="{{ '/devices/' | relative_url }}">Devices</a>
+    <span aria-hidden="true"> / </span>
+    <span>{{ page.device_name | default: page.title }}</span>
+  </nav>
+
+  <h1 class="font-serif text-3xl md:text-4xl mb-6">{{ page.title }}</h1>
+
+  <!-- 1. Metadata bar (DESIGN §10.3) -->
+  <div class="bg-bread-base-dark border border-bread-steel/30 rounded-lg p-4 mb-6">
+    <dl class="flex flex-wrap gap-x-6 gap-y-2 text-sm m-0">
+      {% if page.model %}
+        <div><dt class="inline text-bread-khaki/60">Model:</dt> <dd class="inline m-0 text-bread-khaki">{{ page.model }}</dd></div>
+      {% endif %}
+      {% if page.firmware %}
+        <div><dt class="inline text-bread-khaki/60">Firmware:</dt> <dd class="inline m-0 font-mono text-xs text-bread-khaki">{{ page.firmware }}</dd></div>
+      {% endif %}
+      {% if page.type %}
+        <div>
+          <dt class="inline text-bread-khaki/60">Type:</dt>
+          <dd class="inline m-0">
+            <span class="text-xs px-2 py-0.5 rounded-full {% if page.type == 'software' %}bg-bread-sky/20 text-bread-sky{% else %}bg-bread-accent/20 text-bread-accent{% endif %}">{{ page.type | capitalize }}</span>
+          </dd>
+        </div>
+      {% endif %}
+      {% if page.difficulty %}
+        <div>
+          <dt class="inline text-bread-khaki/60">Difficulty:</dt>
+          <dd class="inline m-0">
+            <span aria-hidden="true">{% for i in (1..page.difficulty) %}🍞{% endfor %}</span>
+            <span class="sr-only">{{ page.difficulty }} of 3</span>
+          </dd>
+        </div>
+      {% endif %}
+      {% if page.time_minutes %}
+        <div><dt class="inline text-bread-khaki/60">Time:</dt> <dd class="inline m-0 text-bread-khaki">~{{ page.time_minutes }} min</dd></div>
+      {% endif %}
+      {% if page.last_verified %}
+        <div><dt class="inline text-bread-khaki/60">Verified:</dt> <dd class="inline m-0 text-bread-khaki">{{ page.last_verified | date: "%B %-d, %Y" }}</dd></div>
+      {% endif %}
+      {% if page.ha_integration %}
+        <div><dt class="inline text-bread-khaki/60">HA integration:</dt> <dd class="inline m-0 font-mono text-xs text-bread-sky">{{ page.ha_integration }}</dd></div>
+      {% endif %}
+    </dl>
+  </div>
+
+  <!-- 2. Mandatory safety block (DESIGN §10.1) — first content after the
+       metadata bar, whenever front matter opts in. -->
+  {% if page.safety_block %}
+    {% include safety-block.html %}
+  {% endif %}
+
+  <!-- 3+. Guide body -->
+  <div class="lb-prose">
+    {{ content }}
+  </div>
+
+  <!-- Video walkthrough (DESIGN §12.1) -->
+  {% if page.video_embed %}
+    {% include video-embed.html
+       platform=page.video_embed.platform
+       id=page.video_embed.id
+       title=page.video_embed.title
+       instance=page.video_embed.instance
+       url=page.video_embed.url %}
+  {% endif %}
+
+  <!-- Protocol reference (DESIGN §4.1) -->
+  {% if page.opengreeniot_spec or page.opengreeniot_docs %}
+    <div class="border-t border-bread-steel/30 mt-10 pt-4 text-sm text-bread-khaki/70">
+      <span>Protocol reference:</span>
+      {% if page.opengreeniot_spec %}<a href="{{ page.opengreeniot_spec }}" target="_blank" rel="noopener">Device spec</a>{% endif %}
+      {% if page.opengreeniot_spec and page.opengreeniot_docs %}<span aria-hidden="true"> · </span>{% endif %}
+      {% if page.opengreeniot_docs %}<a href="{{ page.opengreeniot_docs }}" target="_blank" rel="noopener">Protocol docs</a>{% endif %}
+      <span>— opengreeniot-protocol-docs</span>
+    </div>
+  {% endif %}
+
+  <!-- Standard disclaimer (DESIGN §17.1) -->
+  <div class="border-t border-bread-steel/30 mt-6 pt-4 text-xs text-bread-khaki/60">
+    <strong>Heads up:</strong> These guides are for hardware you own. Use common sense. Don't do anything illegal. Pigs Can Fly Labs LLC isn't responsible for bricked devices, voided warranties, or angry IoT cloud providers. If you're not sure about something, ask someone who knows.
+  </div>
+
+</main>
+
+{% include footer.html %}

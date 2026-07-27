@@ -1,0 +1,58 @@
+{%- comment -%}
+  PHASE 0 — the live root page. DESIGN §9.6 / §14.1 (Prompt A).
+
+  Rendered by _layouts/home.html when `phase0: true` in _config.yml. That same
+  flag also drops this page's sitemap coverage down to `/` alone and removes
+  the devices-feed autodiscovery link, so the unlaunched guides are not
+  advertised to crawlers or feed readers either. See PHASE0.md.
+
+  Deliberately absent, per §9.6 "What's NOT on the page":
+    no navigation bar, no device grid, no 3-step plan, no "how it works",
+    no blog content, and no JavaScript at all.
+
+  Everything else on the site still builds and is reachable by direct URL —
+  /devices/, /ha-plugins/, /about/, /contribute/, /thanks/, /disclaimer/,
+  /feed.xml, /rss/. They are simply not linked from here.
+{%- endcomment -%}
+
+<main id="content" class="flex-1 flex items-center justify-center px-4 py-12">
+  <div class="w-full max-w-lg">
+
+    <div class="bg-bread-base-dark border border-bread-steel rounded-lg p-6 md:p-12 text-center">
+
+      <img src="{{ '/assets/logo.png' | relative_url }}"
+           alt="Liberated Bread logo — a stylized loaf of bread"
+           width="96" height="96" decoding="async"
+           class="w-24 h-24 mx-auto mb-6">
+
+      <h1 class="font-serif text-4xl text-bread-accent mb-3">Liberated Bread</h1>
+
+      <p class="text-bread-khaki text-lg mb-3">Reclaim your household hardware. Coming soon.</p>
+
+      <p class="text-bread-khaki/80 text-sm max-w-md mx-auto">
+        Step-by-step guides for liberating abandoned IoT devices from dead cloud services.
+      </p>
+
+      <hr class="border-bread-steel/50 my-6">
+
+      {% include subscribe-form.html id="cs" %}
+
+      <hr class="border-bread-steel/50 my-6">
+
+      {% include social-links.html %}
+
+    </div>
+
+    <footer class="text-center mt-8 text-xs text-bread-khaki/70 space-y-1">
+      <p>
+        Liberated Bread is a project by
+        <a href="https://pigscanfly.ca" target="_blank" rel="noopener">Pigs Can Fly Labs LLC</a>.
+        <span aria-hidden="true">·</span>
+        <a href="{{ '/disclaimer/' | relative_url }}">Disclaimer</a>
+      </p>
+      <p>Some links may earn us a small commission. These guides are for hardware you own. Use common sense.</p>
+      <p>&copy; {{ site.time | date: "%Y" }} Pigs Can Fly Labs LLC</p>
+    </footer>
+
+  </div>
+</main>

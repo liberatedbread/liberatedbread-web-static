@@ -1,0 +1,24 @@
+{%- comment -%}
+  Mandatory safety callout — DESIGN §10.1.
+
+  Rendered by _layouts/device.html whenever a device page sets
+  `safety_block: true` in its front matter, immediately after the metadata bar
+  and before any guide content. Hardware guides must always set it; software
+  guides set it only when the procedure requires physical access.
+
+  Colour note: this is the one place the site steps outside the bread palette.
+  A warning that reads as "just more amber" is not a warning, so the callout
+  uses a red border/heading against the standard dark card. Text stays khaki so
+  it remains legible at the site's normal contrast.
+{%- endcomment -%}
+
+<div class="bg-red-950/40 border border-red-600/50 rounded-lg p-4 my-6" role="alert">
+  <h2 class="!mt-0 !border-0 !pb-0 font-serif !text-red-300 text-lg mb-2">⚠️ Safety First</h2>
+  <ol class="list-decimal pl-5 space-y-1 text-sm text-bread-khaki">
+    <li><strong>DE-ENERGIZE:</strong> Unplug the device from mains power before any disassembly. For battery-powered devices, remove the battery.</li>
+    <li><strong>MAINS VOLTAGE:</strong> If the device plugs into a wall outlet, mains voltage may be present even when the device appears "off." Capacitors can retain charge after unplugging.</li>
+    <li><strong>TOOLS:</strong> Use insulated tools when working near exposed circuitry.</li>
+    <li><strong>WORKSPACE:</strong> Work on a non-conductive surface in a well-lit area.</li>
+  </ol>
+  <p class="text-sm text-bread-khaki/80 mt-3 mb-0">This guide assumes basic electronics safety knowledge. If you are unsure about any step, consult someone with experience before proceeding.</p>
+</div>

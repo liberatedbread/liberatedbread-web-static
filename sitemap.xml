@@ -1,0 +1,70 @@
+---
+layout: null
+permalink: /sitemap.xml
+sitemap: false
+---
+{%- comment -%}
+  Sitemap, gated on the `phase0` master switch in _config.yml (DESIGN §9.6).
+
+  While phase0 is true this lists ONLY `/`. jekyll-sitemap's own template lists
+  every page it can find, which during Phase 0 means handing Google the whole
+  unlaunched site — both device guides, /devices/, /about/, /contribute/,
+  /ha-plugins/, /disclaimer/ — with robots.txt pointing straight at it. Marking
+  `/` as `sitemap: true` in index.md did not suppress any of that; it only
+  described `/`.
+
+  WHY THIS FILE EXISTS AT ALL, AND WHY IT MUST NOT BE DELETED
+  -----------------------------------------------------------
+  jekyll-sitemap is still installed and still generates robots.txt. Its
+  generator is:
+
+      @site.pages << sitemap unless file_exists?("sitemap.xml")
+      @site.pages << robots  unless file_exists?("robots.txt")
+
+  so the presence of THIS file is what makes the plugin defer the sitemap to
+  us. That is a documented, supported hook — not a hack — but it does mean that
+  deleting this file silently hands sitemap generation back to the plugin and
+  re-publishes the unlaunched site. script/check-phase0.rb fails the build if
+  that ever happens.
+
+  Front-matter defaults (`sitemap: false` per scope) were the obvious
+  alternative, but defaults are static YAML and cannot read `phase0` — going
+  that route would have meant three independent things to remember at launch
+  instead of one flag.
+{%- endcomment -%}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{%- if site.phase0 -%}
+  {%- comment -%} Phase 0: the teaser is the only public page. {%- endcomment -%}
+  <url>
+    <loc>{{ '/' | absolute_url | xml_escape }}</loc>
+  </url>
+{%- else -%}
+  {%- comment -%}
+    Launched: every page and device guide whose front matter has not opted out
+    with `sitemap: false`. Only trailing-slash URLs are listed, which keeps
+    feed.xml, sitemap.xml, robots.txt and CNAME out without an extension
+    blocklist.
+  {%- endcomment -%}
+  {%- for p in site.pages -%}
+    {%- unless p.sitemap == false -%}
+      {%- assign tail = p.url | slice: -1 -%}
+      {%- if tail == '/' %}
+  <url>
+    <loc>{{ p.url | absolute_url | xml_escape }}</loc>
+  </url>
+      {%- endif -%}
+    {%- endunless -%}
+  {%- endfor -%}
+  {%- for d in site.devices -%}
+    {%- unless d.sitemap == false %}
+  <url>
+    <loc>{{ d.url | absolute_url | xml_escape }}</loc>
+    {%- if d.last_verified %}
+    <lastmod>{{ d.last_verified | date_to_xmlschema }}</lastmod>
+    {%- endif %}
+  </url>
+    {%- endunless -%}
+  {%- endfor -%}
+{%- endif %}
+</urlset>

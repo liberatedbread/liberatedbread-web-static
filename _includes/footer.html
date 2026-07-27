@@ -1,0 +1,23 @@
+<footer class="border-t border-bread-steel/30 mt-16 py-8 px-4">
+  <div class="max-w-5xl mx-auto text-center text-sm text-bread-khaki/70 space-y-3">
+    <nav aria-label="Footer">
+      <ul class="flex flex-wrap justify-center gap-x-3 gap-y-1" role="list">
+        <li><a href="https://pigscanfly.ca" target="_blank" rel="noopener">Pigs Can Fly Labs LLC</a></li>
+        <li aria-hidden="true">·</li>
+        <li><a href="{{ '/about/' | relative_url }}">About</a></li>
+        <li aria-hidden="true">·</li>
+        <li><a href="{{ '/contribute/' | relative_url }}">Contribute</a></li>
+        <li aria-hidden="true">·</li>
+        <li><a href="{{ '/disclaimer/' | relative_url }}">Disclaimer</a></li>
+        <li aria-hidden="true">·</li>
+        <li><a href="{{ '/rss/' | relative_url }}">RSS</a></li>
+      </ul>
+    </nav>
+
+    {% include social-links.html %}
+
+    <p>Liberated Bread is free. Some links may earn us a small commission — we'll tell you when they do.</p>
+    <p class="text-bread-khaki/70">These guides are for hardware you own. Use common sense. Pigs Can Fly Labs LLC isn't responsible for bricked devices, voided warranties, or angry IoT cloud providers.</p>
+    <p class="text-bread-khaki/70">&copy; {{ site.time | date: "%Y" }} Pigs Can Fly Labs LLC</p>
+  </div>
+</footer>

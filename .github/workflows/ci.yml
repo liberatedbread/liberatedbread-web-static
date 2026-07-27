@@ -1,0 +1,130 @@
+name: CI
+
+# Verification only. Deployment is GitHub Pages' own Jekyll build on push to
+# main (DESIGN §6.1) — this workflow exists to catch a broken site *before* it
+# ships, using the same github-pages gem set the deploy uses.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build site and check links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Ruby comes from .ruby-version — the single source of truth shared with
+      # the tailwind job and with a local `bundle install`. It holds the exact
+      # Ruby that GitHub Pages' own build runs (pages.github.com/versions.json),
+      # so a green build here means a green deploy.
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      # Fails the job on any Jekyll error. --strict_front_matter turns a
+      # malformed front-matter block in a contributed device page into a build
+      # failure instead of a silently mangled page.
+      - name: Build site
+        env:
+          JEKYLL_ENV: production
+          # Lets jekyll-github-metadata resolve repo data instead of warning.
+          JEKYLL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bundle exec jekyll build --strict_front_matter --trace
+
+      # Offline check: every same-origin href/src/action in the built HTML must
+      # resolve to something in _site. Catches a device card pointing at a guide
+      # that was never added, a renamed permalink, a typo in a nav link.
+      - name: Check internal links
+        run: ruby script/check-links.rb _site
+
+      # `phase0` in _config.yml gates the root page, sitemap coverage and
+      # devices-feed autodiscovery together. This asserts the built site agrees
+      # with the flag, so a half-flipped launch fails here rather than shipping
+      # a teaser that quietly advertises the unlaunched catalog.
+      - name: Check Phase 0 consistency
+        run: ruby script/check-phase0.rb _site
+
+      # Proves the flag actually reverses all three, and that the launched site
+      # is itself sound. Runs against a throwaway copy of _config.yml.
+      - name: Build the opposite phase and check it too
+        run: |
+          cp _config.yml /tmp/_config.yml.bak
+          sed -i 's/^phase0: true$/phase0: false/' _config.yml
+          grep -q '^phase0: false$' _config.yml || { echo "::error::phase0 flip failed"; exit 1; }
+          bundle exec jekyll build --strict_front_matter --destination _site_launch
+          ruby script/check-links.rb _site_launch
+          ruby script/check-phase0.rb _site_launch
+          cp /tmp/_config.yml.bak _config.yml
+          rm -rf _site_launch
+          git diff --exit-code -- _config.yml
+
+      - name: Verify RSS feed is valid XML
+        run: |
+          for f in _site/feed.xml _site/feed/devices.xml; do
+            test -s "$f" || { echo "::error::$f missing or empty"; exit 1; }
+            ruby -rrexml/document -e 'REXML::Document.new(File.read(ARGV[0]))' "$f" \
+              || { echo "::error::$f is not valid XML"; exit 1; }
+            echo "ok: $f"
+          done
+
+      - name: Verify CNAME
+        run: |
+          test "$(cat CNAME)" = "liberatedbread.com" \
+            || { echo "::error::CNAME must contain liberatedbread.com"; exit 1; }
+
+  tailwind:
+    name: Verify committed Tailwind build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # build:css also runs script/sync-brand-data.rb. No ruby-version here on
+      # purpose: .ruby-version drives both jobs so they cannot drift apart.
+      - uses: ruby/setup-ruby@v1
+
+      - run: npm ci
+
+      # DESIGN §9.5: assets/tailwind.css is committed and served directly — no
+      # CDN in production. Rebuilding it here must be a no-op. If this step
+      # fails, run `npm run build:css` and commit the result.
+      # _data/brand.yml is generated from the same source by the same command,
+      # so it is checked here too — a stale one would leave <meta theme-color>
+      # pointing at a colour the logo no longer has.
+      - name: Rebuild CSS and fail if it differs from the committed files
+        run: |
+          npm run build:css
+          if ! git diff --quiet -- assets/tailwind.css _data/brand.yml; then
+            echo "::error::Generated files are stale. Run 'npm run build:css' and commit the result."
+            git --no-pager diff --stat -- assets/tailwind.css _data/brand.yml
+            exit 1
+          fi
+          echo "assets/tailwind.css and _data/brand.yml are up to date with src/input.css"
+
+      # The whole point of committing the CSS is having no runtime dependency
+      # on a third-party host (DESIGN §15.1).
+      - name: Assert no CDN references in shipped markup
+        run: |
+          if grep -rIn --include='*.html' --include='*.md' \
+               -e 'cdn\.tailwindcss\.com' -e 'unpkg\.com' -e 'jsdelivr\.net' \
+               _layouts _includes . --exclude-dir=node_modules \
+               --exclude-dir=_site --exclude=DESIGN-finalized.md 2>/dev/null; then
+            echo "::error::CDN reference found — production must use assets/tailwind.css"
+            exit 1
+          fi
+          echo "no CDN references"
