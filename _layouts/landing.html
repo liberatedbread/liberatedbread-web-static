@@ -1,0 +1,93 @@
+---
+layout: base
+---
+{%- comment -%}
+  ============================================================================
+  NOT PUBLISHED. This is the Phase 1 full landing page (DESIGN §14.2, Prompt B).
+  ============================================================================
+
+  Jekyll never emits `_layouts/*` as a page, so nothing in this file is
+  reachable on the live site until a page opts into it. Today no page does —
+  index.md uses `layout: coming-soon`.
+
+  TO GO LIVE: edit exactly one line in index.md —
+      layout: coming-soon   ->   layout: landing
+  That is the whole switch. There is no config flag, no environment variable,
+  and no build-time toggle, precisely so this cannot ship by accident. See
+  PHASE0.md for the checklist that should be green before flipping it.
+
+  DESIGN §9.6 gates the flip on the device catalog reaching 5+ guides. As of
+  this commit _data/devices.yml has 2, and the four cards below are still the
+  hardcoded placeholders from §14.2 — two of them (Kasa, Wyze) have no guide
+  yet and are commented out rather than left as dead links.
+{%- endcomment -%}
+
+{% include header.html %}
+
+<main id="content" class="flex-1">
+
+  <!-- HERO -->
+  <section class="px-4 py-20 md:py-28 text-center">
+    <h1 class="font-serif text-4xl md:text-6xl text-bread-accent mb-4">Reclaim Your Household Hardware.</h1>
+    <p class="text-lg md:text-xl text-bread-khaki max-w-2xl mx-auto mb-8">
+      When corporate servers go dark, your devices shouldn't. We keep your smart home running — offline, local, and free.
+    </p>
+
+    <div class="bg-bread-base-dark border border-bread-steel/50 rounded-lg p-4 max-w-lg mx-auto mb-8 text-left font-mono text-sm">
+      <p class="text-bread-accent-bright m-0">$ ping api.belkin.com</p>
+      <p class="text-bread-khaki/60 m-0 mb-3"><span aria-hidden="true">&rarr;</span> timeout</p>
+      <p class="text-bread-sky m-0">$ wemo switch living_room_lamp</p>
+      <p class="text-bread-sky m-0"><span aria-hidden="true">&rarr;</span> ON (2ms, local)</p>
+    </div>
+
+    <a href="#plan" class="inline-block px-8 py-3 rounded bg-bread-accent hover:bg-bread-accent-bright text-bread-base font-semibold text-lg no-underline transition-colors">
+      Start Liberating <span aria-hidden="true">&rarr;</span>
+    </a>
+  </section>
+
+  <!-- 3-STEP PLAN -->
+  <section id="plan" class="px-4 py-16 max-w-5xl mx-auto">
+    <h2 class="font-serif text-2xl text-bread-accent text-center mb-10">How It Works</h2>
+    <ol class="grid grid-cols-1 md:grid-cols-3 gap-6 list-none p-0" role="list">
+      <li class="bg-bread-base-dark border border-bread-steel/30 rounded-lg p-6 text-center">
+        <p class="text-3xl mb-3" aria-hidden="true">🍞</p>
+        <h3 class="font-serif text-lg text-bread-accent mb-2">1. Pick Your Device</h3>
+        <p class="text-sm text-bread-khaki/80 m-0">Browse our growing catalog of liberated devices — from smart plugs to security cameras.</p>
+      </li>
+      <li class="bg-bread-base-dark border border-bread-steel/30 rounded-lg p-6 text-center">
+        <p class="text-3xl mb-3" aria-hidden="true">🛠️</p>
+        <h3 class="font-serif text-lg text-bread-accent mb-2">2. Follow the Guide</h3>
+        <p class="text-sm text-bread-khaki/80 m-0">Step-by-step instructions with photos, safety warnings, and troubleshooting. No guesswork.</p>
+      </li>
+      <li class="bg-bread-base-dark border border-bread-steel/30 rounded-lg p-6 text-center">
+        <p class="text-3xl mb-3" aria-hidden="true">🎉</p>
+        <h3 class="font-serif text-lg text-bread-accent mb-2">3. Enjoy Freedom</h3>
+        <p class="text-sm text-bread-khaki/80 m-0">Your devices work locally on your network. No cloud. No accounts. No one pulling the plug.</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- DEVICE GRID — driven by _data/devices.yml, not hardcoded, so it can
+       never drift from the catalog or link to a guide that does not exist. -->
+  <section class="px-4 py-16 max-w-5xl mx-auto">
+    <h2 class="font-serif text-2xl text-bread-accent mb-8">Supported Devices</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% for device in site.data.devices.devices %}
+        {% include device-card.html device=device %}
+      {% endfor %}
+    </div>
+    <p class="text-center mt-6">
+      <a href="{{ '/devices/' | relative_url }}">View all devices <span aria-hidden="true">&rarr;</span></a>
+    </p>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="px-4 py-16 max-w-lg mx-auto text-center">
+    <h2 class="font-serif text-2xl text-bread-accent mb-3">Stay Updated</h2>
+    <p class="text-bread-khaki/80">Get notified when we free new devices.</p>
+    {% include subscribe-form.html id="landing" label="Your email address:" %}
+  </section>
+
+</main>
+
+{% include footer.html %}
