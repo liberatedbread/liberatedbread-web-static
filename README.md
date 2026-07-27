@@ -15,7 +15,8 @@ piece is the newsletter form, which POSTs to pcfweb's mailing list
 
 ## Local development
 
-Requires Ruby (bundler) and Node 20+.
+Requires Ruby (see `.ruby-version` — the Ruby GitHub Pages itself builds with)
+and Node 20+.
 
 ```bash
 bundle install          # installs the same gem set GitHub Pages runs
