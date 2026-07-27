@@ -1,0 +1,98 @@
+name: CI
+
+# Verification only. Deployment is GitHub Pages' own Jekyll build on push to
+# main (DESIGN §6.1) — this workflow exists to catch a broken site *before* it
+# ships, using the same github-pages gem set the deploy uses.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build site and check links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      # Fails the job on any Jekyll error. --strict_front_matter turns a
+      # malformed front-matter block in a contributed device page into a build
+      # failure instead of a silently mangled page.
+      - name: Build site
+        env:
+          JEKYLL_ENV: production
+          # Lets jekyll-github-metadata resolve repo data instead of warning.
+          JEKYLL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bundle exec jekyll build --strict_front_matter --trace
+
+      # Offline check: every same-origin href/src/action in the built HTML must
+      # resolve to something in _site. Catches a device card pointing at a guide
+      # that was never added, a renamed permalink, a typo in a nav link.
+      - name: Check internal links
+        run: ruby script/check-links.rb _site
+
+      - name: Verify RSS feed is valid XML
+        run: |
+          for f in _site/feed.xml _site/feed/devices.xml; do
+            test -s "$f" || { echo "::error::$f missing or empty"; exit 1; }
+            ruby -rrexml/document -e 'REXML::Document.new(File.read(ARGV[0]))' "$f" \
+              || { echo "::error::$f is not valid XML"; exit 1; }
+            echo "ok: $f"
+          done
+
+      - name: Verify CNAME
+        run: |
+          test "$(cat CNAME)" = "liberatedbread.com" \
+            || { echo "::error::CNAME must contain liberatedbread.com"; exit 1; }
+
+  tailwind:
+    name: Verify committed Tailwind build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # DESIGN §9.5: assets/tailwind.css is committed and served directly — no
+      # CDN in production. Rebuilding it here must be a no-op. If this step
+      # fails, run `npm run build:css` and commit the result.
+      - name: Rebuild CSS and fail if it differs from the committed file
+        run: |
+          npm run build:css
+          if ! git diff --quiet -- assets/tailwind.css; then
+            echo "::error::assets/tailwind.css is stale. Run 'npm run build:css' and commit it."
+            git --no-pager diff --stat -- assets/tailwind.css
+            exit 1
+          fi
+          echo "assets/tailwind.css is up to date with src/input.css"
+
+      # The whole point of committing the CSS is having no runtime dependency
+      # on a third-party host (DESIGN §15.1).
+      - name: Assert no CDN references in shipped markup
+        run: |
+          if grep -rIn --include='*.html' --include='*.md' \
+               -e 'cdn\.tailwindcss\.com' -e 'unpkg\.com' -e 'jsdelivr\.net' \
+               _layouts _includes . --exclude-dir=node_modules \
+               --exclude-dir=_site --exclude=DESIGN-finalized.md 2>/dev/null; then
+            echo "::error::CDN reference found — production must use assets/tailwind.css"
+            exit 1
+          fi
+          echo "no CDN references"
