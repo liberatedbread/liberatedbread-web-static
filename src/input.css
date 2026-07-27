@@ -1,0 +1,191 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+/* ---------------------------------------------------------------------------
+   Liberated Bread — brand tokens ("Tactical Bakery")
+
+   THIS BLOCK IS THE SINGLE SOURCE OF TRUTH FOR BRAND COLOUR (DESIGN §3.1/§3.3).
+   Nothing else in the repo may hardcode a brand hex. `tailwind.config.js` maps
+   every `bread-*` utility onto these custom properties, so changing a value
+   here changes the whole site. If the logo changes, re-run the derivation
+   below and update only these seven lines.
+
+   HOW THESE WERE DERIVED
+   ----------------------
+   Four values are sampled directly from `assets/logo.png` (128x128, 16384
+   opaque pixels). Quantising the opaque pixels and taking the most frequent
+   colours yields exactly four brand clusters:
+
+     #5bbee3   5,760 px (35%)  logo background .............. --bread-sky
+     #ee900a   1,750 px (11%)  bread crust, lit face ........ --bread-accent
+     #112545     460 px ( 3%)  darkest tone, loaf outline ... --bread-base
+     #ee6a08     340 px ( 2%)  crust shade, saturated orange  --bread-accent-bright
+
+   Reproduce with:
+     python3 - <<'PY'
+     from PIL import Image; from collections import Counter
+     px = [p[:3] for p in Image.open('assets/logo.png').convert('RGBA').getdata() if p[3] > 200]
+     for c, n in Counter(px).most_common(6): print('#%02x%02x%02x' % c, n)
+     PY
+
+   The remaining three are computed from the sampled four, per DESIGN §14.1:
+
+     --bread-base-dark   base mixed 35% toward black. Card/input backgrounds
+                         need to sit *below* the page, not beside it.
+     --bread-steel       sky at 45% of its original saturation, composited at
+                         70% over base ("desaturated --bread-sky at 70%").
+                         3.83:1 on base — passes WCAG 1.4.11 for borders.
+     --bread-khaki       body text on dark. DESIGN §14.1 describes this as
+                         "--bread-accent at 50% opacity", which literally
+                         computes to #805a28 — 2.49:1 on base, unreadable. We
+                         keep the warm bakery hue but invert the direction:
+                         accent mixed 28% into a warm off-white, giving
+                         10.41:1 on base. Same family, actually legible.
+
+   CONTRAST (WCAG 2.1, measured against --bread-base)
+     sky 7.22:1 · accent 6.28:1 · accent-bright 4.88:1 · khaki 10.41:1
+     Buttons put --bread-base ON --bread-accent (6.28:1). White on amber is
+     only 2.43:1, so the spec's "text-white" button is rendered in base
+     instead — which is also what DESIGN §14.1's "never use #FFF" asks for.
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* sampled from assets/logo.png */
+  --bread-base:          #112545;
+  --bread-accent:        #ee900a;
+  --bread-accent-bright: #ee6a08;
+  --bread-sky:           #5bbee3;
+
+  /* computed from the sampled four */
+  --bread-base-dark:     #0b182d;
+  --bread-steel:         #5f8499;
+  --bread-khaki:         #f3d09a;
+
+  /* typography stacks (DESIGN §3.2) */
+  --bread-font-serif: Georgia, "Times New Roman", serif;
+  --bread-font-sans:  system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bread-font-mono:  "Fira Code", "Cascadia Code", "SF Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    background-color: var(--bread-base);
+  }
+
+  body {
+    background-color: var(--bread-base);
+    color: var(--bread-khaki);
+    font-family: var(--bread-font-sans);
+    /* Dot-pattern overlay, DESIGN §14.1: --bread-sky at 8%, 20px spacing.
+       Lives here rather than in a per-page <style> block so every page in the
+       site shares one definition. */
+    background-image: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--bread-sky) 8%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: 20px 20px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--bread-font-serif);
+    color: var(--bread-accent);
+  }
+
+  pre, code, kbd, samp {
+    font-family: var(--bread-font-mono);
+  }
+
+  a {
+    color: var(--bread-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 150ms ease;
+  }
+
+  a:hover {
+    color: var(--bread-accent-bright);
+  }
+
+  /* Keep the focus ring visible on the dark palette — the form is the whole
+     point of the Phase 0 page, so it must be keyboard-navigable. */
+  :focus-visible {
+    outline: 2px solid var(--bread-sky);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Long-form guide bodies. Prose is generated from markdown, so it can't
+     carry utility classes; these give device pages and the static content
+     pages their typography without a plugin dependency. */
+  .lb-prose > * + * {
+    margin-top: 1rem;
+  }
+
+  .lb-prose h2 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    margin-top: 2.5rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--bread-steel) 40%, transparent);
+    padding-bottom: 0.35rem;
+  }
+
+  .lb-prose h3 {
+    font-size: 1.2rem;
+    line-height: 1.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .lb-prose ul { list-style: disc; padding-left: 1.5rem; }
+  .lb-prose ol { list-style: decimal; padding-left: 1.5rem; }
+  .lb-prose li + li { margin-top: 0.35rem; }
+
+  .lb-prose pre {
+    background-color: var(--bread-base-dark);
+    border: 1px solid color-mix(in srgb, var(--bread-steel) 40%, transparent);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    color: var(--bread-sky);
+  }
+
+  .lb-prose :not(pre) > code {
+    background-color: var(--bread-base-dark);
+    border-radius: 0.25rem;
+    padding: 0.1rem 0.35rem;
+    font-size: 0.875em;
+    color: var(--bread-sky);
+  }
+
+  .lb-prose blockquote {
+    border-left: 3px solid var(--bread-accent);
+    padding-left: 1rem;
+    color: color-mix(in srgb, var(--bread-khaki) 85%, transparent);
+  }
+
+  .lb-prose table {
+    width: 100%;
+    border-collapse: collapse;
+    display: block;
+    overflow-x: auto;
+  }
+
+  .lb-prose th,
+  .lb-prose td {
+    border: 1px solid color-mix(in srgb, var(--bread-steel) 35%, transparent);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+
+  .lb-prose th {
+    background-color: var(--bread-base-dark);
+    color: var(--bread-accent);
+  }
+
+  .lb-prose hr {
+    border-color: color-mix(in srgb, var(--bread-steel) 35%, transparent);
+    margin-block: 2rem;
+  }
+}
