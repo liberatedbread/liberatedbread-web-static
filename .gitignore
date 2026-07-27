@@ -1,0 +1,16 @@
+# Jekyll
+_site/
+.jekyll-cache/
+.jekyll-metadata
+.sass-cache/
+
+# Bundler — Gemfile.lock IS committed (it pins the GitHub Pages gem set)
+.bundle/
+vendor/
+
+# Node — assets/tailwind.css IS committed; it is the production stylesheet
+node_modules/
+
+# Editors / OS
+.DS_Store
+*.swp
