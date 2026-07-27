@@ -1,0 +1,36 @@
+{%- comment -%}
+  Responsive, privacy-preserving video embed — DESIGN §12.
+
+  youtube-nocookie for YouTube, sandboxed iframe for Peertube, lazy-loaded in
+  both cases, never autoplaying. A direct link is always rendered underneath so
+  the embed failing (blocked iframe, no-JS-in-iframe, extension) still leaves a
+  usable path to the video.
+{%- endcomment -%}
+{%- assign fallback = include.url -%}
+{%- if include.platform == 'youtube' -%}
+  {%- assign fallback = include.url | default: 'https://www.youtube.com/watch?v=' | append: include.id -%}
+{%- elsif include.platform == 'peertube' -%}
+  {%- assign fallback = include.url | default: include.instance | append: '/videos/watch/' | append: include.id -%}
+{%- endif -%}
+
+<figure class="my-8">
+  <div class="relative w-full overflow-hidden rounded-lg border border-bread-steel/30" style="aspect-ratio:16/9">
+    {% if include.platform == 'youtube' %}
+      <iframe class="absolute inset-0 w-full h-full"
+              src="https://www.youtube-nocookie.com/embed/{{ include.id }}"
+              title="{{ include.title }}"
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen loading="lazy"></iframe>
+    {% elsif include.platform == 'peertube' %}
+      <iframe class="absolute inset-0 w-full h-full"
+              src="{{ include.instance }}/videos/embed/{{ include.id }}"
+              title="{{ include.title }}"
+              sandbox="allow-same-origin allow-scripts allow-popups"
+              allowfullscreen loading="lazy"></iframe>
+    {% endif %}
+  </div>
+  <figcaption class="text-sm text-bread-khaki/70 mt-2">
+    {{ include.title }}
+    {% if fallback %}— <a href="{{ fallback }}" target="_blank" rel="noopener">watch directly</a>{% endif %}
+  </figcaption>
+</figure>
