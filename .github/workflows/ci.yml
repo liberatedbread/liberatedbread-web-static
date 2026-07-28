@@ -145,6 +145,9 @@ jobs:
       # _data/brand.yml is generated from the same source by the same command,
       # so it is checked here too — a stale one would leave <meta theme-color>
       # pointing at a colour the logo no longer has.
+      - name: Check Tailwind content only scans served paths
+        run: ruby script/check-tailwind-content.rb
+
       - name: Rebuild CSS and fail if it differs from the committed files
         run: |
           npm run build:css
