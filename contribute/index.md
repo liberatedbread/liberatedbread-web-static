@@ -93,7 +93,7 @@ All device guides are reviewed by a maintainer before merging. We check for:
 
 ## Device Packs
 
-For devices we can't officially support, the community creates configurable **device packs** — YAML files following the [liberatedbread-protocol-specs schema](https://github.com/liberatedbread/liberatedbread-protocol-specs). Learn more in [Appendix D of the design document](https://github.com/liberatedbread/liberatedbread-web-static/blob/main/DESIGN-finalized.md#25-appendix-d-device-pack-yaml-spec).
+For devices we can't officially support, the community creates configurable **device packs** — YAML files following the [liberatedbread-protocol-specs schema](https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/schema.json). Learn more in [Appendix D of the design document](https://github.com/liberatedbread/liberatedbread-web-static/blob/main/DESIGN-finalized.md#25-appendix-d-device-pack-yaml-spec).
 
 ---
 

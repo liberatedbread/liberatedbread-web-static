@@ -1,12 +1,17 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 #
-# Asserts Tailwind only scans files Jekyll can serve.
+# Asserts Tailwind's source list and Jekyll's output agree, in both directions:
 #
-# The production stylesheet is committed and shipped directly. If Tailwind
-# scans repository documentation excluded from Jekyll, ordinary prose can create
-# new utilities and mutate assets/tailwind.css. _config.yml's exclude list is
-# the authority for paths that are not web content.
+#   1. Tailwind scans nothing Jekyll excludes. The production stylesheet is
+#      committed and shipped directly, so if Tailwind scans repository
+#      documentation excluded from Jekyll, ordinary prose can create new
+#      utilities and mutate assets/tailwind.css. _config.yml's exclude list is
+#      the authority for paths that are not web content.
+#   2. Tailwind scans everything that reaches the built HTML - every served
+#      page, and every layout and include. A file missing from the source list
+#      compiles no classes, which is silent: the page still builds, the markup
+#      still ships, and the styling is just gone.
 #
 #   ruby script/check-tailwind-content.rb
 
@@ -93,4 +98,50 @@ unless unscanned.empty?
   exit 1
 end
 
-puts "OK - Tailwind content exactly covers served paths"
+# Jekyll's template directories, checked separately because the served-page
+# test above cannot see them. That test keys on front matter, and a template
+# need not have any: all of _includes is partials, and _layouts/base.html
+# opens with <!DOCTYPE html>. Layout coverage was therefore accidental - it
+# held only because home/default/device.html happen to carry `layout:` front
+# matter - and _includes was invisible outright.
+#
+# That mattered in production. Dropping the _includes @source line left this
+# guard green while .accent-bread-accent and .shrink-0 vanished from the
+# compiled stylesheet, rendering the subscribe checkbox in browser-default
+# blue. "Verify committed Tailwind build" cannot catch it either: it only
+# proves the commit matches a rebuild, and the rebuild is wrong the same way.
+#
+# The directories are globbed for the files actually on disk rather than
+# asserted against a hardcoded list of expected @source patterns. That keeps
+# the requirement from drifting: a newly added include is demanded
+# automatically, and any @source glob that genuinely covers these files
+# satisfies it. The directory names come from _config.yml, so renaming a
+# template directory there cannot silently void the check.
+template_dirs = [
+  config.fetch("layouts_dir", "_layouts"),
+  config.fetch("includes_dir", "_includes")
+].map { |dir| normalize(dir) }
+
+templates = template_dirs.flat_map { |dir| Dir.glob("#{dir}/**/*.{html,md}") }
+                         .select { |path| File.file?(path) }
+                         .reject { |path| File.basename(path).start_with?(".", "#", "~") }
+                         .map { |path| normalize(path) }
+                         .sort
+                         .uniq
+
+unscanned_templates = templates.reject { |path| matched.include?(path) }
+
+puts "Jekyll template files required: #{templates.size}"
+
+unless unscanned_templates.empty?
+  warn "\n#{unscanned_templates.size} template file(s) NOT scanned by Tailwind - their classes will not compile:"
+  unscanned_templates.each { |path| warn "  - #{path}" }
+  warn "\nEvery class in a layout or include reaches the built HTML, so Tailwind"
+  warn "must scan them. Add the missing @source line(s) to #{TAILWIND_INPUT}:"
+  unscanned_templates.map { |path| path.split("/").first }.uniq.sort.each do |dir|
+    warn "  @source \"../#{dir}/**/*.html\";"
+  end
+  exit 1
+end
+
+puts "OK - Tailwind content exactly covers served paths and Jekyll templates"
