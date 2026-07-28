@@ -48,8 +48,8 @@ video_embed:            # Optional
   platform: youtube     # "youtube" or "peertube"
   id: "VIDEO_ID"
   title: "Walkthrough video title"
-opengreeniot_spec: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs/blob/main/device-specs/devices/..."
-opengreeniot_docs: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs/blob/main/docs/devices/..."
+opengreeniot_spec: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/devices/..."
+opengreeniot_docs: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/docs/devices/..."
 ---
 ```
 
@@ -65,7 +65,7 @@ opengreeniot_docs: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs
 - [ ] Step 2: Adopt It Locally (Home Assistant)
 - [ ] Step 3: Verify (offline operation test)
 - [ ] Troubleshooting (at least 2 common failure modes)
-- [ ] Protocol reference → opengreeniot-protocol-docs
+- [ ] Protocol reference → liberatedbread-protocol-specs
 
 ### Hardware-liberated devices
 - [ ] ⚠️ Mandatory safety block FIRST
@@ -93,7 +93,7 @@ All device guides are reviewed by a maintainer before merging. We check for:
 
 ## Device Packs
 
-For devices we can't officially support, the community creates configurable **device packs** — YAML files following the [opengreeniot-protocol-docs schema](https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs). Learn more in [Appendix D of the design document](https://github.com/liberatedbread/liberatedbread-web-static/blob/main/DESIGN-finalized.md#25-appendix-d-device-pack-yaml-spec).
+For devices we can't officially support, the community creates configurable **device packs** — YAML files following the [liberatedbread-protocol-specs schema](https://github.com/liberatedbread/liberatedbread-protocol-specs). Learn more in [Appendix D of the design document](https://github.com/liberatedbread/liberatedbread-web-static/blob/main/DESIGN-finalized.md#25-appendix-d-device-pack-yaml-spec).
 
 ---
 

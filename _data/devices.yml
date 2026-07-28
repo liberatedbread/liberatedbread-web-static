@@ -30,8 +30,8 @@ devices:
     ha_integration: "pywemo"
     safety_block: false
     tags: ["wemo", "belkin", "smart-plug", "wifi"]
-    opengreeniot_spec: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs/blob/main/device-specs/devices/wemo-devices.yaml"
-    opengreeniot_docs: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs/blob/main/docs/devices/wemo-devices.md"
+    opengreeniot_spec: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/devices/wemo-devices.yaml"
+    opengreeniot_docs: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/docs/devices/wemo-devices.md"
 
   - slug: eufy-mount
     name: "Eufy Indoor Cam Mount Replacement"

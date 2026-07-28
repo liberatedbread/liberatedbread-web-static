@@ -58,8 +58,8 @@ stl_files:
   - filename: "part-name.stl"
     description: "What it is (material, infill)"
 
-opengreeniot_spec: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs/blob/main/device-specs/devices/<device>.yaml"
-opengreeniot_docs: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs/blob/main/docs/devices/<device>.md"
+opengreeniot_spec: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/devices/<device>.yaml"
+opengreeniot_docs: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/docs/devices/<device>.md"
 ---
 ```
 
@@ -139,7 +139,7 @@ At least two realistic failure modes, each with a fix.
 
 ## Protocol Reference
 
-Link to the opengreeniot-protocol-docs spec for this device.
+Link to the liberatedbread-protocol-specs entry for this device.
 ```
 
 ## Body — hardware-liberated devices
