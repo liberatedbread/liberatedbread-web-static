@@ -10,6 +10,7 @@
   Field contract with pcfweb's MailingListSubscribeView:
     email     required, the subscriber address
     interest  the InterestArea slug — "liberatedbread"
+    all_updates optional checkbox; "1" asks pcfweb for all project updates
     website   honeypot; bots fill it, humans and screen readers never see it
     next      post-signup redirect, allow-listed by MAILING_LIST_ALLOWED_NEXT_HOSTS
   `name` is optional upstream and is deliberately NOT collected here (§9.6).
@@ -38,6 +39,14 @@
             class="px-4 py-2 rounded-md bg-bread-accent hover:bg-bread-accent-bright text-bread-base font-semibold whitespace-nowrap transition-colors">
       Notify Me &rarr;
     </button>
+  </div>
+
+  <div class="flex items-start gap-2 text-left mt-3">
+    <input type="checkbox" name="all_updates" value="1" id="{{ fid }}-all-updates"
+           class="shrink-0 accent-bread-accent">
+    <label for="{{ fid }}-all-updates" class="text-bread-khaki/60 text-xs">
+      Subscribe me to all Pigs Can Fly Labs updates, including Liberated Bread.
+    </label>
   </div>
 
   <input type="hidden" name="interest" value="{{ site.mailing_list.interest }}">
