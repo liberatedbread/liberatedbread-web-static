@@ -1,5 +1,17 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
 @config "../tailwind.config.js";
+@source "../index.md";
+@source "../about.md";
+@source "../devices.md";
+@source "../disclaimer.md";
+@source "../rss.md";
+@source "../thanks.md";
+@source "../*.html";
+@source "../_layouts/**/*.html";
+@source "../_includes/**/*.html";
+@source "../_devices/**/*.md";
+@source "../contribute/**/*.md";
+@source "../ha-plugins/**/*.md";
 
 /* ---------------------------------------------------------------------------
    Liberated Bread — brand tokens ("Tactical Bakery")

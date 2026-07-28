@@ -14,15 +14,6 @@
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./*.md",
-    "./*.html",
-    "./_layouts/**/*.html",
-    "./_includes/**/*.html",
-    "./_devices/**/*.md",
-    "./contribute/**/*.md",
-    "./ha-plugins/**/*.md",
-  ],
   theme: {
     extend: {
       colors: {
