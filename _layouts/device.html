@@ -16,13 +16,27 @@ layout: base
   notice while leaving the "Verified:" row out of the metadata bar — the notice
   and the row are driven by one condition, so they cannot disagree.
 
+  `== true` IS LOAD-BEARING, NOT STYLE. In Liquid the only falsy values are
+  `false` and `nil`; every string is truthy. A bare `if page.hardware_verified`
+  therefore treats `hardware_verified: "false"` — quoted, as a YAML string — as
+  a verification claim, and quietly renders the "Verified:" row and the
+  "Verified on firmware" label for a guide whose author wrote the word "false".
+  Same for "no", "0", "" and any other near-miss.
+
+  Comparing against the boolean means a malformed value degrades to UNVERIFIED,
+  which is the only safe direction for a fail-safe flag. Note this also makes
+  the string `"true"` render the notice: a quoted claim is a malformed claim,
+  and a malformed claim must never be honoured. script/check-device-frontmatter.rb
+  turns that case into a loud build failure rather than a silent downgrade, so
+  nobody is left wondering why their notice will not go away.
+
   Everything below reads `hw_verified` and nothing re-tests the raw fields, so
   there is one place to change if the rule changes. The direction is deliberate
   and must not be inverted: a new guide that says nothing at all inherits the
   notice, never the claim.
 {%- endcomment -%}
 {%- assign hw_verified = false -%}
-{%- if page.hardware_verified and page.last_verified -%}
+{%- if page.hardware_verified == true and page.last_verified -%}
   {%- assign hw_verified = true -%}
 {%- endif -%}
 

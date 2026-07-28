@@ -29,11 +29,14 @@
 
 CSS_FILE = ARGV[0] || "assets/tailwind.css"
 
-# Selectors whose whole purpose is to beat a utility class. Add to this list
-# only for rules that genuinely need to outrank every layer.
-REQUIRED_UNLAYERED = [
-  "[data-lb-hidden]",
-].freeze
+# Selectors whose whole purpose is to beat a utility class, each with the
+# declaration that has to survive with it. Position alone is not the point:
+# `[data-lb-hidden]{display:block}` would sit in exactly the right place in the
+# cascade and still leave the filter hiding nothing. Add to this list only for
+# rules that genuinely need to outrank every layer.
+REQUIRED_UNLAYERED = {
+  "[data-lb-hidden]" => "display:none",
+}.freeze
 
 abort "error: #{CSS_FILE} does not exist — run `npm run build:css` first" unless File.exist?(CSS_FILE)
 
@@ -96,7 +99,7 @@ end
 last_layer_end = layer_ranges.map(&:last).max
 puts "final @layer closing brace at byte #{last_layer_end}\n\n"
 
-REQUIRED_UNLAYERED.each do |selector|
+REQUIRED_UNLAYERED.each do |selector, declaration|
   offsets = []
   from = 0
   while (found = css.index(selector, from))
@@ -118,18 +121,32 @@ REQUIRED_UNLAYERED.each do |selector|
           "#{containing.empty? ? '' : " (nested in #{containing.size} layer block(s))"}"
     check failures, offset > last_layer_end,
           "#{selector} at byte #{offset} is emitted after the final @layer closing brace (#{last_layer_end})"
+
+    # Position without effect is not a pass. Read the declaration block the
+    # selector actually opens and assert the declaration that does the work is
+    # still in it — `[data-lb-hidden]{display:block}` would satisfy every check
+    # above and hide nothing at all.
+    open_brace = css.index("{", offset)
+    close_brace = open_brace && css.index("}", open_brace)
+    block = open_brace && close_brace ? css[(open_brace + 1)...close_brace] : nil
+    normalised = block&.gsub(/\s+/, "")
+    check failures, normalised&.include?(declaration.gsub(/\s+/, "")),
+          "#{selector} at byte #{offset} still declares `#{declaration}`" \
+          "#{normalised.nil? ? ' — could not read its declaration block' : " (got `#{block.strip}`)"}"
   end
 end
 
 if failures.empty?
-  puts "\nOK — every rule that must beat the utility layer is unlayered"
+  puts "\nOK — every rule that must beat the utility layer is unlayered and intact"
   exit 0
 end
 
-warn "\n#{failures.size} cascade-position failure(s):"
+warn "\n#{failures.size} cascade failure(s):"
 failures.each { |f| warn "  - #{f}" }
 warn "\nA rule listed in REQUIRED_UNLAYERED has to sit outside every cascade"
-warn "layer to outrank Tailwind's utilities. In src/input.css, keep it at the"
-warn "top level of the file — not inside @layer base/components/utilities."
+warn "layer to outrank Tailwind's utilities, AND still carry the declaration"
+warn "that does the work. In src/input.css, keep it at the top level of the"
+warn "file — not inside @layer base/components/utilities — and do not change"
+warn "what it declares."
 warn "Do not 'fix' this with !important; the cascade position is the point."
 exit 1

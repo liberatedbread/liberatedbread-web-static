@@ -29,13 +29,15 @@ time_minutes: 30
 firmware: "<exact firmware version this guide targets>"   # tested on, or written for
 ha_integration: "<Home Assistant integration name>"   # optional
 
-# HARDWARE VERIFICATION — both OPTIONAL, see the section below. Omit them if you
-# have not run the guide on the device; the page then shows a "Not yet verified
-# on hardware" status block and its firmware row reads "Written for firmware".
-# That is a normal, expected guide, not a lesser one. Set them together, and
-# only once you have genuinely done it.
-hardware_verified: true
-last_verified: 2026-07-26              # today, or within the last 30 days
+# HARDWARE VERIFICATION — ONLY IF YOU ACTUALLY VERIFIED IT. See the section
+# below. These stay COMMENTED OUT unless you have run every step of the guide on
+# the physical device: copying this template as-is must give you an UNVERIFIED
+# guide, and that is a normal, expected guide, not a lesser one. Its page shows a
+# "Not yet verified on hardware" status block and its firmware row reads "Written
+# for firmware". Uncomment BOTH together, and only once you have genuinely done
+# it. `hardware_verified` must be a real YAML boolean, unquoted.
+# hardware_verified: true
+# last_verified: 2026-07-26            # today, or within the last 30 days
 
 # TRUE for every hardware guide. TRUE for a software guide only if any step
 # requires opening the device or touching the PCB. This is what renders the

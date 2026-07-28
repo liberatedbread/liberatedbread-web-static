@@ -33,10 +33,14 @@ type: software          # "software" or "hardware"
 difficulty: 1           # 1 (🍞), 2 (🍞🍞), or 3 (🍞🍞🍞)
 time_minutes: 30
 firmware: "[Firmware version this guide targets]"   # tested on, or written for
-# Both OPTIONAL — omit them for an unverified guide, which is the normal case.
-# Set them together, and only once you have run every step on the device.
-hardware_verified: true
-last_verified: YYYY-MM-DD
+
+# ONLY IF YOU ACTUALLY VERIFIED IT. Leave these two commented out unless you
+# have run every step of the guide on the physical device — copying this
+# template as-is must give you an UNVERIFIED guide, which is the normal case.
+# Uncomment BOTH together, and only then.
+# hardware_verified: true
+# last_verified: YYYY-MM-DD
+
 ha_integration: "[Home Assistant integration name]"
 safety_block: false     # true for hardware guides
 tags: [tag1, tag2]
@@ -52,7 +56,8 @@ opengreeniot_docs: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs
 ## Section Checklist
 
 ### Software-liberated devices
-- [ ] Metadata bar (model, firmware, difficulty, time, last verified)
+- [ ] Metadata bar (model, firmware, difficulty, time, and the verified date
+      only if the guide claims verification)
 - [ ] Safety block (if physical access required)
 - [ ] What You're Liberating From
 - [ ] Prerequisites

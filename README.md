@@ -151,7 +151,11 @@ Three rules apply to anything added next to them
    default must not be inverted: with most of the catalogue unverified at any
    time, a scheme where silence meant "verified" would mislabel nearly every
    page. Verification is a claim you write down, never one a guide inherits by
-   omitting a key.
+   omitting a key. `hardware_verified` must be an unquoted YAML boolean —
+   `_layouts/device.html` compares it against `true` rather than testing
+   truthiness, because in Liquid every string including `"false"` is truthy, and
+   `script/check-device-frontmatter.rb` rejects a non-boolean so a malformed
+   claim is a loud build failure rather than a silently unverified page.
 
    **To mark a guide verified later:** add those two keys to
    `_devices/<slug>.md`. That is the entire change — one file, one edit. The
@@ -200,11 +204,15 @@ assets/tailwind.css        Built, minified, committed — served in production
 script/check-links.rb      Offline internal-link checker used by CI
 script/check-phase0.rb     Asserts the built site matches the phase0 flag,
                            and that / ships no JS in EITHER phase
+script/check-device-frontmatter.rb
+                           Asserts hardware_verified is a real YAML boolean and
+                           a true claim carries a last_verified date
 script/check-tailwind-content.rb
                            Asserts Tailwind scans exactly the served pages
 script/check-unlayered-css.rb
                            Asserts [data-lb-hidden] is emitted outside every
-                           @layer, so the /devices/ filter keeps working
+                           @layer AND still declares display:none, so the
+                           /devices/ filter keeps working
 script/sync-brand-data.rb  Regenerates _data/brand.yml from src/input.css
 .github/workflows/
   ci.yml                   Verification on every PR — never deploys
