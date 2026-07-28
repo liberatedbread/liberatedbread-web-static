@@ -1,8 +1,15 @@
 name: CI
 
-# Verification only. Deployment is GitHub Pages' own Jekyll build on push to
-# main (DESIGN §6.1) — this workflow exists to catch a broken site *before* it
-# ships, using the same github-pages gem set the deploy uses.
+# Verification only — this workflow never deploys anything. Deployment is
+# .github/workflows/pages.yml, which builds and publishes a Pages artifact on
+# push to main (DESIGN §6.1); the repo's Pages source is "GitHub Actions", so
+# GitHub runs no Jekyll build of its own.
+#
+# This workflow exists to catch a broken site *before* it reaches main, on
+# every PR, using the same .ruby-version and the same github-pages gem set the
+# deploy uses. pages.yml re-runs the link and Phase 0 checks itself, against
+# the artifact it is about to upload — that gate has to live in the deploying
+# job to mean anything, so the overlap is deliberate.
 
 on:
   push:
@@ -78,10 +85,42 @@ jobs:
             echo "ok: $f"
           done
 
+      # Both the source file and the built copy. pages.yml ships _site as the
+      # Pages artifact, so a CNAME that fails to survive the build would drop
+      # the custom domain on the next deploy with no other symptom.
       - name: Verify CNAME
         run: |
           test "$(cat CNAME)" = "liberatedbread.com" \
             || { echo "::error::CNAME must contain liberatedbread.com"; exit 1; }
+          test -f _site/CNAME \
+            || { echo "::error::CNAME did not survive the Jekyll build — check _config.yml exclude"; exit 1; }
+          test "$(cat _site/CNAME)" = "liberatedbread.com" \
+            || { echo "::error::_site/CNAME must contain liberatedbread.com"; exit 1; }
+          echo "ok: CNAME and _site/CNAME = liberatedbread.com"
+
+  workflows:
+    name: Lint workflow files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # A workflow with a YAML or schema error does not fail loudly on GitHub —
+      # it simply never runs. pages.yml is the deploy path, and it is only
+      # triggered by push to main, so nothing else here would catch a typo in
+      # it before merge. actionlint does, on every PR.
+      - name: Run actionlint
+        env:
+          ACTIONLINT_VERSION: 1.7.12
+          ACTIONLINT_SHA256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+        run: |
+          tarball="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          curl -fsSL -o "$tarball" \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${tarball}"
+          echo "${ACTIONLINT_SHA256}  ${tarball}" | sha256sum --check --strict
+          tar xzf "$tarball" actionlint
+          # ubuntu-latest preinstalls shellcheck, which actionlint picks up
+          # automatically to check every `run:` block as well.
+          ./actionlint -no-color .github/workflows/*.yml
 
   tailwind:
     name: Verify committed Tailwind build

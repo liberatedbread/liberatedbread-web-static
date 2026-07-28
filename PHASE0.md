@@ -66,11 +66,19 @@ back the moment that file disappears.
    ruby script/check-links.rb  _site     # no broken internal links
    ```
    `check-phase0.rb` fails the build if the flag and the emitted site disagree
-   in either direction, so a half-flip cannot ship. CI runs it against **both**
-   settings on every PR, which also means the launched site is being built and
-   link-checked continuously while Phase 0 is still on.
-4. Commit and push to `main`. GitHub Pages rebuilds.
-5. **After deploy**, confirm on the live site:
+   in either direction, so a half-flip cannot ship. `ci.yml` runs it against
+   **both** settings on every PR, which also means the launched site is being
+   built and link-checked continuously while Phase 0 is still on, and
+   `pages.yml` runs it once more against the artifact it is about to deploy —
+   a half-flip fails the deploy rather than going live.
+4. Commit and push to `main`. That triggers
+   [`.github/workflows/pages.yml`](.github/workflows/pages.yml), which builds
+   the site, runs the checks above against `_site`, and deploys it. The repo's
+   Pages source is **GitHub Actions** — there is no separate Pages Jekyll build,
+   so if that workflow does not run or does not pass, nothing changes on the
+   live site. Watch the run under Actions → *Deploy to GitHub Pages* before
+   moving on.
+5. **After the deploy job goes green**, confirm on the live site:
    - `https://liberatedbread.com/` is the full landing page
    - `https://liberatedbread.com/sitemap.xml` lists every page, not just `/`
    - `view-source:` on `/` shows `rel="alternate"` for `/feed/devices.xml`
@@ -102,6 +110,10 @@ bundle exec jekyll serve
 - [ ] The landing page has been reviewed at 320px, 768px and 1440px
 - [ ] `bundle exec jekyll build` and `npm run build:css` are both clean, and CI
       is green
+- [ ] The *Deploy to GitHub Pages* workflow has deployed at least once and
+      `https://liberatedbread.com/` is serving the Phase 0 teaser — flipping the
+      flag on a site that has never deployed changes nothing visible, and the
+      real fault will be the deploy, not the flag
 
 ## What stays the same across the switch
 

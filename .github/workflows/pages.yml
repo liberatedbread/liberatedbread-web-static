@@ -1,0 +1,106 @@
+name: Deploy to GitHub Pages
+
+# The site's ONLY deploy path (DESIGN §6.1).
+#
+# The repo's Pages source is "GitHub Actions" (API: build_type: "workflow"),
+# which means GitHub does NOT run its own legacy Jekyll build on push. Nothing
+# reaches liberatedbread.com unless a workflow uploads a Pages artifact and
+# calls deploy-pages — this workflow is that workflow. Delete it and the site
+# stops updating silently: no failed build, no error, just a stale site.
+#
+# The build here deliberately mirrors ci.yml's build job (same .ruby-version,
+# same gem set, same strictness flags) and re-runs the same verification
+# scripts against the built _site *before* the artifact is uploaded. That
+# duplication is intentional: the pre-deploy gate has to run in the same job
+# that produces the bytes being shipped, or it is not a gate.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege. contents:read to check out; pages:write + id-token:write are
+# the minimum deploy-pages needs to mint an OIDC token and create a Pages
+# deployment. Nothing writes to the repo.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time, and NEVER cancel one in flight — a half-applied deploy
+# is how a live site ends up broken. Queue behind the running one instead.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build and verify the site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Ruby comes from .ruby-version and nowhere else. Do NOT add a
+      # `ruby-version:` input here — a pin in a workflow file drifting from
+      # .ruby-version is exactly what broke CI on this repo before.
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v6
+
+      # Note: the site's baseurl is NOT taken from
+      # steps.pages.outputs.base_path. _config.yml pins `baseurl: ""` on
+      # purpose (the site is served from the apex via CNAME, not from
+      # /<user>/<repo>/), and script/check-links.rb below fails the build if
+      # anything reintroduces a prefix.
+      - name: Build site
+        env:
+          JEKYLL_ENV: production
+          # Lets jekyll-github-metadata resolve repo data instead of warning.
+          JEKYLL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bundle exec jekyll build --strict_front_matter --trace
+
+      # ---- pre-deploy gate: everything below runs against the exact _site
+      # ---- that is about to be uploaded. A failure here means nothing ships.
+
+      - name: Check internal links
+        run: ruby script/check-links.rb _site
+
+      # `phase0` in _config.yml gates the root page, sitemap coverage and
+      # devices-feed autodiscovery together. This asserts the built site agrees
+      # with the flag, so a half-flipped launch fails here instead of putting
+      # an unlaunched catalogue on the public internet.
+      - name: Check Phase 0 consistency
+        run: ruby script/check-phase0.rb _site
+
+      # The artifact is what Pages serves, so the custom domain has to survive
+      # the build. Jekyll copies CNAME through as a static file (it is not in
+      # _config.yml's `exclude`); if that ever stops being true, the apex
+      # silently falls back to liberatedbread.github.io on the next deploy.
+      - name: Verify CNAME is in the artifact
+        run: |
+          test -f _site/CNAME \
+            || { echo "::error::_site/CNAME is missing — the deploy would drop the custom domain"; exit 1; }
+          test "$(cat _site/CNAME)" = "liberatedbread.com" \
+            || { echo "::error::_site/CNAME must contain liberatedbread.com, got '$(cat _site/CNAME)'"; exit 1; }
+          echo "ok: _site/CNAME = $(cat _site/CNAME)"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

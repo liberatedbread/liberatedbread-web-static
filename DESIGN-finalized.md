@@ -124,7 +124,7 @@ liberatedbread/
 
 | Repository | GitHub Pages? | Git LFS? | Deployment |
 |---|---|---|---|
-| `liberatedbread-web-static` | Yes — serves apex + www | No | Push to `main` = Jekyll builds and deploys |
+| `liberatedbread-web-static` | Yes — serves apex + www | No | Push to `main` = `.github/workflows/pages.yml` builds, verifies and deploys (§6.1) |
 | `liberatedbread-3d-files` | No | **Yes** (versioning only) | Distributed via GitHub Releases (no LFS bandwidth cap) |
 
 **Home Assistant plugins:** YAML configs and PyWeMo override scripts live in `liberatedbread-web-static` under `/ha-plugins/`. [DECISION] No separate repo — these are small config files.
@@ -152,7 +152,8 @@ Liberated Bread links to opengreeniot-protocol-docs as the authoritative protoco
                        │
      ┌─────────────────┴──────────────────┐
      │  GitHub Pages                       │
-     │  (Jekyll, push=deploy)              │
+     │  (Jekyll built + deployed by        │
+     │   Actions on push to main, §6.1)    │
      │                                     │
      │  Serves:                            │
      │  liberatedbread.com                 │
@@ -209,7 +210,20 @@ Liberated Bread links to opengreeniot-protocol-docs as the authoritative protoco
 
 ### 6.1 Static Site (GitHub Pages + Jekyll)
 
-**[DECISION] Jekyll** — zero-config on GitHub Pages. Native markdown + front-matter. No CI build step needed for deployment.
+**[DECISION] Jekyll** — native markdown + front-matter, and the same gem set (`github-pages`) GitHub Pages itself runs, so the build has no surprises.
+
+**[DECISION — amended] Deployment is an Actions workflow, not Pages' own Jekyll build.** The repo's Pages source is **GitHub Actions** (API: `build_type: "workflow"`). Under that setting GitHub runs *no* build of its own and publishes only what a workflow uploads — so [`.github/workflows/pages.yml`](.github/workflows/pages.yml) is the entire deploy path. An earlier revision of this section said "no CI build step needed for deployment"; that was wrong for how the repo is actually configured, and the site served nothing until the workflow was added.
+
+The deploy workflow, on push to `main` (and `workflow_dispatch` — never on pull requests):
+
+1. Ruby from `.ruby-version`, `bundler-cache: true` — the version is pinned in exactly one place, shared with `ci.yml` and with a local `bundle install`.
+2. `actions/configure-pages`, then `bundle exec jekyll build --strict_front_matter --trace` with `JEKYLL_ENV=production` and `JEKYLL_GITHUB_TOKEN`. `baseurl` stays `""` from `_config.yml` — the site is served from the apex, not from `/<user>/<repo>/`.
+3. **Pre-deploy gate**, run against the built `_site` *before* the artifact is uploaded: `script/check-links.rb`, `script/check-phase0.rb` (§9.6), and an assertion that `_site/CNAME` contains `liberatedbread.com`. Anything failing here means nothing ships — a half-flipped Phase 0 or a broken internal link fails the deploy instead of going live.
+4. `actions/upload-pages-artifact`, then a separate `deploy` job using `actions/deploy-pages` in the `github-pages` environment.
+
+Permissions are least-privilege (`contents: read`, `pages: write`, `id-token: write`) and `concurrency` is `{ group: "pages", cancel-in-progress: false }` — a deploy is never cancelled mid-flight, because a half-applied deploy is how a live site breaks.
+
+`ci.yml` runs the same build plus the wider verification suite (opposite-phase build, RSS validity, Tailwind freshness, `actionlint`) on every pull request and never deploys. The build is deliberately duplicated between the two: a gate that does not run in the job producing the uploaded bytes is not a gate.
 
 **Repository structure:**
 
@@ -287,10 +301,11 @@ www.liberatedbread.com. CNAME  liberatedbread.github.io.
 
 **GitHub Pages custom domain setup:**
 
-1. In the `liberatedbread-web-static` repo: Settings → Pages → Custom domain → `liberatedbread.com`
+1. In the `liberatedbread-web-static` repo: Settings → Pages → Source → **GitHub Actions** (§6.1), and Custom domain → `liberatedbread.com`
 2. Check "Enforce HTTPS"
 3. GitHub provisions a Let's Encrypt certificate automatically
 4. DNS records are set in Cloudflare (grey cloud / DNS-only)
+5. `CNAME` is also committed at the repo root and shipped inside the Pages artifact — the deploy workflow asserts it is there, because losing it silently drops the custom domain
 
 That's it. No Kubernetes, no ingress controllers, no cert-manager. TLS and CDN are handled entirely by GitHub Pages.
 
@@ -1418,6 +1433,7 @@ The official site links to the pack specification and validation tools but does 
 | v1.0-draft | 2026-07-25 | First pass: consolidated repos, added security/privacy/testing sections |
 | v2.0-draft | 2026-07-25 | Round-1 refinement: 16 planner critique issues, corrected bread.png colors |
 | **v3.0-final** | 2026-07-25 | **[THIS DOCUMENT]** Convergence draft. Applied all 6 resolved disagreements: mandatory safety blocks, rewritten legal disclaimer, configurable device pack system, pcfweb PRIMARY/secondary deployment, @csrf_exempt + honeypot, Cloudflare DNS-only for Pages, Jekyll SSG with markdown+front-matter, video content strategy, opengreeniot-protocol-docs integration. |
+| v3.1 | 2026-07-27 | §6.1 amended to match reality: the repo's Pages source is "GitHub Actions", so deployment is `.github/workflows/pages.yml` with a pre-deploy Phase 0/link/CNAME gate — not Pages' own Jekyll build. §4 repo table and §5 diagram updated to match. |
 
 ---
 
