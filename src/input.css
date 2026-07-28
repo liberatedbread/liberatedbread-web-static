@@ -193,7 +193,9 @@
     margin-block: 2rem;
   }
 
-  @media (max-width: 639px) {
+  /* Mirrors Tailwind `sm` (min-width: 40rem) so the enhanced nav and
+     `sm:hidden` menu button cannot drift across fractional viewport widths. */
+  @media not all and (min-width: 40rem) {
     .lb-site-header[data-nav-enhanced="true"] .lb-main-nav {
       display: none;
     }
