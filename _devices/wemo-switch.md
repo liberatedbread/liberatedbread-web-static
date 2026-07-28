@@ -8,12 +8,11 @@ type: software
 difficulty: 1
 time_minutes: 15
 firmware: "WeMo_WW_2.00.11426.PVT-OWRT-SNS"
-last_verified: 2026-07-25
 ha_integration: pywemo
 safety_block: false
 tags: [wemo, belkin, smart-plug, wifi]
-opengreeniot_spec: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs/blob/main/device-specs/devices/wemo-devices.yaml"
-opengreeniot_docs: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs/blob/main/docs/devices/wemo-devices.md"
+opengreeniot_spec: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/devices/wemo-devices.yaml"
+opengreeniot_docs: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/docs/devices/wemo-devices.md"
 ---
 
 <!--
@@ -128,9 +127,10 @@ This guide keeps your WeMo switch working with its original firmware. If you wan
 
 The WeMo Insight Switch communicates via UPnP over Wi-Fi. Full protocol specification:
 
-- [WeMo Device Spec (opengreeniot-protocol-docs)](https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs/blob/main/device-specs/devices/wemo-devices.yaml)
-- [WeMo Protocol Documentation](https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs/blob/main/docs/devices/wemo-devices.md)
+- [WeMo Device Spec (liberatedbread-protocol-specs)](https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/devices/wemo-devices.yaml)
+- [WeMo Protocol Documentation](https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/docs/devices/wemo-devices.md)
 
 ---
 
-*Guide verified: July 25, 2026. Tested on firmware WeMo_WW_2.00.11426.PVT-OWRT-SNS with Home Assistant 2026.7.*
+*Written against firmware `WeMo_WW_2.00.11426.PVT-OWRT-SNS` and Home Assistant 2026.7, from
+Belkin’s UPnP device documentation and the PyWeMo integration.*

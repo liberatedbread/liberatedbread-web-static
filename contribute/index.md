@@ -32,8 +32,15 @@ model: "[Model Number]"
 type: software          # "software" or "hardware"
 difficulty: 1           # 1 (🍞), 2 (🍞🍞), or 3 (🍞🍞🍞)
 time_minutes: 30
-firmware: "[Firmware version tested]"
-last_verified: YYYY-MM-DD
+firmware: "[Firmware version this guide targets]"   # tested on, or written for
+
+# ONLY IF YOU ACTUALLY VERIFIED IT. Leave these two commented out unless you
+# have run every step of the guide on the physical device — copying this
+# template as-is must give you an UNVERIFIED guide, which is the normal case.
+# Uncomment BOTH together, and only then.
+# hardware_verified: true
+# last_verified: YYYY-MM-DD
+
 ha_integration: "[Home Assistant integration name]"
 safety_block: false     # true for hardware guides
 tags: [tag1, tag2]
@@ -41,15 +48,16 @@ video_embed:            # Optional
   platform: youtube     # "youtube" or "peertube"
   id: "VIDEO_ID"
   title: "Walkthrough video title"
-opengreeniot_spec: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs/blob/main/device-specs/devices/..."
-opengreeniot_docs: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs/blob/main/docs/devices/..."
+opengreeniot_spec: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/devices/..."
+opengreeniot_docs: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/docs/devices/..."
 ---
 ```
 
 ## Section Checklist
 
 ### Software-liberated devices
-- [ ] Metadata bar (model, firmware, difficulty, time, last verified)
+- [ ] Metadata bar (model, firmware, difficulty, time, and the verified date
+      only if the guide claims verification)
 - [ ] Safety block (if physical access required)
 - [ ] What You're Liberating From
 - [ ] Prerequisites
@@ -57,7 +65,7 @@ opengreeniot_docs: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs
 - [ ] Step 2: Adopt It Locally (Home Assistant)
 - [ ] Step 3: Verify (offline operation test)
 - [ ] Troubleshooting (at least 2 common failure modes)
-- [ ] Protocol reference → opengreeniot-protocol-docs
+- [ ] Protocol reference → liberatedbread-protocol-specs
 
 ### Hardware-liberated devices
 - [ ] ⚠️ Mandatory safety block FIRST
@@ -74,14 +82,18 @@ opengreeniot_docs: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs
 
 All device guides are reviewed by a maintainer before merging. We check for:
 
-- Accuracy (tested on exact firmware listed)
+- Honest verification status — `hardware_verified` set only where the guide was
+  genuinely run on the device. An unverified guide is a perfectly good submission;
+  an unverified guide wearing a verified badge is not
+- Accuracy — a verified guide's steps were run on the exact firmware listed; an
+  unverified one names the firmware it was written against and does not claim more
 - Safety (mandatory block present for hardware guides)
 - Original content (no manufacturer stock photos, no proprietary code)
 - Attribution (third-party code/configs credited with links)
 
 ## Device Packs
 
-For devices we can't officially support, the community creates configurable **device packs** — YAML files following the [opengreeniot-protocol-docs schema](https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs). Learn more in [Appendix D of the design document](https://github.com/liberatedbread/liberatedbread-web-static/blob/main/DESIGN-finalized.md#25-appendix-d-device-pack-yaml-spec).
+For devices we can't officially support, the community creates configurable **device packs** — YAML files following the [liberatedbread-protocol-specs schema](https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/schema.json). Learn more in [Appendix D of the design document](https://github.com/liberatedbread/liberatedbread-web-static/blob/main/DESIGN-finalized.md#25-appendix-d-device-pack-yaml-spec).
 
 ---
 

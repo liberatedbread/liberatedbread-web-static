@@ -1,0 +1,102 @@
+{%- comment -%}
+  Device catalogue filter — DESIGN §9.4 ("Device filter · all cards rendered in
+  DOM; filter is progressive enhancement") and §14.2 item 4 ("Filter: All |
+  Software | Hardware (JS toggle; <noscript>: all visible)").
+
+  Usage:
+    {% include device-filter.html devices=site.data.devices.devices %}
+
+  The caller renders the grid itself and marks it `data-lb-device-grid`; each
+  card carries `data-device-type` (see _includes/device-card.html).
+
+  WHY A <template>
+  ----------------
+  The controls live inside <template>, which the HTML parser keeps inert: not
+  rendered, not focusable, not in the accessibility tree. With JavaScript off
+  this include therefore contributes nothing at all to the page — no dead
+  buttons, no controls that promise something they cannot do — while every
+  device card is still rendered by the caller and visible. With JavaScript on,
+  assets/js/device-filter.js clones the content and inserts it before the grid.
+
+  Authoring the markup here rather than constructing it in JavaScript also
+  keeps it somewhere Tailwind can see it. Tailwind scans _includes/**/*.html;
+  it never scans .js, so a class that only ever appears in a script is never
+  compiled. The classes below are hand-written component CSS in src/input.css
+  rather than utilities, which makes them immune to the content globs entirely.
+
+  WHY RADIOS RATHER THAN TOGGLE BUTTONS
+  -------------------------------------
+  "All / Software / Hardware" is one choice out of a set, which is precisely a
+  native radio group. That buys the correct semantics for free — a named group,
+  "radio button, Software, 2 of 3, selected", roving arrow-key focus, a single
+  tab stop for the whole control — with no keyboard handling of our own to get
+  wrong. aria-pressed toggles would model three independent booleans instead,
+  and would need the mutual exclusion re-implemented by hand.
+
+  The option list is derived from the data, not hardcoded, so a device type
+  that does not exist can never get a filter button. `uniq` preserves
+  first-appearance order in _data/devices.yml, which currently reads
+  software then hardware — the order §14.2 asks for.
+{%- endcomment -%}
+{%- assign devices = include.devices -%}
+{%- assign total = devices | size -%}
+{%- assign types = devices | map: 'type' | uniq -%}
+
+<template id="lb-device-filter-template">
+  <div class="lb-filter">
+    <fieldset class="lb-filter__set">
+      <legend class="lb-filter__legend">Filter by liberation type</legend>
+
+      <div class="lb-filter__options">
+        <span class="lb-filter__option">
+          <input class="lb-filter__input" type="radio" name="lb-device-type"
+                 id="lb-filter-all" value="all" data-label="All devices" checked>
+          <label class="lb-filter__label" for="lb-filter-all">All
+            <span class="lb-filter__count">{{ total }}</span></label>
+        </span>
+
+        {%- for t in types %}
+        {%- assign n = devices | where: 'type', t | size %}
+        <span class="lb-filter__option">
+          <input class="lb-filter__input" type="radio" name="lb-device-type"
+                 id="lb-filter-{{ t | slugify }}" value="{{ t }}" data-label="{{ t | capitalize }}">
+          <label class="lb-filter__label" for="lb-filter-{{ t | slugify }}">{{ t | capitalize }}
+            <span class="lb-filter__count">{{ n }}</span></label>
+        </span>
+        {%- endfor %}
+      </div>
+    </fieldset>
+
+    {%- comment -%}
+      Two separate readouts on purpose.
+
+      The summary is visible and is written on insertion, so sighted users see
+      the count from the start. It is deliberately NOT a live region: a live
+      region that already has text when it is added to the document is
+      announced by some screen readers, which would mean a page-load
+      announcement nobody asked for.
+
+      The announcer carries no meaning when it is inserted and is only ever
+      written in response to a real change of the filter, which is exactly when
+      a screen reader user needs to be told the visible set moved under them.
+
+      It is seeded with a single non-breaking space rather than left truly
+      empty. VoiceOver has historically only monitored live regions that had
+      some content at the moment they were registered, and silently ignored
+      ones that were empty — NVDA and JAWS handle an empty region fine, so the
+      bug is invisible unless you test on macOS/iOS. A &nbsp; is enough content
+      to register the region and announces as nothing, whereas seeding it with
+      the summary text would make every page load announce a filter change that
+      never happened. The space is deliberately NOT the summary.
+    {%- endcomment -%}
+    <p class="lb-filter__summary" data-lb-filter-summary></p>
+    <p class="lb-filter__announce" data-lb-filter-announce role="status">&nbsp;</p>
+  </div>
+
+  {%- comment -%}
+    Only reachable if a filter matches nothing — impossible for a type that was
+    derived from the data, but the grid is also the thing a future "difficulty"
+    or "tag" filter would reuse. Hidden with the same attribute the cards use.
+  {%- endcomment -%}
+  <p class="lb-filter__empty" data-lb-filter-empty data-lb-hidden></p>
+</template>

@@ -15,7 +15,7 @@ When a company shuts down its cloud servers, "smart" devices often become paperw
 - **What you're liberating from** — the dead cloud service or proprietary lock-in
 - **Step-by-step instructions** — router config, Home Assistant setup, 3D-printed hardware mods
 - **Safety-first documentation** — mandatory de-energize steps for any hardware work
-- **Protocol reference** — links to machine-readable specs in [opengreeniot-protocol-docs](https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs)
+- **Protocol reference** — links to machine-readable specs in [liberatedbread-protocol-specs](https://github.com/liberatedbread/liberatedbread-protocol-specs)
 
 ## The Name
 

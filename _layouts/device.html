@@ -3,6 +3,43 @@ layout: base
 ---
 {% include header.html %}
 
+{%- comment -%}
+  HARDWARE VERIFICATION GATE — fail safe, and only fail safe.
+
+  A guide counts as hardware-verified only if it says so explicitly AND shows
+  the date. Both halves matter:
+
+    hardware_verified: true   the affirmative claim. Absent or false => unverified.
+    last_verified: <date>     the evidence. Missing => unverified, flag or no flag.
+
+  Requiring the date as well as the flag means a guide can never suppress the
+  notice while leaving the "Verified:" row out of the metadata bar — the notice
+  and the row are driven by one condition, so they cannot disagree.
+
+  `== true` IS LOAD-BEARING, NOT STYLE. In Liquid the only falsy values are
+  `false` and `nil`; every string is truthy. A bare `if page.hardware_verified`
+  therefore treats `hardware_verified: "false"` — quoted, as a YAML string — as
+  a verification claim, and quietly renders the "Verified:" row and the
+  "Verified on firmware" label for a guide whose author wrote the word "false".
+  Same for "no", "0", "" and any other near-miss.
+
+  Comparing against the boolean means a malformed value degrades to UNVERIFIED,
+  which is the only safe direction for a fail-safe flag. Note this also makes
+  the string `"true"` render the notice: a quoted claim is a malformed claim,
+  and a malformed claim must never be honoured. script/check-device-frontmatter.rb
+  turns that case into a loud build failure rather than a silent downgrade, so
+  nobody is left wondering why their notice will not go away.
+
+  Everything below reads `hw_verified` and nothing re-tests the raw fields, so
+  there is one place to change if the rule changes. The direction is deliberate
+  and must not be inverted: a new guide that says nothing at all inherits the
+  notice, never the claim.
+{%- endcomment -%}
+{%- assign hw_verified = false -%}
+{%- if page.hardware_verified == true and page.last_verified -%}
+  {%- assign hw_verified = true -%}
+{%- endif -%}
+
 <main id="content" class="flex-1 w-full max-w-4xl mx-auto px-4 py-10">
 
   <nav aria-label="Breadcrumb" class="text-sm text-bread-khaki/60 mb-4">
@@ -19,8 +56,16 @@ layout: base
       {% if page.model %}
         <div><dt class="inline text-bread-khaki/60">Model:</dt> <dd class="inline m-0 text-bread-khaki">{{ page.model }}</dd></div>
       {% endif %}
+      {% comment %}
+        The firmware string is kept — it is the guide's applicability constraint
+        and the steps are written against it — but the LABEL has to say which of
+        the two things it means. Next to a "Verified:" row, a bare "Firmware:"
+        reads as "the firmware we verified against", which for an unverified
+        guide is a claim nobody earned. "Written for" says the true thing and
+        costs the reader nothing.
+      {% endcomment %}
       {% if page.firmware %}
-        <div><dt class="inline text-bread-khaki/60">Firmware:</dt> <dd class="inline m-0 font-mono text-xs text-bread-khaki">{{ page.firmware }}</dd></div>
+        <div><dt class="inline text-bread-khaki/60">{% if hw_verified %}Verified on firmware:{% else %}Written for firmware:{% endif %}</dt> <dd class="inline m-0 font-mono text-xs text-bread-khaki">{{ page.firmware }}</dd></div>
       {% endif %}
       {% if page.type %}
         <div>
@@ -42,7 +87,14 @@ layout: base
       {% if page.time_minutes %}
         <div><dt class="inline text-bread-khaki/60">Time:</dt> <dd class="inline m-0 text-bread-khaki">~{{ page.time_minutes }} min</dd></div>
       {% endif %}
-      {% if page.last_verified %}
+      {% comment %}
+        Gated on hw_verified, not on `last_verified` alone. A date in the front
+        matter is not a claim that anyone touched the device; the flag is. This
+        row is the site's most authoritative-looking assertion — a bare
+        "Verified: July 25, 2026" — so it may only appear when the guide has
+        made the claim explicitly.
+      {% endcomment %}
+      {% if hw_verified %}
         <div><dt class="inline text-bread-khaki/60">Verified:</dt> <dd class="inline m-0 text-bread-khaki">{{ page.last_verified | date: "%B %-d, %Y" }}</dd></div>
       {% endif %}
       {% if page.ha_integration %}
@@ -56,6 +108,19 @@ layout: base
   {% if page.safety_block %}
     {% include safety-block.html %}
   {% endif %}
+
+  <!-- 2b. Verification status (renders unless the guide explicitly claims one) -->
+  {%- comment -%}
+    Placed AFTER the safety block on purpose. DESIGN §10.1 and the device PR
+    checklist both require the safety block to be the first content after the
+    metadata bar, and that ordering is not this feature's to spend. Both
+    callouts land above the fold either way, and the safety warnings are the
+    part of an unverified guide least in doubt — they are generic electrical
+    practice, not a procedure anyone claimed to have carried out.
+  {%- endcomment -%}
+  {% unless hw_verified %}
+    {% include verification-status.html %}
+  {% endunless %}
 
   <!-- 3+. Guide body -->
   <div class="lb-prose">
@@ -79,7 +144,7 @@ layout: base
       {% if page.opengreeniot_spec %}<a href="{{ page.opengreeniot_spec }}" target="_blank" rel="noopener">Device spec</a>{% endif %}
       {% if page.opengreeniot_spec and page.opengreeniot_docs %}<span aria-hidden="true"> · </span>{% endif %}
       {% if page.opengreeniot_docs %}<a href="{{ page.opengreeniot_docs }}" target="_blank" rel="noopener">Protocol docs</a>{% endif %}
-      <span>— opengreeniot-protocol-docs</span>
+      <span>— liberatedbread-protocol-specs</span>
     </div>
   {% endif %}
 

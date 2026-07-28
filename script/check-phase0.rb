@@ -35,14 +35,27 @@ puts "phase0: #{phase0.inspect}"
 # valid-but-empty feed.
 check(failures, index.include?("/feed.xml"), "/ advertises the site feed")
 
+# Script-free in BOTH phases, not only behind the teaser.
+#
+# This used to be asserted only in the phase0 branch below, which made it true
+# by accident rather than by construction: home-coming-soon.html happens not to
+# include _includes/header.html, so nothing script-shaped could reach the
+# teaser. The Phase 1 landing page DOES include that header, so a script added
+# to any shared include lands on / the moment the flag flips — and the check
+# that would have caught it only ran in the phase it could not fire in.
+#
+# Hoisting it means the opposite-phase build in CI fails at PR time instead of
+# at launch. / is the one page on the site that must never ship JavaScript, in
+# either configuration, so the rule is stated once, unconditionally.
+check(failures, !index.include?("<script"),
+      "/ ships no JavaScript (asserted in BOTH phases)")
+
 if phase0
   puts "\nexpecting the Phase 0 teaser, and nothing advertised to machines:"
   check failures, index.include?("Reclaim your household hardware. Coming soon."),
         "/ is the coming-soon teaser"
   check failures, !index.include?("<nav"),
         "/ has no navigation bar"
-  check failures, !index.include?("<script"),
-        "/ ships no JavaScript"
   check failures, !index.include?("/devices/"),
         "/ does not link any device guide"
   check failures, !index.include?("/feed/devices.xml"),

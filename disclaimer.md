@@ -12,7 +12,7 @@ We're not lawyers and we're not trying to sound like them. Here's the deal in pl
 ## What This Means
 
 - These guides are written for **hardware you already own**. You bought it, it's yours.
-- We document what we've tested on our own devices. Your mileage may vary.
+- Guides come in two states and both are normal: **verified**, meaning someone ran every step on the device, and **not yet verified**, meaning it was written from specifications and documentation and is waiting for someone with the hardware to confirm it. Every guide says which it is at the top of its own page. An unverified one is a starting point to check rather than a result to rely on. Either way, your mileage may vary.
 - Opening a device may void its warranty. We assume you're okay with that.
 - Modifying firmware may have legal implications depending on where you live. Check your local laws.
 - We don't host proprietary firmware, encryption keys, or copyrighted code.

@@ -55,6 +55,15 @@ jobs:
       - name: Check internal links
         run: ruby script/check-links.rb _site
 
+      # _layouts/device.html compares `hardware_verified` against the boolean
+      # `true`, because in Liquid every string is truthy and a quoted "false"
+      # would otherwise read as a verification claim. That comparison makes a
+      # malformed value degrade to unverified, which is the safe direction — but
+      # silently. This makes it loud, so an author who wrote `"true"` finds out
+      # here instead of wondering why the notice will not go away.
+      - name: Check device guide verification front matter
+        run: ruby script/check-device-frontmatter.rb
+
       # `phase0` in _config.yml gates the root page, sitemap coverage and
       # devices-feed autodiscovery together. This asserts the built site agrees
       # with the flag, so a half-flipped launch fails here rather than shipping
@@ -139,6 +148,10 @@ jobs:
 
       - run: npm ci
 
+      # Tailwind's source list must agree with Jekyll's served pages.
+      - name: Check Tailwind content only scans served paths
+        run: ruby script/check-tailwind-content.rb
+
       # DESIGN §9.5: assets/tailwind.css is committed and served directly — no
       # CDN in production. Rebuilding it here must be a no-op. If this step
       # fails, run `npm run build:css` and commit the result.
@@ -154,6 +167,16 @@ jobs:
             exit 1
           fi
           echo "assets/tailwind.css and _data/brand.yml are up to date with src/input.css"
+
+      # Runs after the rebuild, so it inspects a stylesheet already proven to
+      # match src/input.css. `[data-lb-hidden]` is the whole /devices/ filter
+      # mechanism and only outranks the utilities on a card while it stays
+      # outside every cascade layer. Moving it into `@layer components` breaks
+      # filtering with no error and no visible difference in review — the one
+      # failure mode a human reviewer cannot see. src/input.css warns about it
+      # in a comment; this is the part that fails the build.
+      - name: Assert cascade-critical rules are unlayered
+        run: ruby script/check-unlayered-css.rb assets/tailwind.css
 
       # The whole point of committing the CSS is having no runtime dependency
       # on a third-party host (DESIGN §15.1).
