@@ -192,4 +192,19 @@
     border-color: color-mix(in srgb, var(--bread-steel) 35%, transparent);
     margin-block: 2rem;
   }
+
+  @media (max-width: 639px) {
+    .lb-site-header[data-nav-enhanced="true"] .lb-main-nav {
+      display: none;
+    }
+
+    .lb-site-header[data-nav-enhanced="true"][data-menu-open="true"] .lb-main-nav {
+      display: block;
+    }
+
+    .lb-main-nav-list a {
+      display: inline-flex;
+      padding-block: 0.375rem;
+    }
+  }
 }
