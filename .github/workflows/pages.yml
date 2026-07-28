@@ -19,13 +19,14 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Least privilege. contents:read to check out; pages:write + id-token:write are
-# the minimum deploy-pages needs to mint an OIDC token and create a Pages
-# deployment. Nothing writes to the repo.
+# Read-only floor for the whole workflow, and for any job added later that
+# forgets to declare its own. The write scopes are NOT here: they are granted
+# per job below, so only the job that actually deploys can deploy. Declaring
+# `pages: write` + `id-token: write` at this level would hand them to the build
+# job, which executes third-party gem and npm code and has no business holding
+# a token that can publish to liberatedbread.com.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # One deploy at a time, and NEVER cancel one in flight — a half-applied deploy
 # is how a live site ends up broken. Queue behind the running one instead.
@@ -37,6 +38,16 @@ jobs:
   build:
     name: Build and verify the site
     runs-on: ubuntu-latest
+
+    # Reads only. contents:read for the checkout; pages:read because
+    # configure-pages below calls GET /repos/{owner}/{repo}/pages, which needs
+    # the Pages read scope and errors out (enablement is false) if it 403s.
+    # This job never deploys, so it holds neither pages:write nor
+    # id-token:write.
+    permissions:
+      contents: read
+      pages: read
+
     steps:
       - uses: actions/checkout@v4
 
@@ -97,6 +108,17 @@ jobs:
     name: Deploy to GitHub Pages
     needs: build
     runs-on: ubuntu-latest
+
+    # Exactly the two scopes actions/deploy-pages documents as its minimum:
+    # pages:write to create the deployment, id-token:write to mint the OIDC
+    # token the Pages API validates the ref against. Deliberately no
+    # contents:read — this job never checks out and reads nothing from the
+    # repo; it consumes the artifact from `needs: build`. Add it only if a step
+    # that reads repo contents is ever added here.
+    permissions:
+      pages: write
+      id-token: write
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

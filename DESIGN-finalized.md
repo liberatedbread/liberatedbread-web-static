@@ -221,7 +221,7 @@ The deploy workflow, on push to `main` (and `workflow_dispatch` — never on pul
 3. **Pre-deploy gate**, run against the built `_site` *before* the artifact is uploaded: `script/check-links.rb`, `script/check-phase0.rb` (§9.6), and an assertion that `_site/CNAME` contains `liberatedbread.com`. Anything failing here means nothing ships — a half-flipped Phase 0 or a broken internal link fails the deploy instead of going live.
 4. `actions/upload-pages-artifact`, then a separate `deploy` job using `actions/deploy-pages` in the `github-pages` environment.
 
-Permissions are least-privilege (`contents: read`, `pages: write`, `id-token: write`) and `concurrency` is `{ group: "pages", cancel-in-progress: false }` — a deploy is never cancelled mid-flight, because a half-applied deploy is how a live site breaks.
+Permissions are least-privilege and scoped **per job**, not workflow-wide: the workflow floor is `contents: read`, the build job adds only `pages: read` (which `configure-pages` needs to read the site config), and `pages: write` + `id-token: write` are granted solely to the deploy job. The build job runs third-party gem and npm code; it must not hold a token that can publish to liberatedbread.com. `concurrency` is `{ group: "pages", cancel-in-progress: false }` — a deploy is never cancelled mid-flight, because a half-applied deploy is how a live site breaks.
 
 `ci.yml` runs the same build plus the wider verification suite (opposite-phase build, RSS validity, Tailwind freshness, `actionlint`) on every pull request and never deploys. The build is deliberately duplicated between the two: a gate that does not run in the job producing the uploaded bytes is not a gate.
 
