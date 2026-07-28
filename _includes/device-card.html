@@ -7,10 +7,16 @@
   The image is optional and guarded: a device entry with no `image` key renders
   a bread-palette placeholder tile instead of a broken <img>. That keeps a
   half-finished contribution from shipping a 404.
+
+  `data-device-type` is what the /devices/ filter matches on (§9.4). It is
+  inert markup — the card is fully rendered and visible with or without it —
+  and it is emitted everywhere the card is used so the filter can never be
+  looking at a grid whose cards forgot to declare their type.
 {%- endcomment -%}
 {%- assign d = include.device -%}
 
 <a href="{{ '/devices/' | append: d.slug | append: '/' | relative_url }}"
+   data-device-type="{{ d.type }}"
    class="group flex flex-col bg-bread-base-dark border border-bread-steel/30 rounded-lg overflow-hidden hover:border-bread-accent/60 transition-colors no-underline">
 
   <div class="aspect-[16/9] bg-bread-base border-b border-bread-steel/20 overflow-hidden">

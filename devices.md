@@ -16,7 +16,16 @@ permalink: /devices/
     tested on the exact firmware version listed on its page.
   </p>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  {%- comment -%}
+    Catalogue filter, DESIGN §9.4 / §14.2 item 4. The include emits nothing but
+    an inert <template>; the grid below always renders every device, and no
+    card is hidden at render time. Without JavaScript this page is exactly the
+    full catalogue it has always been — there is nothing to un-hide and no
+    control on screen that does not work.
+  {%- endcomment -%}
+  {% include device-filter.html devices=site.data.devices.devices %}
+
+  <div data-lb-device-grid class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
     {% for device in site.data.devices.devices %}
       {% include device-card.html device=device %}
     {% endfor %}
@@ -52,5 +61,13 @@ permalink: /devices/
   </div>
 
 </main>
+
+{%- comment -%}
+  The only script on the site, and it is loaded on this page alone — never from
+  a layout or an include, so it cannot leak onto / where the Phase 0 teaser must
+  ship zero JavaScript (§9.6, asserted by script/check-phase0.rb). Local file,
+  no CDN (§15.1). `defer` because the script reads the grid it enhances.
+{%- endcomment -%}
+<script src="{{ '/assets/js/device-filter.js' | relative_url }}" defer></script>
 
 {% include footer.html %}
