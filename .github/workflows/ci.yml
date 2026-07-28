@@ -159,6 +159,16 @@ jobs:
           fi
           echo "assets/tailwind.css and _data/brand.yml are up to date with src/input.css"
 
+      # Runs after the rebuild, so it inspects a stylesheet already proven to
+      # match src/input.css. `[data-lb-hidden]` is the whole /devices/ filter
+      # mechanism and only outranks the utilities on a card while it stays
+      # outside every cascade layer. Moving it into `@layer components` breaks
+      # filtering with no error and no visible difference in review — the one
+      # failure mode a human reviewer cannot see. src/input.css warns about it
+      # in a comment; this is the part that fails the build.
+      - name: Assert cascade-critical rules are unlayered
+        run: ruby script/check-unlayered-css.rb assets/tailwind.css
+
       # The whole point of committing the CSS is having no runtime dependency
       # on a third-party host (DESIGN §15.1).
       - name: Assert no CDN references in shipped markup
