@@ -142,13 +142,22 @@ Three rules apply to anything added next to them
    **Set `safety_block: true` for every hardware guide**, and for any software
    guide whose steps require opening the device — that renders the mandatory
    safety callout ([DESIGN §10.1](DESIGN-finalized.md#101-mandatory-safety-block)).
-   **Set `hardware_verified: true` with a `last_verified` date only once you
-   have run every step on the physical device.** A guide with neither — or with
-   only one of the two — is treated as unverified and renders a "Not yet
-   hardware-verified" notice above its body, and its firmware row reads "Written
-   for firmware" rather than "Verified on firmware". The default is deliberate
-   and must not be inverted: verification is a claim you make, never one a guide
-   inherits by omitting a key.
+   **Leave `hardware_verified` and `last_verified` out unless you have run the
+   guide on the device.** Submitting an unverified guide is normal and welcome —
+   it is how most arrive. The page then shows a "Not yet verified on hardware"
+   status block and its firmware row reads "Written for firmware". Set both keys
+   together, and only once you have genuinely run every step on the physical
+   device; that claim is what binds you to the strict accuracy standard. The
+   default must not be inverted: with most of the catalogue unverified at any
+   time, a scheme where silence meant "verified" would mislabel nearly every
+   page. Verification is a claim you write down, never one a guide inherits by
+   omitting a key.
+
+   **To mark a guide verified later:** add those two keys to
+   `_devices/<slug>.md`. That is the entire change — one file, one edit. The
+   status block, the metadata bar's "Verified:" row and the firmware label all
+   follow from the same condition, `_data/devices.yml` carries no verification
+   state, and no guide's prose depends on the flag.
 3. Write the body starting at `##`. The `<h1>`, metadata bar, safety block,
    video embed, protocol links and disclaimer all come from the layout.
 4. Add a matching entry to [`_data/devices.yml`](_data/devices.yml) so the guide
@@ -177,8 +186,8 @@ _includes/
   home-coming-soon.html    Phase 0 root page  <-- currently live at /
   home-landing.html        Phase 1 root page  <-- built and CI-checked, not live
   device-filter.html       /devices/ filter, as an inert <template>
-  verification-status.html "Not yet hardware-verified" notice; renders unless
-                           the guide explicitly claims otherwise
+  verification-status.html "Not yet verified on hardware" status block; renders
+                           unless the guide explicitly claims otherwise
   ...                      head, header, footer, safety-block, device-card,
                            subscribe-form, social-links, video-embed
 assets/js/

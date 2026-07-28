@@ -11,19 +11,32 @@ labels: device-guide
 -->
 
 **Device:**
-**Model / firmware tested:**
+**Model / firmware this guide targets:**
 **Liberation type:** software / hardware
 
 ## Device Guide PR Checklist
 
+### Verification status — tick exactly ONE
+
+Both are welcome submissions. Tick the one that is true; the checks that follow
+depend on which.
+
+- [ ] **Untested draft.** I have not run this on the device. `hardware_verified`
+      and `last_verified` are both omitted, so the page shows the "Not yet
+      verified on hardware" status block and the firmware row reads "Written for
+      firmware". This is the normal way a guide arrives — nothing further in this
+      section applies.
+- [ ] **Verified on hardware.** I own the device and ran **every step** of this
+      guide on it, on the **exact firmware version listed**. `hardware_verified:
+      true` and `last_verified` are both set. Ticking this box is the claim; the
+      three boxes below are what it commits me to.
+  - [ ] Every step was run, in order, on the physical device
+  - [ ] Device model number matches the unit I used, exactly
+  - [ ] `last_verified` is today or within the past 30 days
+
 ### Accuracy
-- [ ] All steps tested on the **exact firmware version** listed
-- [ ] Device model number matches the tested unit exactly
-- [ ] `last_verified` date is today or within the past 30 days
-- [ ] `hardware_verified: true` set — and set **only** because the box above is
-      genuinely ticked. Without it (or without `last_verified`) the guide
-      renders the "Not yet hardware-verified" notice, which is the correct
-      outcome for a guide drafted from a spec rather than run on the device
+- [ ] The `firmware` field names the exact version this guide targets — the one I
+      ran it on if verified, the one I wrote it against if not
 - [ ] No steps require paid software or subscriptions
 - [ ] No steps connect the device to a different cloud service
 

@@ -132,6 +132,5 @@ The WeMo Insight Switch communicates via UPnP over Wi-Fi. Full protocol specific
 
 ---
 
-*Written against firmware `WeMo_WW_2.00.11426.PVT-OWRT-SNS` and Home Assistant 2026.7, from Belkin’s
-UPnP device documentation and the PyWeMo integration — not from a switch on a bench. See the
-verification notice at the top of this guide.*
+*Written against firmware `WeMo_WW_2.00.11426.PVT-OWRT-SNS` and Home Assistant 2026.7, from
+Belkin’s UPnP device documentation and the PyWeMo integration.*

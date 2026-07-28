@@ -119,5 +119,4 @@ This guide covers the physical mount. If you want to liberate the camera's softw
 ---
 
 *Designed for the Eufy Indoor Cam 2K Pan & Tilt (T8400). The mount geometry and the print
-settings come from the part design, not from a printed and installed sample. See the
-verification notice at the top of this guide.*
+settings come from the part design.*

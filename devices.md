@@ -13,8 +13,9 @@ permalink: /devices/
 
   <p class="text-bread-khaki/80 max-w-2xl">
     Step-by-step guides for liberating abandoned IoT devices. Each guide names the
-    exact hardware and firmware it was written for, and states on its own page
-    whether anyone has yet run it on a physical device.
+    exact hardware and firmware it targets and states on its own page whether it has
+    been verified on hardware yet. Plenty have not been — that is the normal state
+    for a new guide, and the page always tells you which you are reading.
   </p>
 
   {%- comment -%}
@@ -37,8 +38,10 @@ permalink: /devices/
 
     <p>
       Read the <a href="{{ '/contribute/' | relative_url }}">contribution guide</a> for
-      how to submit a new liberation guide. You need to own the hardware and have
-      tested every step yourself.
+      how to submit a new liberation guide. You do not need to have run it on the
+      hardware first — most guides arrive unverified and say so on the page. What
+      you do need is to be straight about which of the two it is, and to claim
+      verification only when you have genuinely done it.
     </p>
 
     <h2>Devices we can't officially support</h2>

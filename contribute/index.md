@@ -32,8 +32,10 @@ model: "[Model Number]"
 type: software          # "software" or "hardware"
 difficulty: 1           # 1 (🍞), 2 (🍞🍞), or 3 (🍞🍞🍞)
 time_minutes: 30
-firmware: "[Firmware version tested]"
-hardware_verified: true # only once you have run every step on the device
+firmware: "[Firmware version this guide targets]"   # tested on, or written for
+# Both OPTIONAL — omit them for an unverified guide, which is the normal case.
+# Set them together, and only once you have run every step on the device.
+hardware_verified: true
 last_verified: YYYY-MM-DD
 ha_integration: "[Home Assistant integration name]"
 safety_block: false     # true for hardware guides
@@ -75,7 +77,11 @@ opengreeniot_docs: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs
 
 All device guides are reviewed by a maintainer before merging. We check for:
 
-- Accuracy (tested on exact firmware listed)
+- Honest verification status — `hardware_verified` set only where the guide was
+  genuinely run on the device. An unverified guide is a perfectly good submission;
+  an unverified guide wearing a verified badge is not
+- Accuracy — a verified guide's steps were run on the exact firmware listed; an
+  unverified one names the firmware it was written against and does not claim more
 - Safety (mandatory block present for hardware guides)
 - Original content (no manufacturer stock photos, no proprietary code)
 - Attribution (third-party code/configs credited with links)

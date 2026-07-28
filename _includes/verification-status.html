@@ -1,5 +1,5 @@
 {%- comment -%}
-  "Not yet hardware-verified" notice.
+  "Not yet verified on hardware" status block.
 
   Rendered by _layouts/device.html for every device guide that has NOT made an
   explicit, evidenced claim to have been run on the physical device. See the
@@ -8,42 +8,53 @@
 
   WHY IT FAILS SAFE
   -----------------
-  The two guides that shipped first were drafted from device specifications and
-  public documentation and have never been near the hardware, yet they asserted
-  firmware versions, print settings and a verification date as fact. The failure
-  mode that matters is not those two pages — it is the next guide, added by
-  someone who forgets the flag exists and inherits a clean page for free. So the
-  default is "unverified" and the affirmative claim is the thing you have to
-  write down. A guide cannot become verified by omission.
+  Unverified is the ORDINARY state of a guide here — submitting one you have not
+  run on hardware is allowed and expected, and verification is marked later by
+  whoever does have the device. That makes the default the common case, not the
+  exception, which is exactly why the flag has to point the way it does: with
+  most of the catalogue unverified, a scheme where silence meant "verified"
+  would mislabel almost everything. The affirmative claim is the thing you write
+  down; a guide cannot become verified by omission.
 
-  Colour note: this is deliberately NOT the red of _includes/safety-block.html.
-  That block owns the site's one escape from the bread palette, on the reasoning
-  in its own comment that "a warning that reads as just more amber is not a
-  warning". Stacking a second red card directly under it would spend exactly the
-  signal that reasoning protects — two red boxes in a row and neither reads as
-  urgent. This is a different class of warning: not "you could be hurt" but
-  "this document may be wrong". It keeps the safety block's geometry so it reads
-  as native furniture, on the accent palette so the hierarchy stays honest.
+  TONE — this is a STATUS, NOT A DEFECT NOTICE. It describes the normal
+  condition of most pages on the site, so it must not read as an apology, a
+  health warning, or a reason to stop reading. State what is and is not
+  confirmed, say what to do about it, and offer the reader the obvious way to
+  help. Nothing here should suggest the guide is low quality: an unverified
+  guide is researched and reviewed, just not yet run.
+
+  Colour note: deliberately NOT the red of _includes/safety-block.html. That
+  block owns the site's one escape from the bread palette, on the reasoning in
+  its own comment that "a warning that reads as just more amber is not a
+  warning"; a second red card directly under it would spend exactly the signal
+  that reasoning protects. It is not amber either — amber is the site's
+  attention/heading colour, and on a block that appears on nearly every guide
+  that reads as permanent caution. Sky is the informational tone (7.22:1 on
+  base), already used for type badges and code, and says "here is a fact about
+  this page" rather than "be careful". The geometry matches the safety block so
+  it still reads as native furniture.
 {%- endcomment -%}
 
-<div class="bg-bread-accent/10 border border-bread-accent/40 rounded-lg p-4 my-6">
-  <h2 class="!mt-0 !border-0 !pb-0 font-serif !text-bread-accent text-lg mb-2">Not yet hardware-verified</h2>
+<div class="bg-bread-sky/10 border border-bread-sky/40 rounded-lg p-4 my-6">
+  <h2 class="!mt-0 !border-0 !pb-0 font-serif !text-bread-sky text-lg mb-2">Not yet verified on hardware</h2>
   <p class="text-sm text-bread-khaki mt-0 mb-3">
-    This guide was written from device specifications and public documentation. Nobody has
-    run it end to end on the physical device, so firmware versions, menu paths, print
-    settings, part fit and timings may not match the unit in front of you. Treat every step
-    as a starting point to check, not a result to rely on.
+    Most guides here start out this way. This one was researched and reviewed, but it was
+    written from device specifications, vendor documentation and the design of the parts
+    involved rather than from a unit on a bench — so the firmware versions, menu paths,
+    print settings, part fit and timings in it are unconfirmed. Follow it, and check each
+    one against the device in front of you as you go.
   </p>
   {%- if page.safety_block %}
   <p class="text-sm text-bread-khaki mt-0 mb-3">
-    That includes the physical steps. The safety warnings above apply in full and are not
-    the part in doubt — but stop and reassess if anything you see differs from what this
-    guide describes.
+    The safety steps above are standard practice and apply in full — they are not the
+    unconfirmed part. The procedure is. Where the device differs from what this guide
+    describes, the device is right.
   </p>
   {%- endif %}
   <p class="text-sm text-bread-khaki/80 mt-0 mb-0">
-    Have you run this on real hardware?
-    <a href="https://github.com/liberatedbread/liberatedbread-web-static/issues" target="_blank" rel="noopener">Tell us what happened</a>
-    and we will correct the guide and mark it verified.
+    Run it on real hardware?
+    <a href="https://github.com/liberatedbread/liberatedbread-web-static/issues" target="_blank" rel="noopener">Tell us how it went</a>
+    — that is how a guide gets marked verified, and a correction is every bit as useful as
+    a confirmation.
   </p>
 </div>

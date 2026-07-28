@@ -26,14 +26,14 @@ model: "<Model Number>"
 type: software                         # software | hardware
 difficulty: 1                          # 1, 2 or 3
 time_minutes: 30
-firmware: "<exact firmware version you tested>"
+firmware: "<exact firmware version this guide targets>"   # tested on, or written for
 ha_integration: "<Home Assistant integration name>"   # optional
 
-# HARDWARE VERIFICATION — see the section below. A guide counts as verified
-# only if BOTH of these are present; otherwise it renders a "Not yet
-# hardware-verified" notice above its body and its firmware row reads "Written
-# for firmware" instead of "Verified on firmware". Leaving them out is not how
-# you get a clean page — it is how you get the notice.
+# HARDWARE VERIFICATION — both OPTIONAL, see the section below. Omit them if you
+# have not run the guide on the device; the page then shows a "Not yet verified
+# on hardware" status block and its firmware row reads "Written for firmware".
+# That is a normal, expected guide, not a lesser one. Set them together, and
+# only once you have genuinely done it.
 hardware_verified: true
 last_verified: 2026-07-26              # today, or within the last 30 days
 
@@ -63,22 +63,45 @@ opengreeniot_docs: "https://github.com/PigsCanFlyLabs/opengreeniot-protocol-docs
 
 ## Hardware verification
 
-Set `hardware_verified: true` with a `last_verified` date **once you have run
-every step of the guide on the physical device**, on the exact firmware you
-listed. That is the same bar the [review checklist]({{ '/contribute/' | relative_url }})
-already applies to a contributed guide, so for a normal contribution both keys
-belong in your front matter from the start.
+**You may submit a guide you have not run on the hardware.** That is fine, it is
+expected, and it is how most guides arrive. Research it properly, write it
+carefully, and leave `hardware_verified` and `last_verified` out. The page then
+carries a "Not yet verified on hardware" status block saying so plainly, and its
+firmware row reads "Written for firmware" rather than "Verified on firmware".
+Nothing about that marks the guide as second-rate — it is the ordinary state of
+a new guide, and someone with the device can mark it verified later.
 
-The default is the other way round on purpose. A guide with neither key — or
-with a date but no flag, or a flag but no date — is treated as unverified and
-renders a "Not yet hardware-verified" notice above its body. Nothing can earn a
-verification claim by leaving something out. That default exists for guides
-drafted from a device specification before anyone has had the hardware in hand:
-they stay honest without anyone having to remember to say so.
+What you must not do is claim more than you did. Set `hardware_verified: true`
+with a `last_verified` date **only once you have run every step of the guide on
+the physical device**, on the exact firmware you listed. Making that claim is
+what binds you to the strict version of the accuracy standard: you owned the
+hardware, you followed your own steps, and they worked.
+
+Both keys are needed together. A guide with neither — or with a date but no
+flag, or a flag but no date — is treated as unverified. That direction is
+deliberate: with most of the catalogue unverified at any given time, a scheme
+where silence meant "verified" would mislabel nearly every page. Verification
+is a claim you write down, never one a guide inherits by leaving a key out.
 
 Do not set the flag because the steps look right, because they worked on a
 similar model, or because the vendor documentation says they should. It means
 one thing only: this was done, on this device, and it worked.
+
+### Marking a guide verified later
+
+One edit, one file. In `_devices/<slug>.md`, add the two keys to the front
+matter:
+
+```yaml
+hardware_verified: true
+last_verified: 2026-07-26
+```
+
+That is the whole change. The status block disappears, the metadata bar grows a
+"Verified:" row, and the firmware label flips to "Verified on firmware" — all
+from the same condition. There is no second file to remember: `_data/devices.yml`
+holds card fields only and no verification state, and no guide's prose depends
+on the flag.
 
 ## Body — software-liberated devices
 
@@ -92,7 +115,8 @@ Which cloud service died, what stopped working, and what still works.
 
 ## Prerequisites
 
-- The exact hardware and firmware this guide was tested on
+- The exact hardware and firmware this guide targets — the version you ran it on
+  if you verified it, otherwise the version you wrote it against
 - Any tools, accounts or network access the reader needs first
 
 ## Step 1: Lock It Down
