@@ -32,6 +32,22 @@
   </div>
 </header>
 
+{%- comment -%}
+  NOT EMITTED ON `/`, IN EITHER PHASE. The root page ships zero JavaScript —
+  §9.6 for the Phase 0 teaser, and the same rule holds for the Phase 1 landing
+  page, which is the only other thing `/` can be. `home-coming-soon.html` does
+  not include this header at all, so at phase0: true the question never arises;
+  `home-landing.html` does, so without this guard flipping the flag would put a
+  script on `/` — the one page that must never have one. script/check-phase0.rb
+  asserts it in both flag positions.
+
+  The cost is that `/` alone keeps the no-JS nav: the button stays hidden, the
+  link row stays expanded and wraps. That is this feature's own designed
+  fallback, already the behaviour for every visitor with JavaScript off, and a
+  four-link row is perfectly usable. Every other page still collapses to the
+  disclosure button.
+{%- endcomment -%}
+{%- unless page.url == "/" %}
 <!-- Kept inline so this include owns its progressive enhancement; a future
      Content-Security-Policy would need this moved to a deferred asset. -->
 <script>
@@ -76,3 +92,4 @@
     });
   }());
 </script>
+{%- endunless %}

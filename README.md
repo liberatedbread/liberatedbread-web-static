@@ -97,26 +97,42 @@ no CSS or JS from a third-party host
 
 ## How JavaScript is allowed to work here
 
-There is one script on the site, `assets/js/device-filter.js`, and `/devices/`
-loads it directly — never a layout or an include, because the Phase 0 root page
-must ship no JavaScript at all and `script/check-phase0.rb` fails the build if
-it ever does.
+There are two scripts on the site:
 
-Two rules apply to anything added next to it
+- `assets/js/device-filter.js`, loaded by `/devices/` directly — from the page,
+  never from a layout.
+- the header nav enhancement, inline in `_includes/header.html`.
+
+**`/` ships zero JavaScript, in both phase positions.** Not just the Phase 0
+teaser — the Phase 1 landing page too, because `/` is the one page whose whole
+job is to load instantly for someone who has never heard of us. The teaser gets
+this for free (`home-coming-soon.html` includes no header), but the landing page
+*does* include the header, so `_includes/header.html` skips emitting its script
+when `page.url == "/"`. `script/check-phase0.rb` asserts it unconditionally, so
+CI's opposite-phase build catches a regression at PR time rather than at launch.
+The cost is that `/` alone keeps the nav's no-JS fallback — an expanded,
+wrapping link row instead of a disclosure button. That fallback is designed and
+shipped anyway for anyone with scripting off.
+
+Three rules apply to anything added next to them
 ([DESIGN §9.4](DESIGN-finalized.md#94-no-js-fallbacks)):
 
-1. **The page is finished before the script runs.** Every device card is
+1. **Nothing script-shaped reaches `/`.** A script in a shared include is fine
+   only if it is guarded out of the root page, as the header's is.
+2. **The page is finished before the script runs.** Every device card is
    rendered and visible in the HTML; nothing is hidden at render time waiting
    to be revealed. Controls that only make sense with JavaScript live inside a
    `<template>`, which the parser leaves inert, so with scripting off they are
    not on the page at all rather than sitting there dead.
-2. **Scripts do not apply Tailwind classes.** Tailwind only compiles classes it
+3. **Scripts do not apply Tailwind classes.** Tailwind only compiles classes it
    finds in the paths it scans and it never scans `.js`, so a class applied
    only at runtime is missing from `assets/tailwind.css` — invisible in review,
    broken in production. Drive state from an attribute instead, backed by
    hand-written CSS in `src/input.css`. The filter's rule, `[data-lb-hidden]`,
    is deliberately outside every `@layer` so it outranks the utilities on the
-   element it hides.
+   element it hides — `script/check-unlayered-css.rb` fails the build if a
+   refactor ever moves it into one, because the symptom otherwise is a filter
+   that silently stops filtering.
 
 ## Adding a device guide
 
@@ -126,6 +142,13 @@ Two rules apply to anything added next to it
    **Set `safety_block: true` for every hardware guide**, and for any software
    guide whose steps require opening the device — that renders the mandatory
    safety callout ([DESIGN §10.1](DESIGN-finalized.md#101-mandatory-safety-block)).
+   **Set `hardware_verified: true` with a `last_verified` date only once you
+   have run every step on the physical device.** A guide with neither — or with
+   only one of the two — is treated as unverified and renders a "Not yet
+   hardware-verified" notice above its body, and its firmware row reads "Written
+   for firmware" rather than "Verified on firmware". The default is deliberate
+   and must not be inverted: verification is a claim you make, never one a guide
+   inherits by omitting a key.
 3. Write the body starting at `##`. The `<h1>`, metadata bar, safety block,
    video embed, protocol links and disclaimer all come from the layout.
 4. Add a matching entry to [`_data/devices.yml`](_data/devices.yml) so the guide
@@ -154,17 +177,25 @@ _includes/
   home-coming-soon.html    Phase 0 root page  <-- currently live at /
   home-landing.html        Phase 1 root page  <-- built and CI-checked, not live
   device-filter.html       /devices/ filter, as an inert <template>
+  verification-status.html "Not yet hardware-verified" notice; renders unless
+                           the guide explicitly claims otherwise
   ...                      head, header, footer, safety-block, device-card,
                            subscribe-form, social-links, video-embed
-assets/js/                 The site's only JavaScript. Loaded by /devices/
-  device-filter.js         alone — / must ship none (PHASE0.md)
+assets/js/
+  device-filter.js         Loaded by /devices/ only. / ships no JS (PHASE0.md)
 sitemap.xml                Phase 0-aware; jekyll-sitemap defers to it
 _data/brand.yml            GENERATED from src/input.css — do not hand-edit
 src/input.css              Brand tokens + component styles (source of truth)
 tailwind.config.js         Maps bread-* utilities onto the tokens
 assets/tailwind.css        Built, minified, committed — served in production
 script/check-links.rb      Offline internal-link checker used by CI
-script/check-phase0.rb     Asserts the built site matches the phase0 flag
+script/check-phase0.rb     Asserts the built site matches the phase0 flag,
+                           and that / ships no JS in EITHER phase
+script/check-tailwind-content.rb
+                           Asserts Tailwind scans exactly the served pages
+script/check-unlayered-css.rb
+                           Asserts [data-lb-hidden] is emitted outside every
+                           @layer, so the /devices/ filter keeps working
 script/sync-brand-data.rb  Regenerates _data/brand.yml from src/input.css
 .github/workflows/
   ci.yml                   Verification on every PR — never deploys
