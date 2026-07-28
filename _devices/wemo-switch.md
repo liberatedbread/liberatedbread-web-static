@@ -8,7 +8,6 @@ type: software
 difficulty: 1
 time_minutes: 15
 firmware: "WeMo_WW_2.00.11426.PVT-OWRT-SNS"
-last_verified: 2026-07-25
 ha_integration: pywemo
 safety_block: false
 tags: [wemo, belkin, smart-plug, wifi]
@@ -133,4 +132,6 @@ The WeMo Insight Switch communicates via UPnP over Wi-Fi. Full protocol specific
 
 ---
 
-*Guide verified: July 25, 2026. Tested on firmware WeMo_WW_2.00.11426.PVT-OWRT-SNS with Home Assistant 2026.7.*
+*Written against firmware `WeMo_WW_2.00.11426.PVT-OWRT-SNS` and Home Assistant 2026.7, from Belkin’s
+UPnP device documentation and the PyWeMo integration — not from a switch on a bench. See the
+verification notice at the top of this guide.*

@@ -12,8 +12,9 @@ permalink: /devices/
   <h1 class="font-serif text-3xl md:text-4xl mb-4">Liberated Devices</h1>
 
   <p class="text-bread-khaki/80 max-w-2xl">
-    Step-by-step guides for liberating abandoned IoT devices. Every guide has been
-    tested on the exact firmware version listed on its page.
+    Step-by-step guides for liberating abandoned IoT devices. Each guide names the
+    exact hardware and firmware it was written for, and states on its own page
+    whether anyone has yet run it on a physical device.
   </p>
 
   {%- comment -%}
@@ -43,7 +44,7 @@ permalink: /devices/
     <h2>Devices we can't officially support</h2>
 
     <p>
-      The devices listed here are ones we've tested and can support. For other
+      The devices listed here are the ones we document and can support. For other
       devices, the community maintains configurable device packs using our YAML
       specification. These packs are created by community members for hardware they
       own and have permission to work with. Liberated Bread links to these packs but
@@ -54,8 +55,9 @@ permalink: /devices/
     <hr>
 
     <p class="text-sm text-bread-khaki/60">
-      All guides verified on the firmware versions listed. If you find a guide that's
-      out of date,
+      Every guide states its own verification status at the top of its page. If you find
+      one that is wrong or out of date — or if you have run one successfully on real
+      hardware and can get it marked verified —
       <a href="https://github.com/liberatedbread/liberatedbread-web-static/issues" target="_blank" rel="noopener">open an issue</a>.
     </p>
   </div>

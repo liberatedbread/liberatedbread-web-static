@@ -9,6 +9,14 @@
 # placeholders (assets/devices/*.webp), not photographs; replace them
 # file-for-file when a contributor supplies original photos. Omitting `image`
 # entirely is also fine — the card renders a "No photo yet" tile instead.
+#
+# This file drives the CARDS only, and the cards render slug, name, model, type,
+# difficulty, time_minutes, short_desc and image — nothing else here reaches a
+# page. `firmware` and `last_verified` used to be mirrored into these entries
+# and read by nothing at all, which made them a second, unreviewed copy of the
+# guide's strongest factual claims. Verification state now lives in exactly one
+# place, the guide's own front matter, where _layouts/device.html gates it
+# behind `hardware_verified`. Do not reintroduce them here.
 
 devices:
   - slug: wemo-switch
@@ -17,8 +25,6 @@ devices:
     type: software
     difficulty: 1
     time_minutes: 15
-    firmware: "WeMo_WW_2.00.11426.PVT-OWRT-SNS"
-    last_verified: "2026-07-25"
     short_desc: "Keep your WeMo switches working locally after Belkin's cloud goes dark in January 2026."
     image: "/assets/devices/wemo-hero.webp"
     ha_integration: "pywemo"
@@ -33,7 +39,6 @@ devices:
     type: hardware
     difficulty: 2
     time_minutes: 45
-    last_verified: "2026-07-25"
     short_desc: "Replace the flimsy stock mount with an articulating 3D-printed arm."
     image: "/assets/devices/eufy-mount.webp"
     safety_block: true

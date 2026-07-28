@@ -1,0 +1,49 @@
+{%- comment -%}
+  "Not yet hardware-verified" notice.
+
+  Rendered by _layouts/device.html for every device guide that has NOT made an
+  explicit, evidenced claim to have been run on the physical device. See the
+  gate in the layout: a guide must set `hardware_verified: true` AND carry a
+  `last_verified` date to suppress this. Omission is never enough.
+
+  WHY IT FAILS SAFE
+  -----------------
+  The two guides that shipped first were drafted from device specifications and
+  public documentation and have never been near the hardware, yet they asserted
+  firmware versions, print settings and a verification date as fact. The failure
+  mode that matters is not those two pages — it is the next guide, added by
+  someone who forgets the flag exists and inherits a clean page for free. So the
+  default is "unverified" and the affirmative claim is the thing you have to
+  write down. A guide cannot become verified by omission.
+
+  Colour note: this is deliberately NOT the red of _includes/safety-block.html.
+  That block owns the site's one escape from the bread palette, on the reasoning
+  in its own comment that "a warning that reads as just more amber is not a
+  warning". Stacking a second red card directly under it would spend exactly the
+  signal that reasoning protects — two red boxes in a row and neither reads as
+  urgent. This is a different class of warning: not "you could be hurt" but
+  "this document may be wrong". It keeps the safety block's geometry so it reads
+  as native furniture, on the accent palette so the hierarchy stays honest.
+{%- endcomment -%}
+
+<div class="bg-bread-accent/10 border border-bread-accent/40 rounded-lg p-4 my-6">
+  <h2 class="!mt-0 !border-0 !pb-0 font-serif !text-bread-accent text-lg mb-2">Not yet hardware-verified</h2>
+  <p class="text-sm text-bread-khaki mt-0 mb-3">
+    This guide was written from device specifications and public documentation. Nobody has
+    run it end to end on the physical device, so firmware versions, menu paths, print
+    settings, part fit and timings may not match the unit in front of you. Treat every step
+    as a starting point to check, not a result to rely on.
+  </p>
+  {%- if page.safety_block %}
+  <p class="text-sm text-bread-khaki mt-0 mb-3">
+    That includes the physical steps. The safety warnings above apply in full and are not
+    the part in doubt — but stop and reassess if anything you see differs from what this
+    guide describes.
+  </p>
+  {%- endif %}
+  <p class="text-sm text-bread-khaki/80 mt-0 mb-0">
+    Have you run this on real hardware?
+    <a href="https://github.com/liberatedbread/liberatedbread-web-static/issues" target="_blank" rel="noopener">Tell us what happened</a>
+    and we will correct the guide and mark it verified.
+  </p>
+</div>

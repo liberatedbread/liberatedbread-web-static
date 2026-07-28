@@ -20,6 +20,10 @@ labels: device-guide
 - [ ] All steps tested on the **exact firmware version** listed
 - [ ] Device model number matches the tested unit exactly
 - [ ] `last_verified` date is today or within the past 30 days
+- [ ] `hardware_verified: true` set — and set **only** because the box above is
+      genuinely ticked. Without it (or without `last_verified`) the guide
+      renders the "Not yet hardware-verified" notice, which is the correct
+      outcome for a guide drafted from a spec rather than run on the device
 - [ ] No steps require paid software or subscriptions
 - [ ] No steps connect the device to a different cloud service
 

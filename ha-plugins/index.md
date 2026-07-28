@@ -30,4 +30,6 @@ wemo:
 
 ---
 
-*All configs tested on Home Assistant 2026.7. File an issue if a config doesn't work with your setup.*
+*These configs are written against Home Assistant 2026.7 from its integration documentation;
+they have not been run on a live install. File an issue if one doesn't work with your setup —
+or if it does, so we can say so.*

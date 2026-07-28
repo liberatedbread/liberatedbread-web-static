@@ -33,6 +33,7 @@ type: software          # "software" or "hardware"
 difficulty: 1           # 1 (🍞), 2 (🍞🍞), or 3 (🍞🍞🍞)
 time_minutes: 30
 firmware: "[Firmware version tested]"
+hardware_verified: true # only once you have run every step on the device
 last_verified: YYYY-MM-DD
 ha_integration: "[Home Assistant integration name]"
 safety_block: false     # true for hardware guides

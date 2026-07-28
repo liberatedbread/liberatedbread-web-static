@@ -7,7 +7,6 @@ model: "T8400"
 type: hardware
 difficulty: 2
 time_minutes: 45
-last_verified: 2026-07-25
 safety_block: true
 stl_files:
   - filename: "wall-mount-v2.stl"
@@ -24,7 +23,7 @@ tags: [eufy, camera, mount, 3d-print]
 
 ## What You're Building
 
-The stock Eufy Indoor Cam mount is flimsy. After a few months, the pan-and-tilt mechanism loosens and the camera sags. This guide walks you through replacing it with a 3D-printed articulating wall mount — more stable, more adjustable, and entirely under your control.
+The stock Eufy Indoor Cam mount is flimsy, and a common complaint is that the pan-and-tilt mechanism works loose over a few months until the camera sags. This guide walks you through replacing it with a 3D-printed articulating wall mount — more stable, more adjustable, and entirely under your control.
 
 This is a physical modification. No firmware changes, no software liberation — just better hardware.
 
@@ -97,7 +96,7 @@ The Eufy Indoor Cam is low-voltage (5V USB), so there's no mains voltage risk in
 
 ### 4. Test
 
-The camera should hold position firmly. Pan and tilt it manually to verify the ball joint has full range of motion. After 24 hours, check the screws — PETG can settle slightly and may need a tiny retightening.
+The camera should hold position firmly. Pan and tilt it manually to verify the ball joint has full range of motion. PETG can settle slightly under a constant load, so check the screws again after 24 hours and retighten a little if needed.
 
 ## Troubleshooting
 
@@ -119,4 +118,6 @@ This guide covers the physical mount. If you want to liberate the camera's softw
 
 ---
 
-*Guide verified: July 25, 2026. Tested on Eufy Indoor Cam 2K Pan & Tilt (T8400) with firmware 2.1.9.7.*
+*Designed for the Eufy Indoor Cam 2K Pan & Tilt (T8400). The mount geometry and the print
+settings come from the part design, not from a printed and installed sample. See the
+verification notice at the top of this guide.*
