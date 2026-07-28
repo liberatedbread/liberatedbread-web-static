@@ -76,7 +76,9 @@
       else empty.setAttribute("data-lb-hidden", "");
     }
 
-    // Only ever written for a change the user made. Populating a live region at
+    // Only ever written for a change the user made. The region ships seeded
+    // with a &nbsp; so VoiceOver registers it (see _includes/device-filter.html)
+    // — that is not content, it is registration. Putting the summary in here at
     // insertion time gets announced by some screen readers as if something had
     // happened, and on page load nothing has.
     if (announce && isUserChange) announce.textContent = text;
