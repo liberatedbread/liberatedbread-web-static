@@ -95,6 +95,29 @@ site follows. `assets/tailwind.css` is committed on purpose — production loads
 no CSS or JS from a third-party host
 ([DESIGN §9.5](DESIGN-finalized.md#95-tailwind-css-build), §15.1).
 
+## How JavaScript is allowed to work here
+
+There is one script on the site, `assets/js/device-filter.js`, and `/devices/`
+loads it directly — never a layout or an include, because the Phase 0 root page
+must ship no JavaScript at all and `script/check-phase0.rb` fails the build if
+it ever does.
+
+Two rules apply to anything added next to it
+([DESIGN §9.4](DESIGN-finalized.md#94-no-js-fallbacks)):
+
+1. **The page is finished before the script runs.** Every device card is
+   rendered and visible in the HTML; nothing is hidden at render time waiting
+   to be revealed. Controls that only make sense with JavaScript live inside a
+   `<template>`, which the parser leaves inert, so with scripting off they are
+   not on the page at all rather than sitting there dead.
+2. **Scripts do not apply Tailwind classes.** Tailwind only compiles classes it
+   finds in the paths it scans and it never scans `.js`, so a class applied
+   only at runtime is missing from `assets/tailwind.css` — invisible in review,
+   broken in production. Drive state from an attribute instead, backed by
+   hand-written CSS in `src/input.css`. The filter's rule, `[data-lb-hidden]`,
+   is deliberately outside every `@layer` so it outranks the utilities on the
+   element it hides.
+
 ## Adding a device guide
 
 1. Copy the template at [`contribute/device-template.md`](contribute/device-template.md)
@@ -130,8 +153,11 @@ _layouts/
 _includes/
   home-coming-soon.html    Phase 0 root page  <-- currently live at /
   home-landing.html        Phase 1 root page  <-- built and CI-checked, not live
+  device-filter.html       /devices/ filter, as an inert <template>
   ...                      head, header, footer, safety-block, device-card,
                            subscribe-form, social-links, video-embed
+assets/js/                 The site's only JavaScript. Loaded by /devices/
+  device-filter.js         alone — / must ship none (PHASE0.md)
 sitemap.xml                Phase 0-aware; jekyll-sitemap defers to it
 _data/brand.yml            GENERATED from src/input.css — do not hand-edit
 src/input.css              Brand tokens + component styles (source of truth)
