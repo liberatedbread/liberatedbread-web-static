@@ -4,8 +4,12 @@ The static site behind **[liberatedbread.com](https://liberatedbread.com)** — 
 [Pigs Can Fly Labs LLC](https://pigscanfly.ca) project publishing step-by-step
 guides for liberating abandoned IoT devices from dead cloud services.
 
-Jekyll, deployed by GitHub Pages on push to `main`. No backend: the only dynamic
-piece is the newsletter form, which POSTs to pcfweb's mailing list
+Jekyll, built and deployed to GitHub Pages by
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) on push to `main`.
+The repo's Pages source is **GitHub Actions**, not Pages' own legacy Jekyll
+build, so nothing reaches the live site unless that workflow uploads an
+artifact and deploys it. No backend: the only dynamic piece is the newsletter
+form, which POSTs to pcfweb's mailing list
 ([DESIGN §6.3](DESIGN-finalized.md#63-pcfweb-mailing-list-integration)).
 
 > **Phase 0:** `/` currently serves a coming-soon teaser by design, and the
@@ -15,8 +19,9 @@ piece is the newsletter form, which POSTs to pcfweb's mailing list
 
 ## Local development
 
-Requires Ruby (see `.ruby-version` — the Ruby GitHub Pages itself builds with)
-and Node 20+.
+Requires Ruby (see `.ruby-version` — the single source of truth, used by both
+workflows and by a local `bundle install`; do not pin a Ruby version anywhere
+else) and Node 20+.
 
 ```bash
 bundle install          # installs the same gem set GitHub Pages runs
@@ -42,8 +47,29 @@ ruby script/check-phase0.rb _site    # built site matches the phase0 flag
 
 CI runs exactly these, plus a check that the committed `assets/tailwind.css` and
 `_data/brand.yml` match `src/input.css`, plus a build of the *opposite* phase so
-the launched site is link-checked continuously too. A stale stylesheet or a
-half-flipped `phase0` fails the build.
+the launched site is link-checked continuously too, plus `actionlint` over the
+workflow files. A stale stylesheet or a half-flipped `phase0` fails the build.
+
+## How it deploys
+
+```
+push to main ──▶ .github/workflows/pages.yml
+                   build job:  jekyll build --strict_front_matter
+                               check-links.rb _site
+                               check-phase0.rb _site      ← pre-deploy gate
+                               verify _site/CNAME
+                               upload-pages-artifact
+                   deploy job: deploy-pages ──▶ liberatedbread.com
+```
+
+The gate runs against the exact `_site` that is about to be uploaded, so a
+half-flipped `phase0` or a broken internal link fails the deploy instead of
+going live. `ci.yml` runs the same build on pull requests — it never deploys.
+
+The workflow takes Ruby from `.ruby-version`, builds with `JEKYLL_ENV=production`,
+and never cancels a deploy in flight (`concurrency.cancel-in-progress: false`).
+Watch a deploy at
+[Actions → Deploy to GitHub Pages](https://github.com/liberatedbread/liberatedbread-web-static/actions/workflows/pages.yml).
 
 ## How the styling works
 
@@ -114,6 +140,9 @@ assets/tailwind.css        Built, minified, committed — served in production
 script/check-links.rb      Offline internal-link checker used by CI
 script/check-phase0.rb     Asserts the built site matches the phase0 flag
 script/sync-brand-data.rb  Regenerates _data/brand.yml from src/input.css
+.github/workflows/
+  ci.yml                   Verification on every PR — never deploys
+  pages.yml                Build + gate + deploy to GitHub Pages, push to main
 CNAME                      liberatedbread.com
 DESIGN-finalized.md        Authoritative design document
 PHASE0.md                  What's live at /, and how to go to Phase 1
