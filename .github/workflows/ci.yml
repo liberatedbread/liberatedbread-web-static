@@ -139,15 +139,16 @@ jobs:
 
       - run: npm ci
 
+      # Tailwind's source list must agree with Jekyll's served pages.
+      - name: Check Tailwind content only scans served paths
+        run: ruby script/check-tailwind-content.rb
+
       # DESIGN §9.5: assets/tailwind.css is committed and served directly — no
       # CDN in production. Rebuilding it here must be a no-op. If this step
       # fails, run `npm run build:css` and commit the result.
       # _data/brand.yml is generated from the same source by the same command,
       # so it is checked here too — a stale one would leave <meta theme-color>
       # pointing at a colour the logo no longer has.
-      - name: Check Tailwind content only scans served paths
-        run: ruby script/check-tailwind-content.rb
-
       - name: Rebuild CSS and fail if it differs from the committed files
         run: |
           npm run build:css
