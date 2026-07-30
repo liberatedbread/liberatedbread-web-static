@@ -138,12 +138,14 @@ layout: base
   {% endif %}
 
   <!-- Protocol reference (DESIGN §4.1) -->
-  {% if page.opengreeniot_spec or page.opengreeniot_docs %}
+  {% assign spec_url = page.protocol_spec | default: page.opengreeniot_spec %}
+  {% assign docs_url = page.protocol_docs | default: page.opengreeniot_docs %}
+  {% if spec_url or docs_url %}
     <div class="border-t border-bread-steel/30 mt-10 pt-4 text-sm text-bread-khaki/70">
       <span>Protocol reference:</span>
-      {% if page.opengreeniot_spec %}<a href="{{ page.opengreeniot_spec }}" target="_blank" rel="noopener">Device spec</a>{% endif %}
-      {% if page.opengreeniot_spec and page.opengreeniot_docs %}<span aria-hidden="true"> · </span>{% endif %}
-      {% if page.opengreeniot_docs %}<a href="{{ page.opengreeniot_docs }}" target="_blank" rel="noopener">Protocol docs</a>{% endif %}
+      {% if spec_url %}<a href="{{ spec_url }}" target="_blank" rel="noopener">Device spec</a>{% endif %}
+      {% if spec_url and docs_url %}<span aria-hidden="true"> · </span>{% endif %}
+      {% if docs_url %}<a href="{{ docs_url }}" target="_blank" rel="noopener">Protocol docs</a>{% endif %}
       <span>— liberatedbread-protocol-specs</span>
     </div>
   {% endif %}

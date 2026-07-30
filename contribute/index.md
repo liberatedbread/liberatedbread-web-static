@@ -48,8 +48,8 @@ video_embed:            # Optional
   platform: youtube     # "youtube" or "peertube"
   id: "VIDEO_ID"
   title: "Walkthrough video title"
-opengreeniot_spec: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/devices/..."
-opengreeniot_docs: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/docs/devices/..."
+protocol_spec: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/devices/..."
+protocol_docs: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/docs/devices/..."
 ---
 ```
 

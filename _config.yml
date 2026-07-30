@@ -139,10 +139,22 @@ kramdown:
   hard_wrap: false
   smart_quotes: ["apos", "apos", "quot", "quot"]
 
+# .well-known/ starts with a dot, so Jekyll skips it by default.
+# security.txt (RFC 9116) must be published at /.well-known/security.txt.
+include:
+  - .well-known
+
 # Never emitted into _site. DESIGN-finalized.md is committed for reference but
 # is not a page; the build toolchain is not web content.
+#
+# device-filter.test.html is a developer tool, not a page. It is excluded for
+# two reasons: a test harness has no business on the public site, and it loads
+# the script under test with a relative `src="device-filter.js"` so it can be
+# opened straight off the filesystem — which script/check-links.rb correctly
+# rejects for anything it finds in _site.
 exclude:
   - .github/
+  - assets/js/device-filter.test.html
   - DESIGN-finalized.md
   - Gemfile
   - Gemfile.lock
