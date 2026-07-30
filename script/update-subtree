@@ -42,6 +42,28 @@
 # is grafted into this repo's history.
 #
 #
+# IT NEVER WRITES TO .git/config
+# -------------------------------
+# The fetch is `git fetch <url> <branch>` against a bare URL. No named remote is
+# added, removed or repointed — not even a temporary one.
+#
+# That is a deliberate choice, not laziness. An earlier version added a
+# `protocol-specs` remote and, if one already existed pointing elsewhere,
+# silently `git remote set-url`'d it. This repo really does carry such a remote
+# aimed at a local development clone, so the default invocation would have
+# destroyed working local wiring, with no warning and no record that it
+# happened. Worse, the set-url ran BEFORE the fetch, so even a fetch that failed
+# left the config mutated.
+#
+# Nothing here needs a named remote anyway: the fetch is consumed via
+# FETCH_HEAD, the split takes a raw sha, and the merge is purely local. So the
+# script leaves .git/config byte-identical whether it succeeds, no-ops, or dies
+# halfway — and `--dry-run` mutates nothing at all beyond adding objects.
+#
+# If a `protocol-specs` remote exists and points somewhere other than --url, the
+# script says so and carries on with --url. It never guesses which one you meant.
+#
+#
 # THE POST-MERGE ASSERTION IS THE POINT
 # --------------------------------------
 # After merging, the script asserts that `HEAD:device-specs` is byte-identical
@@ -66,11 +88,14 @@ set -euo pipefail
 # Defaults. Every one is overridable by flag or environment variable; the flag
 # wins. The URL is the public clone URL — override it with UPDATE_SUBTREE_URL
 # to test against a local clone.
-REMOTE="${UPDATE_SUBTREE_REMOTE:-protocol-specs}"
 URL="${UPDATE_SUBTREE_URL:-git@github.com:liberatedbread/liberatedbread-protocol-specs.git}"
 BRANCH="${UPDATE_SUBTREE_BRANCH:-main}"
 PREFIX="${UPDATE_SUBTREE_PREFIX:-device-specs}"
 UPSTREAM_DIR="${UPDATE_SUBTREE_UPSTREAM_DIR:-device-specs}"
+
+# Read-only. The script does not use, create or modify any named remote; this is
+# only the name it looks for so it can TELL you a differing one is being ignored.
+CONVENTIONAL_REMOTE="protocol-specs"
 
 DRY_RUN=0
 VERIFY=0
@@ -82,18 +107,17 @@ Update the vendored device specs from liberatedbread-protocol-specs.
 Usage:
   script/update-subtree [options]
 
+Fetches straight from --url. No git remote is added, removed or repointed, so
+.git/config is never written to — see the comment at the top of this script.
+
 Options:
-  -n, --dry-run          Show what would change and exit. Fetches upstream
-                         (which only adds objects to .git) but creates no
-                         commit, touches no tracked file, and does not add or
-                         modify the git remote.
+  -n, --dry-run          Show what would change and exit. Fetches upstream,
+                         which only adds objects to .git; creates no commit and
+                         touches no tracked file or config.
       --verify           After a successful update, run the Jekyll build and
                          the internal link check. Without this the commands are
                          printed for you to run.
-      --remote NAME      Git remote name for upstream.
-                         (default: ${REMOTE})
-      --url URL          Upstream clone URL. The remote is created, or pointed
-                         at this, as needed.
+      --url URL          Upstream clone URL to fetch from.
                          (default: ${URL})
       --branch NAME      Upstream branch to take the specs from.
                          (default: ${BRANCH})
@@ -106,7 +130,7 @@ Options:
   -h, --help             Show this help and exit.
 
 Environment variables (flags take precedence):
-  UPDATE_SUBTREE_REMOTE  UPDATE_SUBTREE_URL     UPDATE_SUBTREE_BRANCH
+  UPDATE_SUBTREE_URL     UPDATE_SUBTREE_BRANCH
   UPDATE_SUBTREE_PREFIX  UPDATE_SUBTREE_UPSTREAM_DIR
 
 Examples:
@@ -137,11 +161,6 @@ while [ $# -gt 0 ]; do
       ;;
     -n | --dry-run) DRY_RUN=1 ;;
     --verify) VERIFY=1 ;;
-    --remote)
-      need_value "$1" $#
-      REMOTE="$2"
-      shift
-      ;;
     --url)
       need_value "$1" $#
       URL="$2"
@@ -218,40 +237,34 @@ fi
 echo "Updating $PREFIX/ from $URL ($BRANCH:$UPSTREAM_DIR/)"
 echo
 
-if [ "$DRY_RUN" -eq 1 ]; then
-  # Fetch straight from the URL. This leaves .git/config untouched, so a dry
-  # run cannot surprise anyone by rewriting an existing remote.
-  if git remote get-url "$REMOTE" >/dev/null 2>&1; then
-    existing="$(git remote get-url "$REMOTE")"
-    if [ "$existing" = "$URL" ]; then
-      note "remote '$REMOTE' already points at $URL"
-    else
-      note "would repoint remote '$REMOTE': $existing -> $URL"
-    fi
-  else
-    note "would add remote '$REMOTE' -> $URL"
+# If the conventional remote exists and disagrees with --url, say so and use
+# --url. Read-only: `git remote get-url` never writes. The script does not
+# repoint it (that would destroy local development wiring), does not adopt its
+# URL (that would make the same command fetch different things on different
+# machines, which is exactly the silent-corruption failure mode this script is
+# built to prevent), and does not create it when absent.
+if git remote get-url "$CONVENTIONAL_REMOTE" >/dev/null 2>&1; then
+  existing="$(git remote get-url "$CONVENTIONAL_REMOTE")"
+  if [ "$existing" != "$URL" ]; then
+    note "remote '$CONVENTIONAL_REMOTE' points at $existing"
+    note "  -> left untouched; fetching from $URL instead."
+    note "  -> to use it: --url '$existing'"
   fi
+fi
+
+# Fetch by URL, never through a named remote, so .git/config is not written to
+# on any path — success, no-op, or a fetch that dies halfway.
+if [ "$DRY_RUN" -eq 1 ]; then
   git fetch --no-tags "$URL" "$BRANCH" >/dev/null 2>&1 \
     || die "could not fetch $BRANCH from $URL"
 else
-  if git remote get-url "$REMOTE" >/dev/null 2>&1; then
-    existing="$(git remote get-url "$REMOTE")"
-    if [ "$existing" = "$URL" ]; then
-      note "remote '$REMOTE' already points at $URL"
-    else
-      note "repointing remote '$REMOTE': $existing -> $URL"
-      git remote set-url "$REMOTE" "$URL"
-    fi
-  else
-    note "adding remote '$REMOTE' -> $URL"
-    git remote add "$REMOTE" "$URL"
-  fi
-  git fetch --no-tags "$REMOTE" "$BRANCH" \
-    || die "could not fetch $BRANCH from $REMOTE ($URL)"
+  git fetch --no-tags "$URL" "$BRANCH" \
+    || die "could not fetch $BRANCH from $URL"
 fi
 
-# FETCH_HEAD rather than $REMOTE/$BRANCH: it is set identically by both fetches
-# above and does not depend on the remote having a default fetch refspec.
+# FETCH_HEAD is how a URL fetch reports what it got — there is no
+# remote-tracking ref to read, which is the point: no remote, no config write.
+# Everything downstream keys off this sha, so nothing else needs one either.
 UPSTREAM_SHA="$(git rev-parse FETCH_HEAD)"
 
 git cat-file -e "$UPSTREAM_SHA:$UPSTREAM_DIR" 2>/dev/null \

@@ -189,8 +189,12 @@ script/update-subtree --dry-run   # what would change?
 script/update-subtree --verify    # apply, then build and link-check
 ```
 
-`script/update-subtree --help` lists the flags (upstream remote, URL, branch,
-prefix — all overridable). Do **not** substitute `git subtree pull`: upstream's
+`script/update-subtree --help` lists the flags (upstream URL, branch, prefix and
+upstream directory — all overridable, by flag or `UPDATE_SUBTREE_*` env var). It
+fetches straight from the URL and **never writes to `.git/config`** — no git
+remote is added, removed or repointed, so a `protocol-specs` remote you have
+aimed at a local clone is left exactly as you set it. Do **not** substitute
+`git subtree pull`: upstream's
 branch root is a whole Python project and the specs are one subdirectory of it,
 so pulling the root would dump `docs/`, `scripts/` and `pyproject.toml` into the
 site. The script splits that subdirectory out first — the same operation the
