@@ -11,8 +11,8 @@ firmware: "WeMo_WW_2.00.11426.PVT-OWRT-SNS"
 ha_integration: pywemo
 safety_block: false
 tags: [wemo, belkin, smart-plug, wifi]
-opengreeniot_spec: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/devices/wemo-devices.yaml"
-opengreeniot_docs: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/docs/devices/wemo-devices.md"
+protocol_spec: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/devices/wemo-devices.yaml"
+protocol_docs: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/docs/devices/wemo-devices.md"
 ---
 
 <!--

@@ -14,6 +14,27 @@ metadata bar, the safety block, and the device index all read from it.
 See the [contribution guide]({{ '/contribute/' | relative_url }}) for the review
 checklist, and remember to add a matching entry to `_data/devices.yml`.
 
+## Submission Checklist
+
+Before you open a pull request, make sure:
+
+- [ ] You created a file at `_devices/<slug>.md` with front matter and guide body
+- [ ] You added a matching entry to [`_data/devices.yml`](https://github.com/liberatedbread/liberatedbread-web-static/blob/main/_data/devices.yml) — the card won't render without it
+- [ ] `slug` matches in both files (the filename, the front matter `slug`, and the `devices.yml` entry)
+- [ ] `type` is either `software` or `hardware` (lowercase, no other values)
+- [ ] `difficulty` is 1, 2, or 3
+- [ ] `safety_block: true` is set for:
+  - Every hardware guide (always)
+  - Any software guide where a step involves opening the device or touching the PCB
+- [ ] If you ran every step on the physical device, you set **both** `hardware_verified: true` AND `last_verified` with an actual date. If you didn't, you left both out — an unverified guide is a perfectly good submission
+- [ ] `firmware` names the exact version the guide targets (for software guides). Hardware guides can omit it
+- [ ] The guide has a **Troubleshooting** section with at least 2 realistic failure modes
+- [ ] The guide links to [`liberatedbread-protocol-specs`](https://github.com/liberatedbread/liberatedbread-protocol-specs) for the protocol reference
+- [ ] If the guide ships printable parts, the STL files are uploaded to [`liberatedbread-3d-files`](https://github.com/liberatedbread/liberatedbread-3d-files) with a `SOURCE.txt`
+- [ ] No manufacturer stock photos or proprietary code are included
+- [ ] Any third-party code, configs, or references are credited with a link
+- [ ] The guide builds cleanly: `bundle exec jekyll build --strict_front_matter` passes with no errors
+
 ## Front matter
 
 ```yaml
@@ -46,6 +67,9 @@ safety_block: false
 
 tags: [tag1, tag2]
 
+# Optional — set this to override the default og:image (uses the site logo).
+# og_image: "/assets/devices/your-device-hero.webp"
+
 # Optional — omit the whole block if there is no video.
 video_embed:
   platform: youtube                    # youtube | peertube
@@ -58,8 +82,8 @@ stl_files:
   - filename: "part-name.stl"
     description: "What it is (material, infill)"
 
-opengreeniot_spec: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/devices/<device>.yaml"
-opengreeniot_docs: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/docs/devices/<device>.md"
+protocol_spec: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/devices/<device>.yaml"
+protocol_docs: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/docs/devices/<device>.md"
 ---
 ```
 
@@ -172,3 +196,17 @@ If applicable.
 
 ## Protocol Reference
 ```
+
+## Protocol Specs Repository
+
+Every device guide links to [`liberatedbread-protocol-specs`](https://github.com/liberatedbread/liberatedbread-protocol-specs), our machine-readable protocol documentation. If your device communicates over a protocol we haven't documented yet, you'll need to contribute a spec there too:
+
+1. **Device spec YAML:** A structured description of the device's protocol following the [device-specs schema](https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/schema.json). Add it to `device-specs/devices/<device>.yaml`.
+2. **Protocol docs markdown:** A human-readable explanation of the protocol, commands, and data format. Add it to `docs/devices/<device>.md`.
+3. **Reference both** from your guide's front matter using the `protocol_spec` and `protocol_docs` keys. (Guides written before the rename use `opengreeniot_spec`/`opengreeniot_docs`; `_layouts/device.html` still honours those, but new guides should use the current names.)
+
+If you're not sure how to document a protocol, open a discussion in the protocol-specs repo and we'll help — a partially-documented protocol is better than no documentation at all.
+
+## 3D Files Repository
+
+Hardware guides that include printable parts must upload the STL files to [`liberatedbread-3d-files`](https://github.com/liberatedbread/liberatedbread-3d-files). Each part directory needs a `SOURCE.txt` explaining how the part was designed (CAD tool, version, design choices). The guide then links to the files using the raw download URL.

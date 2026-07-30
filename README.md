@@ -134,6 +134,56 @@ Three rules apply to anything added next to them
    refactor ever moves it into one, because the symptom otherwise is a filter
    that silently stops filtering.
 
+### Testing device-filter.js
+
+`assets/js/device-filter.test.html` is a standalone browser test harness — zero
+dependencies, no build step.
+
+```bash
+# Open in your default browser:
+open assets/js/device-filter.test.html
+
+# Or with a specific hash to test hash-based initialisation:
+open 'assets/js/device-filter.test.html#software'
+open 'assets/js/device-filter.test.html#hardware'
+open 'assets/js/device-filter.test.html#bogus'
+```
+
+The harness creates a mock DOM with five device cards (two software, three
+hardware), a fourth "firmware" radio whose type has no matching cards, and the
+same `<template>` structure the real `/devices/` page ships. It loads
+`device-filter.js`, then runs 60 assertions covering:
+
+- `readHash()` — unknown / empty / known values
+- `apply()` — card visibility toggling, summary text, empty-state message
+- Keyboard — Enter / Space on checked and unchecked radios, scroll prevention
+- Hash persistence — `hashchange` event, back/forward navigation
+- HTML structure — `<template>` cloning, and that the clone lands ahead of the
+  original template element
+- Edge cases — 0-device message, "all" restores every card, non-card elements
+  left untouched, exact match (not substring match)
+
+Results are rendered in green/red directly on the page. No npm, no vitest, no
+Jest — any browser will do.
+
+The harness is listed in `_config.yml`'s `exclude`, so it never ships to the
+public site. That is also why it loads the script under test with a relative
+`src` — the file has to work opened straight off disk, and nothing in `_site`
+is allowed a relative link (`script/check-links.rb` enforces that).
+
+To run it without a browser window — the same way CI would if it ever gated on
+this:
+
+```bash
+google-chrome --headless --disable-gpu --virtual-time-budget=3000 \
+  --dump-dom "file://$PWD/assets/js/device-filter.test.html" \
+  | grep -o '[0-9]* passed, [0-9]* failed'
+# => 60 passed, 0 failed
+```
+
+`--dump-dom` emits the whole document on one line, so count with `grep -o`
+rather than `grep -c`.
+
 ## Adding a device guide
 
 1. Copy the template at [`contribute/device-template.md`](contribute/device-template.md)

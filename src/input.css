@@ -7,6 +7,10 @@
 @source "../disclaimer.md";
 @source "../rss.md";
 @source "../thanks.md";
+@source "../404.md";
+@source "../faq.md";
+@source "../privacy.md";
+@source "../security.md";
 @source "../*.html";
 @source "../_layouts/**/*.html";
 @source "../_includes/**/*.html";

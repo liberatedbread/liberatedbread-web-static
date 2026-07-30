@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>device-filter.js — Test Harness</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    max-width: 860px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    line-height: 1.6;
+    color: #1a1a1a;
+    background: #fff;
+  }
+  h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+  .subtitle { color: #666; margin-bottom: 1.5rem; font-size: 0.875rem; }
+  #results { margin-top: 1.5rem; }
+  .result-line {
+    padding: 0.25rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.875rem;
+    word-break: break-word;
+  }
+  .result-line.PASS { color: #15803d; }
+  .result-line.PASS::before { content: "✓ "; }
+  .result-line.FAIL { color: #b91c1c; background: #fef2f2; }
+  .result-line.FAIL::before { content: "✗ "; }
+  .summary-box {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  .summary-box.all-pass { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
+  .summary-box.has-fail { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+
+  /* The real [data-lb-hidden] rule from src/input.css — copied here so the
+     test harness hides cards exactly as the production site does. */
+  [data-lb-hidden] { display: none !important; }
+
+  /* Minimal test-fixture styling so cards are distinguishable */
+  [data-lb-device-grid] { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+  [data-device-type] {
+    padding: 0.75rem 1rem;
+    border: 1px solid #d4d4d4;
+    border-radius: 4px;
+    min-width: 140px;
+  }
+  [data-device-type="software"] { border-left: 3px solid #2563eb; }
+  [data-device-type="hardware"] { border-left: 3px solid #dc2626; }
+</style>
+</head>
+<body>
+
+<h1>device-filter.js — Test Harness</h1>
+<p class="subtitle">
+  Tests run automatically. Open this page with <code>#software</code>,
+  <code>#hardware</code>, or <code>#bogus</code> to test hash-based
+  initialisation separately.
+</p>
+
+<!-- ================================================================
+     TEST FIXTURE
+     Mirrors the real /devices/ page structure that device-filter.js
+     expects: a grid with [data-device-type] cards, a <template> with
+     radio inputs + summary + announce + empty elements.
+     ================================================================ -->
+<div data-lb-device-grid id="test-grid">
+  <p class="grid-heading">Device Cards (non-card child — should never get hidden)</p>
+  <div data-device-type="software">Software Card A</div>
+  <div data-device-type="software">Software Card B</div>
+  <div data-device-type="hardware">Hardware Card C</div>
+  <div data-device-type="hardware">Hardware Card D</div>
+  <div data-device-type="hardware">Hardware Card E</div>
+</div>
+
+<template id="lb-device-filter-template">
+  <div class="lb-filter">
+    <fieldset id="filter-group">
+      <legend>Filter by liberation type</legend>
+      <span>
+        <input class="lb-filter__input" type="radio" name="lb-device-type"
+               id="lb-filter-all" value="all" data-label="All devices" checked>
+        <label for="lb-filter-all">All</label>
+      </span>
+      <span>
+        <input class="lb-filter__input" type="radio" name="lb-device-type"
+               id="lb-filter-software" value="software" data-label="Software">
+        <label for="lb-filter-software">Software</label>
+      </span>
+      <span>
+        <input class="lb-filter__input" type="radio" name="lb-device-type"
+               id="lb-filter-hardware" value="hardware" data-label="Hardware">
+        <label for="lb-filter-hardware">Hardware</label>
+      </span>
+      <span>
+        <input class="lb-filter__input" type="radio" name="lb-device-type"
+               id="lb-filter-firmware" value="firmware" data-label="Firmware">
+        <label for="lb-filter-firmware">Firmware</label>
+      </span>
+    </fieldset>
+    <p data-lb-filter-summary></p>
+    <p data-lb-filter-announce role="status">&nbsp;</p>
+    <p data-lb-filter-empty data-lb-hidden></p>
+  </div>
+</template>
+
+<!-- ================================================================
+     LOAD THE MODULE UNDER TEST
+     The IIFE runs synchronously when this script loads. The DOM
+     fixture above is already parsed, so getElementById / querySelector
+     will find everything.
+     ================================================================ -->
+<script src="device-filter.js"></script>
+
+<!-- ================================================================
+     RESULTS
+     Every assertion appends one line here. The runner below bails on
+     the first assert if this element is missing, so it renders nothing
+     rather than a partial pass count — keep it above the runner.
+     ================================================================ -->
+<div id="results"></div>
+
+<!-- ================================================================
+     TEST RUNNER
+     ================================================================ -->
+<script>
+(function () {
+  "use strict";
+
+  var passed = 0;
+  var failed = 0;
+  var resultsEl = document.getElementById("results");
+
+  function log(status, msg) {
+    var div = document.createElement("div");
+    div.className = "result-line " + status;
+    div.textContent = msg;
+    resultsEl.appendChild(div);
+  }
+
+  function assert(cond, msg) {
+    if (cond) { passed++; log("PASS", msg); }
+    else      { failed++; log("FAIL", msg); }
+  }
+
+  function assertEqual(actual, expected, msg) {
+    var ok = actual === expected;
+    if (ok) { passed++; log("PASS", msg); }
+    else {
+      failed++;
+      log("FAIL", msg + " — expected " + JSON.stringify(expected) + ", got " + JSON.stringify(actual));
+    }
+  }
+
+  // Helpers
+  function visibleCards() {
+    return document.querySelectorAll('[data-lb-device-grid] [data-device-type]:not([data-lb-hidden])');
+  }
+  function hiddenCards() {
+    return document.querySelectorAll('[data-lb-device-grid] [data-device-type][data-lb-hidden]');
+  }
+
+  // The IIFE has already run. Give the browser a microtask tick so any
+  // queued work (though the IIFE is synchronous) settles before we assert.
+  setTimeout(function () {
+
+    /* ==============================================================
+       HTML STRUCTURE & TEMPLATE CLONING
+       ============================================================== */
+    (function () {
+      var tpl = document.getElementById("lb-device-filter-template");
+      var fieldset = document.getElementById("filter-group");
+
+      assert(fieldset !== null, "Template cloned: #filter-group exists in live DOM");
+      assert(tpl !== null, "Original <template> still present after cloning");
+      // insertBefore(fragment, tpl) puts the clone ahead of the template, so
+      // from tpl's point of view the fieldset PRECEDES it. Asserting
+      // FOLLOWING here tested the opposite of the documented behaviour.
+      assert(
+        tpl.compareDocumentPosition(fieldset) & Node.DOCUMENT_POSITION_PRECEDING,
+        "Cloned fragment inserted before original <template>"
+      );
+    })();
+
+    /* ==============================================================
+       INITIAL STATE — no hash → "all" selected
+       readHash() with empty hash returns "all"
+       ============================================================== */
+    (function () {
+      var allRadio      = document.querySelector('.lb-filter__input[value="all"]');
+      var softwareRadio = document.querySelector('.lb-filter__input[value="software"]');
+      var hardwareRadio = document.querySelector('.lb-filter__input[value="hardware"]');
+      var announce      = document.querySelector("[data-lb-filter-announce]");
+      var empty         = document.querySelector("[data-lb-filter-empty]");
+      var summary       = document.querySelector("[data-lb-filter-summary]");
+
+      assert(allRadio !== null, "Initial: all radio element exists");
+      assert(allRadio.checked, "Initial: 'all' radio is checked");
+      assert(!softwareRadio.checked, "Initial: 'software' radio is NOT checked");
+      assert(!hardwareRadio.checked, "Initial: 'hardware' radio is NOT checked");
+
+      assertEqual(visibleCards().length, 5, "Initial: all 5 cards visible");
+      assertEqual(hiddenCards().length, 0, "Initial: zero cards hidden");
+
+      assert(
+        summary.textContent.indexOf("Showing all 5 devices") === 0,
+        "Initial: summary says 'Showing all 5 devices.' — actual: '" + summary.textContent + "'"
+      );
+
+      // Page-load restore is silent — announce region should NOT be updated.
+      assert(
+        announce.textContent === "\u00a0" || announce.textContent.trim() === "",
+        "Initial: announce region NOT updated (silent page-load restore)"
+      );
+
+      assert(
+        empty.hasAttribute("data-lb-hidden"),
+        "Initial: empty-state element is hidden"
+      );
+    })();
+
+    /* ==============================================================
+       apply() — SOFTWARE FILTER
+       ============================================================== */
+    (function () {
+      var allRadio      = document.querySelector('.lb-filter__input[value="all"]');
+      var softwareRadio = document.querySelector('.lb-filter__input[value="software"]');
+      var summary       = document.querySelector("[data-lb-filter-summary]");
+      var announce      = document.querySelector("[data-lb-filter-announce]");
+
+      softwareRadio.checked = true;
+      softwareRadio.dispatchEvent(new Event("change", { bubbles: true }));
+
+      assert(softwareRadio.checked, "Software: software radio is checked");
+      assert(!allRadio.checked, "Software: all radio is NOT checked");
+      assertEqual(visibleCards().length, 2, "Software: 2 cards visible");
+      assertEqual(hiddenCards().length, 3, "Software: 3 cards hidden");
+
+      visibleCards().forEach(function (card) {
+        assertEqual(
+          card.getAttribute("data-device-type"), "software",
+          "Software: visible card is software — " + card.textContent.trim()
+        );
+      });
+
+      assert(
+        summary.textContent.indexOf("Showing 2 of 5 devices: software") === 0,
+        "Software: summary correct — actual: '" + summary.textContent + "'"
+      );
+
+      // User-initiated change → announce region updated.
+      assert(
+        announce.textContent.indexOf("Showing 2 of 5 devices") === 0,
+        "Software: announce region updated for user change"
+      );
+    })();
+
+    /* ==============================================================
+       apply() — HARDWARE FILTER
+       ============================================================== */
+    (function () {
+      var hardwareRadio = document.querySelector('.lb-filter__input[value="hardware"]');
+      var summary       = document.querySelector("[data-lb-filter-summary]");
+
+      hardwareRadio.checked = true;
+      hardwareRadio.dispatchEvent(new Event("change", { bubbles: true }));
+
+      assertEqual(visibleCards().length, 3, "Hardware: 3 cards visible");
+      assertEqual(hiddenCards().length, 2, "Hardware: 2 cards hidden");
+
+      visibleCards().forEach(function (card) {
+        assertEqual(
+          card.getAttribute("data-device-type"), "hardware",
+          "Hardware: visible card is hardware — " + card.textContent.trim()
+        );
+      });
+
+      assert(
+        summary.textContent.indexOf("Showing 3 of 5 devices: hardware") === 0,
+        "Hardware: summary correct — actual: '" + summary.textContent + "'"
+      );
+    })();
+
+    /* ==============================================================
+       apply() — ALL FILTER RESTORES EVERYTHING
+       ============================================================== */
+    (function () {
+      var allRadio = document.querySelector('.lb-filter__input[value="all"]');
+      var summary  = document.querySelector("[data-lb-filter-summary]");
+      var empty    = document.querySelector("[data-lb-filter-empty]");
+
+      allRadio.checked = true;
+      allRadio.dispatchEvent(new Event("change", { bubbles: true }));
+
+      assertEqual(visibleCards().length, 5, "All: all 5 cards visible again");
+      assertEqual(hiddenCards().length, 0, "All: zero cards hidden");
+      assert(
+        summary.textContent.indexOf("Showing all 5 devices") === 0,
+        "All: summary restored"
+      );
+      assert(
+        empty.hasAttribute("data-lb-hidden"),
+        "All: empty-state element hidden again"
+      );
+    })();
+
+    /* ==============================================================
+       EMPTY STATE — "firmware" filter (no matching cards)
+       This tests the "0 devices" message path.
+       ============================================================== */
+    (function () {
+      var firmwareRadio = document.querySelector('.lb-filter__input[value="firmware"]');
+      var summary       = document.querySelector("[data-lb-filter-summary]");
+      var empty         = document.querySelector("[data-lb-filter-empty]");
+      var announce      = document.querySelector("[data-lb-filter-announce]");
+
+      firmwareRadio.checked = true;
+      firmwareRadio.dispatchEvent(new Event("change", { bubbles: true }));
+
+      assertEqual(visibleCards().length, 0, "Firmware: 0 cards visible");
+      assertEqual(hiddenCards().length, 5, "Firmware: all 5 cards hidden");
+
+      assertEqual(
+        summary.textContent, "No devices match Firmware.",
+        "Firmware: summary says 'No devices match Firmware.'"
+      );
+
+      assert(
+        !empty.hasAttribute("data-lb-hidden"),
+        "Firmware: empty-state element is visible (data-lb-hidden removed)"
+      );
+      assert(
+        empty.textContent.indexOf("No devices match") === 0,
+        "Firmware: empty-state element has correct message"
+      );
+
+      // Announce updated for user change.
+      assert(
+        announce.textContent.indexOf("No devices match") === 0,
+        "Firmware: announce region updated for user change"
+      );
+
+      // Restore "all" and verify empty goes back to hidden.
+      var allRadio = document.querySelector('.lb-filter__input[value="all"]');
+      allRadio.checked = true;
+      allRadio.dispatchEvent(new Event("change", { bubbles: true }));
+      assert(
+        empty.hasAttribute("data-lb-hidden"),
+        "Firmware→All: empty-state element hidden after restoring 'all'"
+      );
+    })();
+
+    /* ==============================================================
+       KEYBOARD — Enter on unchecked radio checks it
+       ============================================================== */
+    (function () {
+      var allRadio      = document.querySelector('.lb-filter__input[value="all"]');
+      var softwareRadio = document.querySelector('.lb-filter__input[value="software"]');
+
+      // Reset to "all".
+      allRadio.checked = true;
+      allRadio.dispatchEvent(new Event("change", { bubbles: true }));
+
+      var enterEvent = new KeyboardEvent("keydown", {
+        key: "Enter", bubbles: true, cancelable: true
+      });
+      softwareRadio.dispatchEvent(enterEvent);
+
+      assert(softwareRadio.checked, "Enter on unchecked: software radio becomes checked");
+      assertEqual(visibleCards().length, 2, "Enter on unchecked: filter applied (2 cards visible)");
+    })();
+
+    /* ==============================================================
+       KEYBOARD — Enter on already-checked radio is a no-op
+       ============================================================== */
+    (function () {
+      var softwareRadio = document.querySelector('.lb-filter__input[value="software"]');
+      var before = visibleCards().length;
+
+      // softwareRadio is already checked from the previous test.
+      var enterEvent = new KeyboardEvent("keydown", {
+        key: "Enter", bubbles: true, cancelable: true
+      });
+      softwareRadio.dispatchEvent(enterEvent);
+
+      assert(softwareRadio.checked, "Enter on checked: stays checked");
+      assertEqual(visibleCards().length, before,
+        "Enter on checked: card visibility unchanged (no double-apply)");
+    })();
+
+    /* ==============================================================
+       KEYBOARD — Space on unchecked radio checks it AND prevents default
+       ============================================================== */
+    (function () {
+      var allRadio      = document.querySelector('.lb-filter__input[value="all"]');
+      var hardwareRadio = document.querySelector('.lb-filter__input[value="hardware"]');
+
+      // Reset to "all".
+      allRadio.checked = true;
+      allRadio.dispatchEvent(new Event("change", { bubbles: true }));
+
+      var spaceEvent = new KeyboardEvent("keydown", {
+        key: " ", bubbles: true, cancelable: true
+      });
+      hardwareRadio.dispatchEvent(spaceEvent);
+
+      assert(spaceEvent.defaultPrevented, "Space: preventDefault was called (defaultPrevented is true)");
+      assert(hardwareRadio.checked, "Space on unchecked: hardware radio becomes checked");
+      assertEqual(visibleCards().length, 3, "Space on unchecked: filter applied (3 cards visible)");
+    })();
+
+    /* ==============================================================
+       KEYBOARD — Space on already-checked radio still prevents default
+       (scroll prevention), but does NOT re-apply the filter.
+       ============================================================== */
+    (function () {
+      var hardwareRadio = document.querySelector('.lb-filter__input[value="hardware"]');
+      var before = visibleCards().length;
+
+      var spaceEvent = new KeyboardEvent("keydown", {
+        key: " ", bubbles: true, cancelable: true
+      });
+      hardwareRadio.dispatchEvent(spaceEvent);
+
+      assert(spaceEvent.defaultPrevented, "Space on checked: defaultPrevented is still true");
+      assertEqual(visibleCards().length, before,
+        "Space on checked: card visibility unchanged");
+    })();
+
+    /* ==============================================================
+       HASH PERSISTENCE — hashchange event triggers activateFilter
+       ============================================================== */
+    (function () {
+      var allRadio      = document.querySelector('.lb-filter__input[value="all"]');
+      var softwareRadio = document.querySelector('.lb-filter__input[value="software"]');
+      var hardwareRadio = document.querySelector('.lb-filter__input[value="hardware"]');
+
+      // #software
+      window.location.hash = "#software";
+      window.dispatchEvent(new Event("hashchange"));
+
+      assert(softwareRadio.checked, "hashchange→#software: software radio checked");
+      assertEqual(visibleCards().length, 2, "hashchange→#software: 2 cards visible");
+
+      // #hardware
+      window.location.hash = "#hardware";
+      window.dispatchEvent(new Event("hashchange"));
+
+      assert(hardwareRadio.checked, "hashchange→#hardware: hardware radio checked");
+      assertEqual(visibleCards().length, 3, "hashchange→#hardware: 3 cards visible");
+
+      // #bogus — unknown hash → fallback to "all"
+      window.location.hash = "#bogus";
+      window.dispatchEvent(new Event("hashchange"));
+
+      assert(allRadio.checked, "hashchange→#bogus: falls back to 'all'");
+      assertEqual(visibleCards().length, 5,
+        "hashchange→#bogus: all 5 cards visible (unknown hash → fallback)");
+      assertEqual(hiddenCards().length, 0,
+        "hashchange→#bogus: no cards hidden");
+
+      // empty hash
+      window.location.hash = "";
+      window.dispatchEvent(new Event("hashchange"));
+
+      assert(allRadio.checked, "hashchange→empty: falls back to 'all'");
+      assertEqual(visibleCards().length, 5,
+        "hashchange→empty: all 5 cards visible");
+    })();
+
+    /* ==============================================================
+       WRITE-HASH — changing a filter updates location.hash
+       ============================================================== */
+    (function () {
+      var softwareRadio = document.querySelector('.lb-filter__input[value="software"]');
+      var allRadio      = document.querySelector('.lb-filter__input[value="all"]');
+
+      // Software
+      softwareRadio.checked = true;
+      softwareRadio.dispatchEvent(new Event("change", { bubbles: true }));
+
+      assert(
+        window.location.hash === "#software" ||
+        window.location.href.indexOf("#software") !== -1,
+        "writeHash: location.hash is '#software' after selecting Software"
+      );
+
+      // All — hash should be cleared (empty string or just '#')
+      allRadio.checked = true;
+      allRadio.dispatchEvent(new Event("change", { bubbles: true }));
+
+      assert(
+        window.location.hash === "" || window.location.hash === "#",
+        "writeHash: hash cleared after selecting 'All'"
+      );
+    })();
+
+    /* ==============================================================
+       EDGE CASE — Non-card elements in the grid are untouched
+       ============================================================== */
+    (function () {
+      var grid  = document.querySelector("[data-lb-device-grid]");
+      var children = grid.children;
+
+      for (var i = 0; i < children.length; i++) {
+        var child = children[i];
+        if (!child.hasAttribute("data-device-type")) {
+          assert(
+            !child.hasAttribute("data-lb-hidden"),
+            "Non-card child untouched: no data-lb-hidden on element without data-device-type"
+          );
+        }
+      }
+    })();
+
+    /* ==============================================================
+       EDGE CASE — data-device-type filter is attribute-based
+       Only cards whose data-device-type exactly matches the radio
+       value are shown.  Partial matches do not count.
+       ============================================================== */
+    (function () {
+      var softwareRadio = document.querySelector('.lb-filter__input[value="software"]');
+      var hardwareRadio = document.querySelector('.lb-filter__input[value="hardware"]');
+
+      // Software filter
+      softwareRadio.checked = true;
+      softwareRadio.dispatchEvent(new Event("change", { bubbles: true }));
+      assertEqual(visibleCards().length, 2,
+        "Exact match: 'software' matches only software cards, not hardware");
+
+      // Hardware filter
+      hardwareRadio.checked = true;
+      hardwareRadio.dispatchEvent(new Event("change", { bubbles: true }));
+      assertEqual(visibleCards().length, 3,
+        "Exact match: 'hardware' matches only hardware cards, not software");
+    })();
+
+    /* ==============================================================
+       RESULTS SUMMARY
+       ============================================================== */
+    (function () {
+      var total = passed + failed;
+      var box   = document.createElement("div");
+      box.className = "summary-box " + (failed === 0 ? "all-pass" : "has-fail");
+
+      var lines = [];
+      lines.push("<strong>" + passed + " passed, " + failed + " failed — " + total + " total</strong>");
+      if (failed === 0) {
+        lines.push("✅ All tests passed.");
+      } else {
+        lines.push("❌ " + failed + " test(s) failed — scroll up for details.");
+      }
+      lines.push("<br><small>Tip: open this page with <code>#software</code>, <code>#hardware</code>, or <code>#bogus</code> in the URL to test hash-based initialisation.</small>");
+
+      box.innerHTML = lines.join("<br>");
+      resultsEl.appendChild(box);
+    })();
+
+  }, 50); /* 50ms delay — the IIFE is synchronous, this just yields to the
+              event loop so the browser finishes any pending layout work
+              before our assertions read the DOM. */
+
+})();
+</script>
+
+</body>
+</html>
