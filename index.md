@@ -5,6 +5,6 @@
 layout: home
 
 title: Liberated Bread
-description: Reclaim your household hardware. Step-by-step guides for liberating abandoned IoT devices from dead cloud services. Coming soon.
+description: Reclaim your household hardware. Step-by-step guides for liberating abandoned IoT devices from dead cloud services.
 permalink: /
 ---

@@ -1,35 +1,77 @@
 ---
 layout: default
-title: Home Assistant Plugins
-description: YAML configs and scripts for integrating liberated devices with Home Assistant.
+title: Home Assistant Integration
+description: Liberated Bread custom integration for Home Assistant — local control of liberated IoT devices via BLE, WiFi, and serial.
 permalink: /ha-plugins/
 ---
 
-YAML configurations and override scripts for liberated devices. Copy these into your Home Assistant setup.
+The **Liberated Bread Home Assistant integration** (`liberated_bread`) connects liberated IoT devices to Home Assistant — fully local, no cloud dependencies. It reads machine-readable [protocol specs](/device-specs/) from the `liberatedbread-protocol-specs` repository and auto-discovers supported devices on your network.
 
-## WeMo Local Control
+## What It Does
 
-Drop this into your `configuration.yaml` to keep WeMo switches working without Belkin's cloud:
+- **Auto-discovers** BLE, WiFi (SSDP/mDNS), and serial devices that match a known protocol spec
+- **Creates Home Assistant entities** — sensors, switches, lights, climate, fans, numbers, selects — mapped from each spec's capabilities
+- **Runs entirely local** — no cloud calls, no telemetry, no internet required after setup
+- **Protocol-driven** — device support is defined in YAML specs, not hardcoded Python. Adding a device = adding its spec YAML
 
-```yaml
-# Home Assistant configuration.yaml
-wemo:
-  discovery: true
-  static:
-    - 192.168.1.50   # Replace with your WeMo's IP
+## Supported Transport Layers
 
-# Block cloud access at the router level (firewall rule),
-# NOT in Home Assistant — see the device guide for details.
+| Transport | Discovery | Examples |
+|-----------|-----------|---------|
+| **BLE** | Bluetooth advertisement scan | Ember Mug, SwitchBot, Govee sensors, LED strips, heated gear |
+| **WiFi** | SSDP + mDNS | WeMo switches, Frigidaire AC, Vector Robot, Roku |
+| **Serial / UART / CAN** | Manual config entry | Bafang BBS02, Fardriver, TSDZ2, Bosch eBike, BMW/Triumph motorcycle |
+
+## Entity Types
+
+The integration maps protocol-spec capabilities to these Home Assistant platforms:
+
+`sensor` · `binary_sensor` · `switch` · `light` · `climate` · `fan` · `number` · `select`
+
+## Installation
+
+### HACS (recommended)
+
+1. Add `https://github.com/liberatedbread/ha-plugins` as a custom repository in HACS
+2. Install "Liberated Bread" from the HACS integrations list
+3. Restart Home Assistant
+
+### Manual
+
+```bash
+cd /path/to/homeassistant/config/custom_components
+git clone https://github.com/liberatedbread/ha-plugins.git liberated_bread_tmp
+mv liberated_bread_tmp/custom_components/liberated_bread .
+rm -rf liberated_bread_tmp
 ```
 
-## Coming Soon
+Then restart Home Assistant.
 
-- **Eufy Cam RTSP Config** — Stream directly to Frigate without the Eufy cloud
-- **TP-Link Kasa Local** — Bypass the Kasa app entirely
-- **Wyze Cam v3 RTSP** — Enable the hidden RTSP firmware
+### Requirements
+
+- Home Assistant **2026.2** or later
+- For BLE devices: a supported Bluetooth adapter with the `bluetooth` integration enabled
+- For WiFi devices: devices must be on the same local network as Home Assistant
+
+## Device Coverage
+
+The integration ships with **58 device protocol specs** (as a git subtree from `liberatedbread-protocol-specs`), covering:
+
+- **Smart plugs & switches**: WeMo, Govee
+- **Lighting**: LED strips, bulbs, panels, signs, masks, motorcycle LEDs
+- **Climate**: Frigidaire AC, Gerbing ThermoGauge, Hotwired heated gear
+- **Kitchen**: Ember Mug, Chef IQ, iBBQ meat thermometer, smart scales
+- **E-bikes & vehicles**: Bafang, Tongsheng, Bosch, Fardriver, NIU scooter, BMW/Triumph diagnostics
+- **Sensors**: Xiaomi thermometers/hygrometers/plant sensors, Govee thermo, SwitchBot, iTag tracker, pulse oximeter
+- **Printers & displays**: Cat printer, Niimbot, Fichero, Divoom Pixoo, iDotMatrix, Magic Display
+- **Hubs & bridges**: Hue, SmartThings, Rachio, Enphase, Dyson, Lutron
+
+[Browse all device specs →](/device-specs/)
+
+## Adding Support for New Devices
+
+New devices are supported by adding a protocol spec YAML. See the [contribution guide](/contribute/) and the [protocol-specs README](https://github.com/liberatedbread/liberatedbread-protocol-specs).
 
 ---
 
-*These configs are written against Home Assistant 2026.7 from its integration documentation;
-they have not been run on a live install. File an issue if one doesn't work with your setup —
-or if it does, so we can say so.*
+> **⚠️ Pre-release status:** This integration is under active development. Device specs, discovery, and control paths are validated against decompiled APKs and protocol documentation but have **not been tested against physical hardware** for most devices. Do not deploy to production without testing your specific device first. [Report issues →](https://github.com/liberatedbread/ha-plugins/issues)

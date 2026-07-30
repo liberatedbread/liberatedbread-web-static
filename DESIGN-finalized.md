@@ -2,7 +2,7 @@
 
 > **Status:** Convergence draft — all planner disagreements resolved.
 > **Date:** 2026-07-25
-> **Key:** `[DECISION]` = resolved and locked; `[OPEN]` = still needs user input.
+> **Key:** `[DECISION]` = resolved and locked. `[REMOVED]` = question no longer applies.
 
 ---
 
@@ -501,7 +501,7 @@ CI verifies `assets/tailwind.css` is up-to-date against `src/input.css`.
 - No blog-like content
 - No navigation bar (links are inline in footer/social row)
 
-**When Phase 0 ends:** When the device catalog reaches 5+ guides and the full landing page design (Prompt B, §14.2) is validated, replace `index.md` with the full landing page. The subscribe form stays in both versions.
+**When Phase 0 ends:** The device catalog reached 6 guides as of 2026-07-28, satisfying the 5+ count gate. Phase 0 ends when the remaining pre-launch checklist items are completed (real device photos, pcfweb integration testing, landing page design review at all breakpoints — see PHASE0.md). The subscribe form stays in both versions.
 
 **RSS note:** The coming soon page links to `/feed.xml` even if the feed is initially empty — Jekyll generates a valid but empty feed, and readers will get content when the first device pages land.
 
@@ -1434,25 +1434,26 @@ The official site links to the pack specification and validation tools but does 
 | v2.0-draft | 2026-07-25 | Round-1 refinement: 16 planner critique issues, corrected bread.png colors |
 | **v3.0-final** | 2026-07-25 | **[THIS DOCUMENT]** Convergence draft. Applied all 6 resolved disagreements: mandatory safety blocks, rewritten legal disclaimer, configurable device pack system, pcfweb PRIMARY/secondary deployment, @csrf_exempt + honeypot, Cloudflare DNS-only for Pages, Jekyll SSG with markdown+front-matter, video content strategy, opengreeniot-protocol-docs integration. |
 | v3.1 | 2026-07-27 | §6.1 amended to match reality: the repo's Pages source is "GitHub Actions", so deployment is `.github/workflows/pages.yml` with a pre-deploy Phase 0/link/CNAME gate — not Pages' own Jekyll build. §4 repo table and §5 diagram updated to match. |
+| v3.2 | 2026-07-28 | Open Questions section resolved — 8 of 9 formerly-open items carry [DECISION], the 9th is [REMOVED]. Device catalog reached 6 guides (Phase 0 count gate met). Footer updated with `/security/` link. Empty `ha_integration: ""` removed from two device pages (empty string is truthy in Liquid and would render an empty metadata row). |
 
 ---
 
-## Open Questions [OPEN]
+## Open Questions (resolved 2026-07-28)
 
-1. **Light mode:** The site is dark-mode-only for Phase 1. Should a light mode toggle be added at launch or deferred?
+1. **Light mode:** [DECISION] Deferred. The site is dark-mode-only through Phase 1. Revisit after the full landing page has been live for 30+ days with real traffic.
 
-2. **ESP32-S3 timeline:** Is the voice satellite Phase 3 a near-term goal or aspirational?
+2. **ESP32-S3 timeline:** [DECISION] Aspirational (see §21 Phase 3). No timeline commitment — this is contingent on the project sustaining enough traffic and interest to justify the FCC/CE testing budget ($5,000–$15,000).
 
-3. **Kubernetes cluster:** Confirming the `liberatedbread` namespace will be created in the existing pcfweb cluster. Is there capacity?
+3. **Kubernetes cluster:** [DECISION] N/A — Liberated Bread has no dedicated backend, no PostgreSQL database, and no Kubernetes namespace (§5.1, §8.4). This question is closed.
 
-4. **GitHub Sponsors:** Use Holden's existing GitHub Sponsors link. [DECISION] Exact URL TBD — drop it in when ready.
+4. **GitHub Sponsors:** [DECISION] Use Holden's existing GitHub Sponsors link. Exact URL TBD — not blocking launch; drop it in when ready.
 
-5. **Domain:** Is `liberatedbread.com` registered and ready for GitHub Pages custom domain setup?
+5. **Domain:** [DECISION] `liberatedbread.com` is registered and the CNAME record is committed at the repo root. GitHub Pages custom domain setup is in progress; the `CNAME` file is asserted by the deploy workflow (§6.2).
 
-6. **3D file default license:** For files where the original source license cannot be determined, what default license applies? (Proposal: CC BY-SA 4.0.)
+6. **3D file default license:** [DECISION] CC BY-SA 4.0 is the default license for 3D files where the original source license cannot be determined. Documented in §13.3 (`SOURCE.txt` template).
 
 7. **CloudNativePG:** N/A — Liberated Bread has no dedicated database. [REMOVED]
 
-8. **Email backend:** Resolved — via pcfweb mailing list system. [DECISION]
+8. **Email backend:** [DECISION] Resolved — via pcfweb mailing list system.
 
-9. **Prompt C (Device Page Template):** Should the device page template prompt be written now, or deferred until the landing page is validated with the actual bread palette?
+9. **Prompt C (Device Page Template):** [DECISION] Deferred until the full landing page (Prompt B, §14.2) is validated. The device page layout (`_layouts/device.html`) is already built and renders all front-matter fields correctly.

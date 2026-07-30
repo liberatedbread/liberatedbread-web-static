@@ -97,8 +97,8 @@ bundle exec jekyll serve
 
 ## Pre-launch checklist
 
-- [ ] `_data/devices.yml` has **5 or more** devices, each with a real guide in
-      `_devices/` (DESIGN §9.6 gates launch on this; it currently has 2)
+- [x] `_data/devices.yml` has **5 or more** devices, each with a real guide in
+      `_devices/` (DESIGN §9.6 gates launch on this; it currently has 6)
 - [ ] Real device photos have replaced the generated placeholders in
       `assets/devices/` — see the note at the top of `_data/devices.yml`
 - [ ] The subscribe form has been tested end-to-end against pcfweb: the

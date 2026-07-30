@@ -134,6 +134,38 @@ Three rules apply to anything added next to them
    refactor ever moves it into one, because the symptom otherwise is a filter
    that silently stops filtering.
 
+### Testing device-filter.js
+
+`assets/js/device-filter.test.html` is a standalone browser test harness — zero
+dependencies, no build step.
+
+```bash
+# Open in your default browser:
+open assets/js/device-filter.test.html
+
+# Or with a specific hash to test hash-based initialisation:
+open 'assets/js/device-filter.test.html#software'
+open 'assets/js/device-filter.test.html#hardware'
+open 'assets/js/device-filter.test.html#bogus'
+```
+
+The harness creates a mock DOM with five device cards (two software, three
+hardware), a fourth "firmware" radio whose type has no matching cards, and the
+same `<template>` structure the real `/devices/` page ships. It loads
+`device-filter.js`, then runs 30+ assertions covering:
+
+- `readHash()` — unknown / empty / known values
+- `apply()` — card visibility toggling, summary text, empty-state message
+- Keyboard — Enter / Space on checked and unchecked radios, scroll prevention
+- Hash persistence — `hashchange` event, back/forward navigation
+- HTML structure — `<template>` cloning, graceful bail-out when `.content` is
+  missing
+- Edge cases — 0-device message, "all" restores every card, non-card elements
+  left untouched, exact match (not substring match)
+
+Results are rendered in green/red directly on the page. No npm, no vitest, no
+Jest — any browser will do.
+
 ## Adding a device guide
 
 1. Copy the template at [`contribute/device-template.md`](contribute/device-template.md)

@@ -17,10 +17,29 @@
  * So visibility is driven by one attribute, `data-lb-hidden`, backed by a single
  * hand-written rule in src/input.css that cannot be tree-shaken away.
  *
- * Accessibility: the controls are a native radio group, so selection semantics,
- * arrow-key roving focus and the single group tab stop come from the platform.
- * Focus never moves out from under the user — the radio they operated keeps it —
- * and the change in the visible set is announced through a polite live region.
+ * URL HASH PERSISTENCE
+ * --------------------
+ * The selected filter is reflected in the URL hash: /devices/#software,
+ * /devices/#hardware, /devices/#all. On page load, the hash is read and the
+ * matching filter is activated. Back/forward navigation restores the
+ * corresponding filter state. Changing the filter updates the hash via
+ * `history.replaceState` — no new history entries are pushed, so the back
+ * button leaves the /devices/ page rather than stepping through filters.
+ *
+ * KEYBOARD ACCESSIBILITY
+ * ----------------------
+ * The filter controls are native radio buttons, so arrow-key roving and a
+ * single tab stop come free from the platform. This script adds Enter/Space
+ * support for toggling the currently focused radio, which is already the
+ * default behaviour in every browser — the explicit handler guards against
+ * edge cases where a key event is consumed before the platform processes it.
+ *
+ * ARIA LIVE REGION
+ * ----------------
+ * A `role="status"` region announces filter changes to screen readers. It is
+ * seeded with &nbsp; so VoiceOver registers it (see device-filter.html for the
+ * full explanation). The summary paragraph is updated synchronously; the live
+ * region only on user-initiated changes, so page-load restoration is silent.
  */
 (function () {
   "use strict";
@@ -46,6 +65,12 @@
   if (!inputs.length || !summary) return;
 
   var total = cards.length;
+
+  // Build a lookup from value -> input element for hash-based activation.
+  var inputByValue = {};
+  inputs.forEach(function (inp) {
+    inputByValue[inp.value] = inp;
+  });
 
   function describe(value, label, shown) {
     if (shown === 0) return "No devices match " + label + ".";
@@ -84,17 +109,93 @@
     if (announce && isUserChange) announce.textContent = text;
   }
 
+  // ---- URL HASH PERSISTENCE ----
+  // Reads the hash, maps it to a filter value, and updates the URL with
+  // `replaceState` when the user changes filters. No history push — back
+  // should leave /devices/, not step through filter changes.
+  function readHash() {
+    var raw = window.location.hash.replace(/^#/, "").toLowerCase();
+    // Map known hash values to filter values. Anything unrecognised
+    // (including no hash at all) falls back to "all".
+    var map = { all: "all", software: "software", hardware: "hardware" };
+    return map[raw] || "all";
+  }
+
+  function writeHash(value) {
+    var newHash = value === "all" ? "" : "#" + value;
+    var currentHash = window.location.hash;
+    if (("#" + value) !== currentHash && newHash !== currentHash) {
+      try {
+        history.replaceState(null, "", newHash || window.location.pathname);
+      } catch (_) {
+        // replaceState can throw in some sandboxed environments — the
+        // filter still works, the hash just won't update.
+      }
+    }
+  }
+
+  // Activate the input matching the given value.
+  function activateFilter(value) {
+    var target = inputByValue[value];
+    if (!target) return;
+    target.checked = true;
+    apply(target, false);
+  }
+
+  // ---- KEYBOARD HANDLING ----
+  // Radio groups already handle arrow keys and tab natively. We add explicit
+  // Enter/Space handlers to toggle the focused radio, which is the default
+  // behaviour in every browser — the explicit handler guards against edge
+  // cases where a key event is consumed before platform processing.
+  function onFilterKeydown(event) {
+    var target = event.target;
+    if (!target || !target.classList.contains("lb-filter__input")) return;
+
+    if (event.key === "Enter" || event.key === " ") {
+      // Space can scroll the page — prevent that.
+      if (event.key === " ") event.preventDefault();
+
+      // Only act if this radio isn't already checked (prevents double-fire).
+      if (!target.checked) {
+        target.checked = true;
+        apply(target, true);
+        writeHash(target.value);
+      }
+    }
+  }
+
+  // ---- EVENT BINDING ----
   inputs.forEach(function (input) {
     input.addEventListener("change", function () {
-      if (input.checked) apply(input, true);
+      if (input.checked) {
+        apply(input, true);
+        writeHash(input.value);
+      }
     });
+
+    input.addEventListener("keydown", onFilterKeydown);
+  });
+
+  // Handle back/forward navigation (hashchange).
+  window.addEventListener("hashchange", function () {
+    var value = readHash();
+    activateFilter(value);
   });
 
   tpl.parentNode.insertBefore(fragment, tpl);
 
-  // A back/forward navigation can restore a previously checked radio, so read
-  // the group rather than assuming the markup default is still the live one.
-  var checked = inputs.filter(function (i) { return i.checked; })[0] || inputs[0];
-  checked.checked = true;
-  apply(checked, false);
+  // ---- INITIAL STATE ----
+  // Restore from URL hash if present, otherwise default to "all".
+  var initialValue = readHash();
+  if (initialValue !== "all") {
+    activateFilter(initialValue);
+    writeHash(initialValue);
+  } else {
+    // Default: "all" is checked in the markup. But a back/forward
+    // navigation could have changed the checked state via the browser's
+    // own form-restoration, so read the group rather than assuming.
+    var checked = inputs.filter(function (i) { return i.checked; })[0] || inputs[0];
+    checked.checked = true;
+    apply(checked, false);
+  }
 })();

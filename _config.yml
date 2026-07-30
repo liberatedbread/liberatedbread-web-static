@@ -139,6 +139,11 @@ kramdown:
   hard_wrap: false
   smart_quotes: ["apos", "apos", "quot", "quot"]
 
+# .well-known/ starts with a dot, so Jekyll skips it by default.
+# security.txt (RFC 9116) must be published at /.well-known/security.txt.
+include:
+  - .well-known
+
 # Never emitted into _site. DESIGN-finalized.md is committed for reference but
 # is not a page; the build toolchain is not web content.
 exclude:
