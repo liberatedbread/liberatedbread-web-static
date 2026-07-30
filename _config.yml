@@ -84,6 +84,55 @@ feed:
     devices:
       path: /feed/devices.xml
 
+# ============================================================================
+#  VENDORED MARKDOWN MUST NOT BECOME PAGES
+#
+#  `device-specs/` is a git subtree of liberatedbread-protocol-specs (README
+#  §"Updating the vendored device specs"). Its Markdown was written for THAT
+#  repository's layout, so its relative links point at files that exist there
+#  and will never exist here — `../docs/api/spec-format.md`,
+#  `../scripts/build_index.py`, `../.github/workflows/ci.yml`.
+#
+#  The github-pages gem loads several plugins that are NOT listed under
+#  `plugins:` above — they ship with the gem and are on by default. Two of them
+#  turn plain Markdown into rendered HTML:
+#
+#    jekyll-readme-index           makes a directory's README.md that
+#                                  directory's index.html. This rendered
+#                                  device-specs/README.md as
+#                                  /device-specs/index.html and published ten
+#                                  dead relative links, which is exactly what
+#                                  script/check-links.rb failed on.
+#    jekyll-optional-front-matter  makes any front-matter-less .md a page. This
+#                                  rendered device-specs/research-notes/*.md as
+#                                  orphan pages. They carry no relative links
+#                                  today — but the next subtree pull is one
+#                                  upstream edit away from reintroducing the
+#                                  same build failure.
+#
+#  Both are turned off here rather than naming the offending files in
+#  `exclude:` below, and that is the point: the rule is "no vendored Markdown
+#  is ever a page", so it keeps holding however upstream reorganises. An
+#  exclude list would have to be re-audited on every subtree pull, and
+#  jekyll-readme-index would simply promote the next README it found.
+#
+#  Nothing this repo owns loses anything. Every page here has front matter, and
+#  the only other README is this repo's, already excluded below.
+#
+#  The specs themselves are untouched: YAML and JSON are not Markdown, so
+#  device-specs/**/*.{yaml,json} still copy through as static files and keep
+#  serving at their public URLs. The vendored .md files still copy through too,
+#  readable in raw form — they are simply no longer rendered.
+#
+#  /device-specs/ is now served by device-specs.md, a landing page this repo
+#  owns and can keep honest, instead of by upstream's README.
+# ============================================================================
+readme_index:
+  enabled: false
+
+optional_front_matter:
+  enabled: false
+
 markdown: kramdown
 kramdown:
   input: GFM
