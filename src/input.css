@@ -2,6 +2,7 @@
 @config "../tailwind.config.js";
 @source "../index.md";
 @source "../about.md";
+@source "../device-specs.md";
 @source "../devices.md";
 @source "../disclaimer.md";
 @source "../rss.md";
