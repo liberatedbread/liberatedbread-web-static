@@ -175,12 +175,56 @@ Three rules apply to anything added next to them
    (append `?template=device-guide.md` to the compare URL). Every guide is
    reviewed before merge.
 
+## Updating the vendored device specs
+
+`device-specs/` is **vendored, not authored here.** It is a `git subtree` of the
+`device-specs/` directory of
+[liberatedbread-protocol-specs](https://github.com/liberatedbread/liberatedbread-protocol-specs),
+served at [`/device-specs/`](https://liberatedbread.com/device-specs/) so the
+specs have a stable URL off the apex. Corrections and new devices go to that
+repo — anything edited here is overwritten by the next sync.
+
+```bash
+script/update-subtree --dry-run   # what would change?
+script/update-subtree --verify    # apply, then build and link-check
+```
+
+`script/update-subtree --help` lists the flags (upstream remote, URL, branch,
+prefix — all overridable). Do **not** substitute `git subtree pull`: upstream's
+branch root is a whole Python project and the specs are one subdirectory of it,
+so pulling the root would dump `docs/`, `scripts/` and `pyproject.toml` into the
+site. The script splits that subdirectory out first — the same operation the
+subtree was created with — and asserts afterwards that `device-specs/` is
+byte-identical to upstream's directory. The script's header comment has the full
+derivation.
+
+**Always run the link check after a sync**; `--verify` does it for you. Upstream
+Markdown is written for upstream's layout, and its relative links point at files
+that do not exist here (`../docs/api/spec-format.md`, `../scripts/build_index.py`).
+Rendering `device-specs/README.md` as `/device-specs/index.html` is what broke CI
+when the subtree first landed, so `_config.yml` now disables `jekyll-readme-index`
+and `jekyll-optional-front-matter` — no vendored Markdown becomes a page, however
+upstream reorganises. The specs themselves are YAML and JSON and copy through
+untouched, and the vendored `.md` files are still served, just in raw form. The
+long comment above `readme_index:` in `_config.yml` explains it.
+
+`/device-specs/` itself is served by [`device-specs.md`](device-specs.md), a
+landing page at the repository **root** — deliberately not inside the subtree,
+where a pull would clobber it. It lists the specs by globbing the files actually
+present, so a sync that adds or removes one needs no edit here.
+
 ## Layout of the repo
 
 ```
 _config.yml                Jekyll + pcfweb mailing-list settings
 _data/devices.yml          Device catalog (DESIGN Appendix B)
 _devices/*.md              Device guides (Jekyll collection -> /devices/<slug>/)
+device-specs/              VENDORED git subtree of liberatedbread-protocol-specs
+                           — do not edit; see "Updating the vendored device
+                           specs" above. Served as raw YAML/JSON
+device-specs.md            The /device-specs/ landing page. At the root, NOT in
+                           the subtree, so a pull cannot clobber it; lists the
+                           specs by globbing what is actually there
 _layouts/
   base.html                <html> shell only
   default.html             base + header/footer, for prose pages
@@ -214,6 +258,8 @@ script/check-unlayered-css.rb
                            @layer AND still declares display:none, so the
                            /devices/ filter keeps working
 script/sync-brand-data.rb  Regenerates _data/brand.yml from src/input.css
+script/update-subtree      Pulls upstream device specs into device-specs/,
+                           by splitting upstream's subdirectory out first
 .github/workflows/
   ci.yml                   Verification on every PR — never deploys
   pages.yml                Build + gate + deploy to GitHub Pages, push to main
