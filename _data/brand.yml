@@ -3,9 +3,9 @@
 # them where CSS custom properties cannot reach (e.g. <meta name="theme-color">).
 # Regenerate with: npm run build:css   (or: ruby script/sync-brand-data.rb)
 base: "#112545"
-accent: "#ee900a"
-accent-bright: "#ee6a08"
-sky: "#5bbee3"
+accent: "#ef900a"
+accent-bright: "#ee6a07"
+sky: "#eba1c6"
 base-dark: "#0b182d"
-steel: "#5f8499"
+steel: "#9b8a9f"
 khaki: "#f3d09a"
