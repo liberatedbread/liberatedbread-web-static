@@ -7,6 +7,11 @@
 # beats templating store-specific tracking grammar here, because each
 # program's URL shape is its own moving target.
 #
+# Amazon links: our Associates tag is `hkmagic-20`. A SiteStripe-generated
+# link pastes in verbatim (see the Belkin WeMo entry); for links built by
+# hand, appending `&tag=hkmagic-20` to the search URL is what attributes the
+# commission.
+#
 # /shop/ discloses the affiliate relationship above the links; the footer's
 # "some links may earn us a small commission" line is carried by that page.
 # Items may name a `guide` (a site-relative liberation-guide URL) so the shop
@@ -29,6 +34,9 @@ sections:
           - label: "eBay"
             url: "https://www.ebay.com/sch/i.html?_nkw=belkin+wemo+insight+switch"
             affiliate_url: ""
+          - label: "Amazon"
+            url: "https://www.amazon.com/s?k=belkin+wemo"
+            affiliate_url: "https://www.amazon.com/s?k=belkin+wemo&rh=p_123%3A157711&dc=&qid=1786147338&rnid=85457740011&ds=v1%3AnwlpvcjHy4BfPINVzLtVB9y7vAWfXtZm5ZretUdozTQ&linkCode=ll2&tag=hkmagic-20&linkId=5d7994f40c80c042fe599dd953c06468&language=en_US&ref_=as_li_ss_tl"
       - name: "Untested smart-plug and sensor lots"
         why: >-
           Job lots of "untested" smart plugs, bulbs and sensors go cheapest of
@@ -54,7 +62,7 @@ sections:
         links:
           - label: "Amazon"
             url: "https://www.amazon.com/s?k=wemos+d1+mini+esp8266"
-            affiliate_url: ""
+            affiliate_url: "https://www.amazon.com/s?k=wemos+d1+mini+esp8266&tag=hkmagic-20"
           - label: "AliExpress"
             url: "https://www.aliexpress.com/w/wholesale-wemos-d1-mini.html"
             affiliate_url: ""
@@ -65,7 +73,7 @@ sections:
         links:
           - label: "Amazon"
             url: "https://www.amazon.com/s?k=esp32+devkit"
-            affiliate_url: ""
+            affiliate_url: "https://www.amazon.com/s?k=esp32+devkit&tag=hkmagic-20"
           - label: "AliExpress"
             url: "https://www.aliexpress.com/w/wholesale-esp32-devkit.html"
             affiliate_url: ""
@@ -76,7 +84,7 @@ sections:
         links:
           - label: "Amazon"
             url: "https://www.amazon.com/s?k=d1+mini+relay+shield"
-            affiliate_url: ""
+            affiliate_url: "https://www.amazon.com/s?k=d1+mini+relay+shield&tag=hkmagic-20"
 
   - title: "Tools worth having"
     blurb: >-
@@ -90,7 +98,7 @@ sections:
         links:
           - label: "Amazon"
             url: "https://www.amazon.com/s?k=cp2102+usb+to+serial+adapter"
-            affiliate_url: ""
+            affiliate_url: "https://www.amazon.com/s?k=cp2102+usb+to+serial+adapter&tag=hkmagic-20"
       - name: "Pinecil soldering iron"
         why: >-
           Small, USB-C powered, and cheap enough that "I don't own an iron"
@@ -98,11 +106,11 @@ sections:
         links:
           - label: "Amazon"
             url: "https://www.amazon.com/s?k=pinecil+soldering+iron"
-            affiliate_url: ""
+            affiliate_url: "https://www.amazon.com/s?k=pinecil+soldering+iron&tag=hkmagic-20"
       - name: "Jumper wires + breadboard kit"
         why: >-
           For the try-it-before-you-solder-it stage of every hardware mod.
         links:
           - label: "Amazon"
             url: "https://www.amazon.com/s?k=breadboard+jumper+wire+kit"
-            affiliate_url: ""
+            affiliate_url: "https://www.amazon.com/s?k=breadboard+jumper+wire+kit&tag=hkmagic-20"

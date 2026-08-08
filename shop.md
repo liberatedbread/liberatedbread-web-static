@@ -13,9 +13,9 @@ and the fix is a guide you can read for free. This page collects search links
 for the dead devices worth grabbing, plus the boards and tools our guides
 reach for.
 
-**Affiliate disclosure:** links on this page may be affiliate links, meaning
-Pigs Can Fly Labs LLC earns a small commission if you buy through them — at no
-extra cost to you. It helps keep the guides free. We only list the kind of
+**Affiliate disclosure:** some links on this page are affiliate links (the
+Amazon ones today), meaning Pigs Can Fly Labs LLC earns a small commission if
+you buy through them — at no extra cost to you. It helps keep the guides free. We only list the kind of
 gear the guides actually use, prices are whatever the store says they are, and
 a plain web search will find you the same things.
 
