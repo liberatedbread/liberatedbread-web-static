@@ -1,0 +1,116 @@
+# The /shop/ catalogue (see shop.md).
+#
+# Every link ships as a plain, working search/product URL in `url`. When we
+# get an affiliate link for a store (Amazon Associates short link, eBay
+# Partner Network link, etc.), paste it into that link's `affiliate_url` —
+# the page prefers it automatically. Keeping the tagged URL a literal paste
+# beats templating store-specific tracking grammar here, because each
+# program's URL shape is its own moving target.
+#
+# Amazon links: our Associates tag is `hkmagic-20`. A SiteStripe-generated
+# link pastes in verbatim (see the Belkin WeMo entry); for links built by
+# hand, appending `&tag=hkmagic-20` to the search URL is what attributes the
+# commission.
+#
+# /shop/ discloses the affiliate relationship above the links; the footer's
+# "some links may earn us a small commission" line is carried by that page.
+# Items may name a `guide` (a site-relative liberation-guide URL) so the shop
+# always routes people back to the actual point of this site.
+sections:
+  - title: "Dead devices, going cheap"
+    blurb: >-
+      When a vendor kills the cloud, the hardware price falls off a cliff —
+      "doesn't work with the app" means broken to most sellers and a bargain
+      for you. Check the listing photos for the exact model a guide covers,
+      and assume anything sold "untested" needs a factory reset.
+    items:
+      - name: "Belkin WeMo smart plugs"
+        why: >-
+          Belkin shut the WeMo cloud down in January 2026, so these Wi-Fi
+          plugs sell for pocket change. The hardware is fine — our guide locks
+          an Insight Switch to LAN-only and hands it to Home Assistant.
+        guide: /devices/wemo-switch/
+        links:
+          - label: "eBay"
+            url: "https://www.ebay.com/sch/i.html?_nkw=belkin+wemo+insight+switch"
+            affiliate_url: ""
+          - label: "Amazon"
+            url: "https://www.amazon.com/s?k=belkin+wemo"
+            affiliate_url: "https://www.amazon.com/s?k=belkin+wemo&rh=p_123%3A157711&dc=&qid=1786147338&rnid=85457740011&ds=v1%3AnwlpvcjHy4BfPINVzLtVB9y7vAWfXtZm5ZretUdozTQ&linkCode=ll2&tag=hkmagic-20&linkId=5d7994f40c80c042fe599dd953c06468&language=en_US&ref_=as_li_ss_tl"
+      - name: "Untested smart-plug and sensor lots"
+        why: >-
+          Job lots of "untested" smart plugs, bulbs and sensors go cheapest of
+          all. Cross-check what turns up against the device catalogue before
+          you bid.
+        guide: /devices/
+        links:
+          - label: "eBay"
+            url: "https://www.ebay.com/sch/i.html?_nkw=smart+plug+lot+untested"
+            affiliate_url: ""
+
+  - title: "Boards that bring them back"
+    blurb: >-
+      A lot of liberations end with a tiny ESP board doing the job the cloud
+      used to pretend to do. (Confusingly, "WeMos" — now LOLIN — is a board
+      maker, no relation to Belkin's WeMo plugs. You will meet both names in
+      this hobby.)
+    items:
+      - name: "WeMos / LOLIN D1 mini (ESP8266)"
+        why: >-
+          The default transplant board: Wi-Fi, a few bucks, huge community,
+          drop-in support in ESPHome and Tasmota.
+        links:
+          - label: "Amazon"
+            url: "https://www.amazon.com/s?k=wemos+d1+mini+esp8266"
+            affiliate_url: "https://www.amazon.com/s?k=wemos+d1+mini+esp8266&tag=hkmagic-20"
+          - label: "AliExpress"
+            url: "https://www.aliexpress.com/w/wholesale-wemos-d1-mini.html"
+            affiliate_url: ""
+      - name: "ESP32 dev boards"
+        why: >-
+          For devices that need Bluetooth as well as Wi-Fi, or more pins than
+          an ESP8266 offers.
+        links:
+          - label: "Amazon"
+            url: "https://www.amazon.com/s?k=esp32+devkit"
+            affiliate_url: "https://www.amazon.com/s?k=esp32+devkit&tag=hkmagic-20"
+          - label: "AliExpress"
+            url: "https://www.aliexpress.com/w/wholesale-esp32-devkit.html"
+            affiliate_url: ""
+      - name: "D1 mini relay shields"
+        why: >-
+          Stack one on a D1 mini and you have rebuilt the guts of a smart
+          plug you actually own.
+        links:
+          - label: "Amazon"
+            url: "https://www.amazon.com/s?k=d1+mini+relay+shield"
+            affiliate_url: "https://www.amazon.com/s?k=d1+mini+relay+shield&tag=hkmagic-20"
+
+  - title: "Tools worth having"
+    blurb: >-
+      Most software liberations need nothing but patience. The moment a guide
+      says "solder" or "serial console", these earn their keep.
+    items:
+      - name: "USB-to-serial adapter (CP2102 / CH340)"
+        why: >-
+          The bridge between your laptop and a board's UART pins — flashing
+          and debug consoles both come through here.
+        links:
+          - label: "Amazon"
+            url: "https://www.amazon.com/s?k=cp2102+usb+to+serial+adapter"
+            affiliate_url: "https://www.amazon.com/s?k=cp2102+usb+to+serial+adapter&tag=hkmagic-20"
+      - name: "Pinecil soldering iron"
+        why: >-
+          Small, USB-C powered, and cheap enough that "I don't own an iron"
+          stops being the blocker.
+        links:
+          - label: "Amazon"
+            url: "https://www.amazon.com/s?k=pinecil+soldering+iron"
+            affiliate_url: "https://www.amazon.com/s?k=pinecil+soldering+iron&tag=hkmagic-20"
+      - name: "Jumper wires + breadboard kit"
+        why: >-
+          For the try-it-before-you-solder-it stage of every hardware mod.
+        links:
+          - label: "Amazon"
+            url: "https://www.amazon.com/s?k=breadboard+jumper+wire+kit"
+            affiliate_url: "https://www.amazon.com/s?k=breadboard+jumper+wire+kit&tag=hkmagic-20"

@@ -1,0 +1,27 @@
+{
+  "_readme": [
+    "Remote config for the mobile app's bottom ad banner. The app fetches",
+    "this in the background on launch and falls back to a bundled copy of",
+    "the same content when it can't. Contract (version 1):",
+    "  banner.id       stable id for the promotion; dismissals are stored",
+    "                  against it, so CHANGE THE ID to resurface the banner",
+    "                  for people who dismissed the previous one.",
+    "  banner.message  short pitch, <= 200 chars, rendered on two lines max.",
+    "  banner.cta      button label, <= 40 chars (optional, default 'Shop').",
+    "  banner.url      https only; anything else is rejected client-side.",
+    "  banner.enabled  set false (or drop the banner object) to hide the",
+    "                  banner in every app within a day of launch cadence.",
+    "Bump 'version' only for breaking schema changes: older apps hide the",
+    "banner entirely when they see a version they don't understand.",
+    "Keep this file in sync with AdBanner.fallback in the mobile repo",
+    "(lib/models/ad_banner.dart) when the current promotion changes."
+  ],
+  "version": 1,
+  "banner": {
+    "id": "dead-devices-2026",
+    "message": "Cloud-dead smart devices sell for cheap. Grab one and liberate it.",
+    "cta": "Shop",
+    "url": "https://liberatedbread.com/shop/",
+    "enabled": true
+  }
+}
