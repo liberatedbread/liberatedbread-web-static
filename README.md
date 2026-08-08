@@ -74,26 +74,40 @@ Watch a deploy at
 ## How the styling works
 
 Every brand colour is a CSS custom property defined in **one place**,
-[`src/input.css`](src/input.css), sampled from `assets/logo.png` and documented
+[`src/input.css`](src/input.css), sampled from the logo artwork and documented
 there with the derivation. [`tailwind.config.js`](tailwind.config.js) maps the
 `bread-*` utilities onto those properties — it contains no hex values, and
 neither does any layout or page.
 
 ```
-                                                    ┌─▶ tailwind.config.js ─┐
-assets/logo.png ──sampled──▶ :root{--bread-*} ──────┤   (bread-* utilities) ├──▶ assets/tailwind.css
-                              (src/input.css)       │                       │    (built, committed)
-                                                    └─▶ _data/brand.yml ────┘
-                                                        (generated; for markup
-                                                         CSS can't reach, e.g.
-                                                         <meta theme-color>)
+                                                          ┌─▶ tailwind.config.js ─┐
+assets/brand/*.png ──sampled──▶ :root{--bread-*} ─────────┤   (bread-* utilities) ├──▶ assets/tailwind.css
+       │                         (src/input.css)          │                       │    (built, committed)
+       │                              │                   └─▶ _data/brand.yml ────┘
+       │                              │                       (generated; for markup
+       │                              │                        CSS can't reach, e.g.
+       │                              │                        <meta theme-color>)
+       │                              ▼
+       └──────────────▶ script/generate-logo-assets.py ──▶ assets/logo.png
+                        (reads --bread-sky for the                favicon.ico
+                         icon background, so the                  apple-touch-icon.png
+                         artwork can't drift from CSS)            og-image.png
 ```
 
-If the logo changes, re-sample it (the command is in the comment at the top of
-`src/input.css`), update those few lines, run `npm run build:css`, and the whole
-site follows. `assets/tailwind.css` is committed on purpose — production loads
-no CSS or JS from a third-party host
+The masters in [`assets/brand/`](assets/brand) are the only hand-supplied
+artwork: the mascot alone and the mascot with the wordmark, each transparent
+and on the brand pink. Every served icon is generated from them.
+
+If the logo changes: drop the new masters into `assets/brand/`, re-sample them
+(the command is in the comment at the top of `src/input.css`), update those few
+lines, then run `npm run build:css` and
+`python3 script/generate-logo-assets.py`. The whole site follows.
+`assets/tailwind.css` is committed on purpose — production loads no CSS or JS
+from a third-party host
 ([DESIGN §9.5](DESIGN-finalized.md#95-tailwind-css-build), §15.1).
+
+The generator needs Pillow (`pip install pillow`) and is authoring-only: its
+outputs are committed, so neither CI nor the Pages build ever runs it.
 
 ## How JavaScript is allowed to work here
 
