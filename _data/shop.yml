@@ -53,7 +53,8 @@ sections:
       A lot of liberations end with a tiny ESP board doing the job the cloud
       used to pretend to do. (Confusingly, "WeMos" — now LOLIN — is a board
       maker, no relation to Belkin's WeMo plugs. You will meet both names in
-      this hobby.)
+      this hobby.) Not every device speaks Wi-Fi, so a radio dongle earns a
+      place here too.
     items:
       - name: "WeMos / LOLIN D1 mini (ESP8266)"
         why: >-
@@ -76,6 +77,23 @@ sections:
             affiliate_url: "https://www.amazon.com/s?k=esp32+devkit&tag=hkmagic-20"
           - label: "AliExpress"
             url: "https://www.aliexpress.com/w/wholesale-esp32-devkit.html"
+            affiliate_url: ""
+      - name: "nRF52840 USB dongle"
+        why: >-
+          The radio-side counterpart to an ESP board. It speaks Bluetooth LE
+          and 802.15.4, so one dongle covers both jobs a cloud-dead device
+          tends to need: run Nordic's sniffer firmware to watch what a
+          vendor's app is actually saying over BLE, or flash a Zigbee or
+          Thread stack and let Home Assistant adopt orphaned Zigbee kit
+          without a hub. It flashes over its own USB bootloader — no
+          programmer, no soldering. Genuine Nordic PCA10059 units and clones
+          both turn up; either is a few dollars.
+        links:
+          - label: "Amazon"
+            url: "https://www.amazon.com/s?k=nrf52840+dongle"
+            affiliate_url: "https://www.amazon.com/s?k=nrf52840+dongle&tag=hkmagic-20"
+          - label: "AliExpress"
+            url: "https://www.aliexpress.com/w/wholesale-nrf52840-dongle.html"
             affiliate_url: ""
       - name: "D1 mini relay shields"
         why: >-
