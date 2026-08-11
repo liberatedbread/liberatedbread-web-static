@@ -29,6 +29,10 @@ See the [device catalogue](/devices/) for currently-documented devices. The [Hom
 
 Probably! If your device has an Android companion app, we can decompile it to extract the Bluetooth or WiFi protocol. [Open a GitHub Discussion](https://github.com/liberatedbread/liberatedbread-web-static/discussions) with the device name and model number. If you're technical, see the [contribution guide](/contribute/).
 
+Another thing you can do is grab a Bluetooth (BTLE) capture of the companion app talking to the device and send it along — often that trace is enough to work out the protocol. You can capture on [Android](https://source.android.com/docs/core/connect/bluetooth/verifying_debugging) (turn on the Bluetooth HCI snoop log in Developer Options), on [iOS](https://developer.apple.com/bug-reporting/profiles-and-logs/) (install Apple's Bluetooth logging profile and use PacketLogger), or with a dedicated sniffer like Nordic's [nRF Sniffer for Bluetooth LE](https://www.nordicsemi.com/Products/Development-tools/nRF-Sniffer-for-Bluetooth-LE).
+
+> **Strip out accounts and private info first.** A Bluetooth capture can contain account credentials, tokens, email addresses, location, or other personal data. Scrub anything sensitive before you share it — and if the device or app requires an account, we recommend creating a temporary account with non-private info and pairing with that, so nothing personal ends up in the trace to begin with.
+
 ## Does this require jailbreaking or rooting?
 
 **No.** Liberated Bread works entirely through standard protocols — connecting to devices over your local WiFi network or Bluetooth. No device modifications, no custom firmware, no rooting required. For WiFi devices, the only "modification" is a firewall rule on your router to block cloud access.

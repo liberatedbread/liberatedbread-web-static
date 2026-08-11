@@ -20,7 +20,7 @@ We're not lawyers and we're not trying to sound like them. Here's the deal in pl
 
 ## Affiliate Links
 
-Some pages may include affiliate links to tools, parts, or services. When they do, we'll tell you at the top of the links section:
+Some pages may include affiliate links to tools, parts, or services. We flag them where we can — usually with a note at the top of the links section — but we can't promise we catch every single one, so assume any link to a store could be an affiliate link:
 
 > **Affiliate Disclosure:** Some links below are affiliate links. If you buy something through them, Liberated Bread may earn a small commission at no extra cost to you.
 
