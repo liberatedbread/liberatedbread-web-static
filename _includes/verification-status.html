@@ -52,7 +52,7 @@
 {%- endcomment -%}
 {%- assign verify_device = page.device_name | default: page.title -%}
 {%- capture verify_subject -%}{{ verify_device | url_encode | replace: '+', '%20' }}{%- endcapture -%}
-{%- capture verify_mailto -%}mailto:hello@liberatedbread.com?subject=Verified%3A%20{{ verify_subject }}{%- endcapture -%}
+{%- capture verify_mailto -%}mailto:support42@liberatedbread.com?subject=Verified%3A%20{{ verify_subject }}{%- endcapture -%}
 
 <div class="bg-bread-sky/10 border border-bread-sky/40 rounded-lg p-4 my-6">
   {%- comment -%}
@@ -100,7 +100,7 @@
   <p class="text-sm text-bread-khaki/80 mt-0 mb-0">
     Run it on real hardware? Please tell us how it went — that is how a guide gets marked
     verified, and a correction is every bit as useful as a confirmation. Email
-    <a href="{{ verify_mailto }}">hello@liberatedbread.com</a>
+    <a href="{{ verify_mailto }}">support42@liberatedbread.com</a>
     (the subject line fills itself in), or
     <a href="https://github.com/liberatedbread/liberatedbread-web-static/issues" target="_blank" rel="noopener">open an issue</a>
     if you would rather. Even "followed it, worked, nothing to add" is worth sending.
