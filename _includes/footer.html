@@ -28,6 +28,25 @@
 
     <p>Liberated Bread is free. Some links may earn us a small commission — we'll tell you when they do.</p>
     <p class="text-bread-khaki/70">These guides are for hardware you own. Use common sense. Pigs Can Fly Labs LLC isn't responsible for bricked devices, voided warranties, or angry IoT cloud providers.</p>
+
+    {%- comment -%}
+      The 1996 badge, at the bottom of the page where it always was.
+
+      It is not decoration for its own sake: this site really is being built in
+      public, one contributed guide at a time, and the catalogue is small and
+      mostly unverified. A site that says so in the idiom of the last web that
+      let you own your own hardware is being honest and making a joke with the
+      same gesture — which is the whole register Liberated Bread is written in.
+
+      Kept deliberately small: a 64px sign at footnote size, below the
+      disclaimers, well clear of anything a reader needs. The sign itself is
+      road yellow rather than bread amber, on purpose — see the note in
+      src/input.css.
+    {%- endcomment -%}
+    <p class="pt-1">
+      {% include under-construction.html %}
+    </p>
+
     <p class="text-bread-khaki/70">&copy; {{ site.time | date: "%Y" }} Pigs Can Fly Labs LLC</p>
   </div>
 </footer>

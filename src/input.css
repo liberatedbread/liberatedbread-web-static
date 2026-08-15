@@ -375,4 +375,128 @@
       padding-block: 0.375rem;
     }
   }
+
+  /* -------------------------------------------------------------------------
+     "Under construction" badge — _includes/under-construction.html.
+
+     The markup is an inline SVG with no ids and no images; everything that
+     moves, moves from here. See that include's comment for why the artifact is
+     redrawn rather than a period GIF, and for what the joint angles below are
+     trying to look like.
+
+     THE SIGN IS DELIBERATELY NOT IN THE BREAD PALETTE, and these two are the
+     only hardcoded colours in this stylesheet. Roadworks yellow is doing the
+     same job as the red in _includes/safety-block.html, which owns the site's
+     other escape from the palette on the reasoning that "a warning that reads
+     as just more amber is not a warning". This one is a joke rather than a
+     hazard, but it works the same way round: the gag is that a real road sign
+     has been stuck on the page, and a road sign restyled to match the site
+     stops being recognisable as one. It was tried in --bread-accent —
+     handsome, and it read as site iconography instead of as a sign.
+
+     The ink has to be its own colour for a duller reason. It was --bread-base
+     first, which is nearly black and looked right on the device card — and
+     invisible in the footer, because --bread-base is also the page background,
+     so the sign's black border simply disappeared and the badge became a bare
+     yellow triangle. Sign black is a shade off the page navy and reads as a
+     border on both.
+
+     WHY THE MOTION IS STEPPED. `steps(1, end)` holds each keyframe and snaps to
+     the next instead of interpolating. That is the whole look. One beat,
+     --lb-uc-beat, drives the hip, the arm and the spoil heap together, so the
+     blade landing and the heap flinching are the same frame rather than three
+     loops that drift apart.
+     ------------------------------------------------------------------------- */
+  .lb-uc {
+    --lb-uc-beat: 0.66s;
+    /* Roadworks yellow and sign black. See above before replacing either of
+       these with a brand token — both have been tried and both regressed. */
+    --lb-uc-sign: #f2c200;
+    --lb-uc-ink: #111111;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .lb-uc__art {
+    flex: none;
+    /* `block` keeps the inline baseline gap from adding a phantom row under a
+       58px-tall graphic inside the flex line. */
+    display: block;
+  }
+
+  .lb-uc__label {
+    font-family: var(--bread-font-mono);
+    font-weight: 700;
+    font-size: 0.6875rem;
+    line-height: 1.25;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: left;
+    color: color-mix(in srgb, var(--bread-khaki) 78%, transparent);
+  }
+
+  .lb-uc__plate { fill: var(--lb-uc-ink); stroke: var(--lb-uc-ink); }
+  .lb-uc__face  { fill: var(--lb-uc-sign); stroke: var(--lb-uc-sign); }
+  .lb-uc__ink   { fill: none; stroke: var(--lb-uc-ink); }
+  .lb-uc__solid { fill: var(--lb-uc-ink); }
+
+  .lb-uc__spoil {
+    fill: var(--lb-uc-ink);
+    transform-box: fill-box;
+    transform-origin: bottom center;
+    animation: lb-uc-spoil var(--lb-uc-beat) steps(1, end) infinite;
+  }
+
+  /* `transform-box: view-box` makes the origins below resolve against the root
+     <svg>'s viewBox coordinates — the same numbers the path data is written in
+     — rather than against each group's own bounding box, which moves as the
+     group rotates. Hip at the waist, arm at the shoulder. */
+  .lb-uc__hip {
+    transform-box: view-box;
+    transform-origin: 23.5px 36px;
+    animation: lb-uc-hip var(--lb-uc-beat) steps(1, end) infinite;
+  }
+
+  .lb-uc__arm {
+    transform-box: view-box;
+    transform-origin: 29.5px 27.5px;
+    animation: lb-uc-arm var(--lb-uc-beat) steps(1, end) infinite;
+  }
+
+  /* The hip barely moves and the arm does the work — see the include's note on
+     why the reverse reads as a man walking with a briefcase. */
+  @keyframes lb-uc-hip {
+    0%   { transform: rotate(-5deg); }    /* spadeful lifted */
+    33%  { transform: rotate(2deg); }     /* coming down */
+    66%  { transform: rotate(13deg); }    /* blade in the heap */
+  }
+
+  @keyframes lb-uc-arm {
+    0%   { transform: rotate(-12deg); }
+    33%  { transform: rotate(0deg); }
+    66%  { transform: rotate(7deg); }
+  }
+
+  @keyframes lb-uc-spoil {
+    0%, 65% { transform: scaleY(1); }
+    66%     { transform: scaleY(0.86); }  /* flinch, on the landing frame */
+  }
+
+  /* A badge on every page of the site is exactly the perpetual motion this
+     media query exists for. The badge itself stays — it is the joke, and a road
+     sign standing still is still a road sign. */
+  @media (prefers-reduced-motion: reduce) {
+    .lb-uc__hip,
+    .lb-uc__arm,
+    .lb-uc__spoil {
+      animation: none;
+    }
+
+    /* Frozen on the middle frame rather than at either end of the swing, so
+       the still reads as a digger caught mid-stroke and not one standing idle
+       or face-down in the dirt. */
+    .lb-uc__hip { transform: rotate(2deg); }
+  }
 }

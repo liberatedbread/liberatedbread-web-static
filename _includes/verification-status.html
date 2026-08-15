@@ -35,8 +35,43 @@
   it still reads as native furniture.
 {%- endcomment -%}
 
+{%- comment -%}
+  MAILTO SUBJECT — why the escaping is written this way.
+
+  The device name goes into a mailto query string, and one of the two guides in
+  the catalogue today is "Eufy Indoor Cam 2K Pan & Tilt". A raw `&` there ends
+  the subject parameter and hands the rest of the name to the mail client as a
+  parameter of its own, so the name has to be percent-encoded, not just pasted.
+
+  `url_encode` does that — but it is form encoding, so it also turns spaces into
+  `+`. RFC 6068 mailto URIs are not form-encoded: a `+` in the query is a
+  literal plus, and the subject line would arrive reading "Verified:+Eufy+...".
+  Re-replacing `+` with `%20` afterwards is safe precisely because url_encode
+  ran first — any plus actually IN the device name is already `%2B` by then, so
+  the only `+` left to rewrite is the one that used to be a space.
+{%- endcomment -%}
+{%- assign verify_device = page.device_name | default: page.title -%}
+{%- capture verify_subject -%}{{ verify_device | url_encode | replace: '+', '%20' }}{%- endcapture -%}
+{%- capture verify_mailto -%}mailto:support42@liberatedbread.com?subject=Verified%3A%20{{ verify_subject }}{%- endcapture -%}
+
 <div class="bg-bread-sky/10 border border-bread-sky/40 rounded-lg p-4 my-6">
-  <h2 class="!mt-0 !border-0 !pb-0 font-serif !text-bread-sky text-lg mb-2">Not yet verified on hardware</h2>
+  {%- comment -%}
+    `items-start`, not `items-center`: the badge is 90px tall and the heading
+    is one line, so centring leaves the heading floating in the middle of the
+    row with nothing beside it. Top-aligned, both sit on the card's top edge
+    and the badge reads as a stamp on the notice.
+  {%- endcomment -%}
+  <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-1 mb-2">
+    <h2 class="!mt-0 !border-0 !pb-0 font-serif !text-bread-sky text-lg !mb-0">Not yet verified on hardware</h2>
+    {%- comment -%}
+      The same badge the footer carries, for the same reason: an unverified
+      guide genuinely is under construction, and the 90s idiom says "someone is
+      still working on this" faster and more cheerfully than another sentence
+      of prose would. It sits on the heading row rather than in the body so it
+      reads as a stamp on the status card, not as an extra claim inside it.
+    {%- endcomment -%}
+    {% include under-construction.html %}
+  </div>
   <p class="text-sm text-bread-khaki mt-0 mb-3">
     Most guides here start out this way. This one was researched and reviewed, but it was
     written from device specifications, vendor documentation and the design of the parts
@@ -51,10 +86,23 @@
     describes, the device is right.
   </p>
   {%- endif %}
+  {%- comment -%}
+    Email is offered FIRST and by name, ahead of the GitHub issue. Both routes
+    stay open, but the person best placed to verify a guide is whoever happens
+    to own the device, and that is not reliably someone with a GitHub account
+    or any wish to acquire one to send us one sentence. A mailto asks for
+    nothing: it opens in whatever they already read mail in.
+
+    The subject line arrives pre-filled with the device name so a report can be
+    matched to a guide without asking a follow-up question — most people will
+    write "it worked" and nothing else, and that is a completely good report.
+  {%- endcomment -%}
   <p class="text-sm text-bread-khaki/80 mt-0 mb-0">
-    Run it on real hardware?
-    <a href="https://github.com/liberatedbread/liberatedbread-web-static/issues" target="_blank" rel="noopener">Tell us how it went</a>
-    — that is how a guide gets marked verified, and a correction is every bit as useful as
-    a confirmation.
+    Run it on real hardware? Please tell us how it went — that is how a guide gets marked
+    verified, and a correction is every bit as useful as a confirmation. Email
+    <a href="{{ verify_mailto }}">support42@liberatedbread.com</a>
+    (the subject line fills itself in), or
+    <a href="https://github.com/liberatedbread/liberatedbread-web-static/issues" target="_blank" rel="noopener">open an issue</a>
+    if you would rather. Even "followed it, worked, nothing to add" is worth sending.
   </p>
 </div>
