@@ -35,7 +35,11 @@ Another thing you can do is grab a Bluetooth (BTLE) capture of the companion app
 
 ## Does this require jailbreaking or rooting?
 
-**No.** Liberated Bread works entirely through standard protocols — connecting to devices over your local WiFi network or Bluetooth. No device modifications, no custom firmware, no rooting required. For WiFi devices, the only "modification" is a firewall rule on your router to block cloud access.
+**No.** Liberated Bread works entirely through standard protocols — connecting to devices over your local WiFi network or Bluetooth. No device modifications, no custom firmware, no rooting required. For WiFi devices, the only "modification" is a firewall rule on your router to block cloud access — see [Keep It Off the Internet](/firewall/) for how to write that rule on UniFi, MikroTik, OPNsense, OpenWrt and the rest.
+
+## Why block a device from the internet at all?
+
+Because an over-the-air firmware update is the most likely way local control disappears. It has already happened: TP-Link closed port 9999 on newer Kasa hardware, and iRobot's 2025 Roombas ship with no local MQTT broker at all. A device that can't reach the vendor keeps the protocol it shipped with. [Keep It Off the Internet](/firewall/) walks through doing that without breaking discovery or local control.
 
 ## Will my device lose features without the cloud?
 

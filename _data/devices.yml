@@ -49,5 +49,18 @@ devices:
         description: "Ball joint connector (PETG, 50% infill)"
     tags: ["eufy", "camera", "mount", "3d-print"]
 
-last_updated: "2026-07-25"
-total_devices: 2
+  - slug: roomba
+    name: "iRobot Roomba (Wi-Fi models)"
+    model: "690 / 890 / 960 / 980 / e5 / i3–i8 / j7 / j9 / s9"
+    type: software
+    difficulty: 2
+    time_minutes: 30
+    short_desc: "Wi-Fi Roombas from 2024 and earlier already speak a full local API. Get the password, firewall the robot, and keep it that way — the 2025 models ship without one."
+    ha_integration: "roomba"
+    safety_block: false
+    tags: ["irobot", "roomba", "vacuum", "wifi", "mqtt", "dorita980"]
+    protocol_spec: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/device-specs/devices/irobot-roomba.yaml"
+    protocol_docs: "https://github.com/liberatedbread/liberatedbread-protocol-specs/blob/main/docs/devices/irobot-roomba.md"
+
+last_updated: "2026-08-14"
+total_devices: 3

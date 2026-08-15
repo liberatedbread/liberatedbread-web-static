@@ -26,6 +26,7 @@
 {%- assign current_href = page.url | remove: 'index.html' -%}
         <li><a href="{{ '/devices/' | relative_url }}"{% if current_href == '/devices/' %} aria-current="page"{% elsif current_href contains '/devices/' %} aria-current="true"{% endif %}>Devices</a></li>
         <li><a href="{{ '/ha-plugins/' | relative_url }}"{% if current_href == '/ha-plugins/' %} aria-current="page"{% endif %}>HA&nbsp;Plugins</a></li>
+        <li><a href="{{ '/firewall/' | relative_url }}"{% if current_href == '/firewall/' %} aria-current="page"{% endif %}>Firewall</a></li>
         <li><a href="{{ '/contribute/' | relative_url }}"{% if current_href == '/contribute/' %} aria-current="page"{% endif %}>Contribute</a></li>
         <li><a href="{{ '/faq/' | relative_url }}"{% if current_href == '/faq/' %} aria-current="page"{% endif %}>FAQ</a></li>
         <li><a href="{{ '/about/' | relative_url }}"{% if current_href == '/about/' %} aria-current="page"{% endif %}>About</a></li>
