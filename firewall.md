@@ -264,15 +264,23 @@ it. To make it harder to escape:
 MikroTik with `/log print` if you add `log=yes` to the rules, OPNsense/pfSense
 under Firewall → Log Files. Seeing the device try and fail is the confirmation.
 
-**Watch the wire.** From any machine on the same subnet:
+**Watch the wire — from the router, not from your laptop.** Run this *on* the
+router or AP, or on a machine fed by a mirrored/SPAN switch port:
 
 ```bash
 # Everything the device sends that isn't staying on the LAN.
 sudo tcpdump -ni eth0 host 192.168.1.50 and not net 192.168.1.0/24
 ```
 
-Retries with no replies is a working block. Silence usually means the device
-gave up, which is also fine.
+Retries with no replies is a working block.
+
+The location matters more than the filter. On switched Ethernet or Wi-Fi, an
+ordinary machine on the same subnet never receives traffic between the device
+and the gateway — the switch forwards those frames only to the port they are
+addressed to, and promiscuous mode does not change what the switch sends you.
+Capturing from your laptop therefore shows silence whether the block works or
+not, so silence there tells you *nothing*. Only the drop log above and a
+capture at the gateway can distinguish "blocked" from "not seen".
 
 **Then use the thing.** Open Home Assistant, or the Liberated Bread app, and
 send a command. If it works, you're done: the device is alive, local, and can't

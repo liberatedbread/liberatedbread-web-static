@@ -147,7 +147,16 @@ updates. That last one is the entire point.
 
 ## Step 3: Adopt It Locally
 
-### Home Assistant
+> **One thing should hold the robot.** It accepts a single local connection at
+> a time, and a new one evicts the old. Two things talking to it directly means
+> both take turns being locked out — including your own iRobot app. So pick one
+> owner and let everything else go through it. That is the thread running
+> through this whole section.
+
+### Home Assistant — start here
+
+If you run Home Assistant, this is the answer, and it stays the answer even if
+you also want the phone app.
 
 **Settings → Devices & Services → Add Integration → iRobot Roomba and Braava**.
 It asks for the host, the BLID and the password from Step 1. That's it —
@@ -157,6 +166,16 @@ robot and nothing else.
 You get a vacuum entity (start, pause, stop, return to base, locate), plus
 battery and status sensors.
 
+Three reasons to make it the owner rather than one option among several:
+
+- **It settles the one-client problem.** HA holds the connection; everything
+  else asks HA. Nothing gets evicted.
+- **It survives the firewall.** If you put the robot on its own VLAN — the
+  natural end of the [firewall guide]({{ '/firewall/' | relative_url }}) — HA
+  can still be on a network that reaches it, while your phone roams elsewhere.
+- **It works with old firmware.** Some robots only offer a cipher modern phone
+  TLS stacks have dropped. HA's Python stack can still negotiate it.
+
 ### Liberated Bread app
 
 Open the Wi-Fi tab and scan. The robot answers a broadcast probe on UDP 5678,
@@ -164,11 +183,31 @@ so it shows up by name without you typing an address. Tap it, run through the
 adoption wizard, and the credentials go into your phone's keychain — not into
 preferences, not into a file.
 
+**If you already have Home Assistant, point the app at it instead** — on a
+robot's screen, choose "How to reach this robot" and pick the Home Assistant
+entity. You get the same panel, the same buttons and the same readings, but the
+commands travel to HA and HA talks to the robot. Two things worth knowing:
+
+- The app then needs **no BLID and no password at all** for that robot. HA
+  holds them. There is nothing on your phone to leak.
+- It works for robots the phone **cannot reach** — a separate VLAN, a
+  guest SSID with client isolation. The panel does not care, because it is not
+  the thing dialling the robot.
+
+Straight-at-the-robot is the right choice when the app is the only thing
+driving it. If anything else is, or might be, put that other thing in front.
+
 ### Command line
+
+`get-roomba-password` above works straight from a global install — npm links
+its binary onto your `PATH`. Using dorita980 as a *library* is different:
+`require` does not look in npm's global directory, so the snippet below sets
+`NODE_PATH` to it rather than making you install the package a second time.
 
 ```bash
 # One-off, using dorita980 directly
 BLID=<blid> PASSWORD=<password> ROBOT_IP=<ip> \
+NODE_PATH="$(npm root -g)" \
   node -e "
     const d = require('dorita980');
     const r = new d.Local(process.env.BLID, process.env.PASSWORD, process.env.ROBOT_IP);
