@@ -182,6 +182,36 @@ BLID=<blid> PASSWORD=<password> ROBOT_IP=<ip> \
 > long-running should connect, act, and disconnect rather than hold the socket
 > open.
 
+### Or: put rest980 in front of it
+
+[rest980](https://github.com/koalazak/rest980) is koalazak's own HTTP wrapper
+around dorita980 — same author as the protocol. It holds the robot connection
+and answers plain HTTP, so everything else talks to *it* instead of fighting
+over the robot:
+
+```bash
+docker run -p 3000:3000 \
+  -e BLID=<blid> -e PASSWORD='<password>' -e ROBOT_IP=<ip> \
+  koalazak/rest980
+```
+
+Then `GET /api/local/action/start`, `/dock`, `/pause`, and
+`/api/local/info/state`. The Liberated Bread app can be pointed at a rest980
+address per robot instead of talking to the robot directly.
+
+This is worth doing in two cases:
+
+- **More than one thing wants the robot.** One client at a time is the rule, so
+  an app and a Home Assistant both connecting directly will keep evicting each
+  other. One rest980, everything else pointed at it, and the problem goes away.
+- **Old firmware the phone can't reach.** If your robot only offers the
+  `AES128-SHA256` cipher (see Troubleshooting below), Node can speak to it and a
+  phone genuinely cannot. Run rest980 on a computer and the app works again
+  through it.
+
+One gap worth knowing: rest980 publishes no endpoint for **locate**, so the
+"make it beep" button isn't available in that mode. Everything else is.
+
 ## Step 4: Verify
 
 The real test: **unplug your internet**. Not the router — the WAN.
@@ -217,10 +247,16 @@ libraries have retired. Node.js hits this too, which is why dorita980 ships the
 ROBOT_TLS_LEGACY=1 ROBOT_CIPHERS=AES128-SHA256 get-roomba-password <robot-ip>
 ```
 
-The Liberated Bread app **cannot** work around this — the phone TLS stack it
-uses doesn't offer that cipher and gives no way to ask for it. If the app tells
-you the robot needs a legacy cipher, that's honest, not a bug: pull the
-password with dorita980 or roombapy on a computer, then paste it into the app.
+The Liberated Bread app **cannot** work around this directly — the phone TLS
+stack it uses doesn't offer that cipher and gives no way to ask for it. If the
+app tells you the robot needs a legacy cipher, that's honest, not a bug. Two
+things do work:
+
+- Pull the password with dorita980 or roombapy on a computer, then paste it
+  into the app.
+- Run [rest980](#or-put-rest980-in-front-of-it) on that computer and point the
+  app at it. Node selects the old cipher happily, so the robot becomes
+  reachable again — through the server rather than directly.
 
 ### Home Assistant connects, then drops
 
