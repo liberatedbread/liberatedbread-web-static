@@ -1,0 +1,72 @@
+Liberated Bread — provenance for assets/decor/
+==============================================
+
+Same rule as the device guides: nothing ships here that we cannot say where it
+came from and under what licence. Anything added to this directory gets an
+entry below, with the licence checked at the SOURCE, not assumed from where it
+was found.
+
+
+under-construction.gif
+under-construction-still.png
+----------------------------
+
+  What        The 1990s "under construction" web badge: a yellow diamond road
+              sign with a digging worker, hazard-striped border, and UNDER
+              CONSTRUCTION in rainbow letters that cycle colour across six
+              frames (0.6s loop).
+
+  Source      Wikimedia Commons, "File:Under construction graphic.gif"
+              https://commons.wikimedia.org/wiki/File:Under_construction_graphic.gif
+
+  Author      Wikipedia user "I do not exist"; uploaded to en.wikipedia
+              2006-07-30 as own work, later transferred to Commons.
+
+  Licence     Public domain — released by the copyright holder with no
+              conditions. No attribution is required; this file records the
+              provenance because knowing it is worth more than the obligation.
+
+  Original    200x150, 6 frames, 16-colour palette. Its only embedded comment
+              is "Created with The GIMP", consistent with the own-work claim.
+              sha256 of the file as downloaded from Commons:
+              025b2e2f873d47bc15ee9b91c618201e7a1f3efbd86ef887478ee50094d89af8
+
+  What we did Scaled 200x150 -> 120x90 from that original, animation intact:
+
+                gifsicle --resize-method catrom --resize-width 120 -O3 \
+                  Under_construction_graphic.gif -o under-construction.gif
+
+              catrom rather than gifsicle's default: at this size the rainbow
+              lettering is the first thing to go, and the smoother filters turn
+              it to mush. Compared side by side at 88/100/120 px before
+              choosing — 120 is the narrowest width where the second line is
+              still readable.
+
+              The still is frame 0 of the scaled GIF, for readers who have
+              asked their browser for reduced motion (a GIF cannot be paused,
+              so _includes/under-construction.html swaps the whole image):
+
+                convert under-construction.gif[0] -coalesce \
+                  PNG8:under-construction-still.png
+
+
+REJECTED CANDIDATE — worth recording, because it looked fine at a glance
+------------------------------------------------------------------------
+
+  Wikimedia Commons "File:Under-Construction-Bulldozer.gif" — a scrolling
+  hazard-stripe banner with a bulldozer, and a better period piece than the one
+  we shipped. Its Commons page tags it CC BY-SA 4.0, uploaded 2015 as own work.
+
+  The file itself says otherwise. Its embedded GIF comments read:
+
+    "Reduced 8% @ www.gifwizard.com Guest: NON-COMMERCIAL USE ONLY"
+    "This animation is archived at Animation Library at
+     http://www.animationlibrary.com"
+
+  So it is a third-party animation re-uploaded under an own-work claim, and its
+  actual terms forbid the commercial use this site makes (Liberated Bread runs
+  affiliate links). The Commons licence tag is simply wrong.
+
+  The lesson, for whoever adds the next asset here: read the file, not only the
+  page it was downloaded from. `gifsicle --info` and `strings` take a second
+  and would have caught it.

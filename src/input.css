@@ -378,99 +378,25 @@
   /* -------------------------------------------------------------------------
      "Under construction" badge — _includes/under-construction.html.
 
-     The markup is an inline SVG with no ids and no images; everything that
-     moves, moves from here. See that include's comment for why the artifact is
-     reconstructed rather than a period GIF.
+     Almost nothing to do here, and that is the point: the badge is a genuine
+     1990s animated GIF (public domain; see assets/decor/SOURCE.txt), so the
+     artwork, the lettering and the motion are all inside the file. There is no
+     palette to track and no animation to drive — reduced motion is handled by
+     serving a different file from the <picture>, because CSS cannot stop a GIF.
 
-     WHY THE MOTION IS STEPPED. `steps(1, end)` holds each keyframe and snaps to
-     the next instead of interpolating between them. That is the whole look: a
-     1996 construction.gif was a handful of cels on a fixed delay, and an eased
-     swing reads as a modern spinner. One beat, --lb-uc-beat, drives the pick,
-     the dirt and the stripes together, so the pick landing and the mound
-     squashing are the same frame rather than two loops that drift apart.
-
-     Colours come from the brand tokens and `currentColor`, so the badge tracks
-     both the palette and whatever text it is placed next to. Nothing here
-     hardcodes a hex — same rule as the rest of this file.
+     What is left is the one thing the file cannot do for itself. Tailwind's
+     preflight sets `img { display: block }`, which drops the badge onto its own
+     line and left-aligns it inside the centred footer text; `inline-block`
+     restores the flow these call sites lay out for. `vertical-align: middle`
+     goes with it — an inline image sits on the text baseline by default, which
+     leaves a descender-sized gap under a 90px-tall badge.
      ------------------------------------------------------------------------- */
   .lb-uc {
-    --lb-uc-beat: 0.72s;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--bread-font-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: color-mix(in srgb, var(--bread-khaki) 75%, transparent);
+    display: inline-block;
+    vertical-align: middle;
   }
 
-  .lb-uc__art {
-    flex: none;
-    /* The SVG's own height is 24px at 44px wide; `block` keeps the inline
-       baseline gap from adding a phantom row under it inside the flex line. */
+  .lb-uc__img {
     display: block;
-  }
-
-  /* The pick swings about the digger's shoulder. `transform-box: view-box`
-     makes the origin below resolve against the root <svg>'s viewBox
-     coordinates — the same numbers the <path> data is written in — rather than
-     against the group's own bounding box, which moves as the group rotates. */
-  .lb-uc__pick {
-    transform-box: view-box;
-    transform-origin: 11px 10.6px;
-    animation: lb-uc-swing var(--lb-uc-beat) steps(1, end) infinite;
-  }
-
-  .lb-uc__dirt {
-    fill: color-mix(in srgb, var(--bread-steel) 70%, transparent);
-    transform-box: fill-box;
-    transform-origin: bottom center;
-    animation: lb-uc-dirt var(--lb-uc-beat) steps(1, end) infinite;
-  }
-
-  .lb-uc__bar {
-    fill: var(--bread-accent);
-  }
-
-  /* Slides by exactly one stripe period (8 user units) per beat. The group is
-     drawn one period past each edge of the clipping viewport, so the reset at
-     100% lands on an identical arrangement and the loop has no visible seam. */
-  .lb-uc__stripes {
-    fill: var(--bread-base);
-    animation: lb-uc-stripes var(--lb-uc-beat) steps(4, end) infinite;
-  }
-
-  @keyframes lb-uc-swing {
-    0%   { transform: rotate(-45deg); }   /* raised overhead */
-    33%  { transform: rotate(-5deg); }    /* mid-swing */
-    66%  { transform: rotate(55deg); }    /* buried in the mound */
-  }
-
-  @keyframes lb-uc-dirt {
-    /* Squashes on the frame the pick lands (66%), springs back on the next. */
-    0%, 65% { transform: scaleY(1); }
-    66%     { transform: scaleY(0.72); }
-  }
-
-  @keyframes lb-uc-stripes {
-    to { transform: translateX(8px); }
-  }
-
-  /* A badge that appears on every page of the site is exactly the kind of
-     perpetual motion this media query exists for. The badge itself stays — it
-     is the joke, and it still reads as a construction sign standing still. */
-  @media (prefers-reduced-motion: reduce) {
-    .lb-uc__pick,
-    .lb-uc__dirt,
-    .lb-uc__stripes {
-      animation: none;
-    }
-
-    /* Frozen mid-swing rather than at the top of the arc, so the still frame
-       looks like a digger caught by a camera and not one standing idle. */
-    .lb-uc__pick {
-      transform: rotate(-5deg);
-    }
   }
 }
