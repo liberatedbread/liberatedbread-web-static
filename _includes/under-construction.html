@@ -1,61 +1,112 @@
 {%- comment -%}
-  The 1996 "under construction" badge. The actual artifact, not a redraw.
+  The 1996 "under construction" badge: a roadworks warning sign with a digging
+  figure, drawn as inline SVG and animated in three discrete frames.
 
   Usage:
     {% include under-construction.html %}
-    {% include under-construction.html label="This site is under construction" %}
+    {% include under-construction.html label="This page is under construction" %}
 
   Optional includes:
-    include.label  — the accessible name, i.e. the alt text. The words UNDER
-                     CONSTRUCTION are drawn INSIDE the image, so this is what a
-                     screen reader gets instead of the picture, not a caption
-                     printed next to it. Default: "Under construction".
+    include.label  — the badge text, which is also its accessible name.
+                     Default: "Under construction".
     include.class  — extra classes on the wrapper, for spacing at the call
                      site. The badge never sets its own margins.
 
-  WHERE IT CAME FROM, AND WHY THAT TOOK CHECKING
-  ----------------------------------------------
-  A genuine GeoCities-era construction.gif is an orphan work: everybody's
-  homepage had one, almost nobody knows who drew it, and none of them is
-  licensed for a commercial site to redistribute. That is the same rule the
-  device guides follow for manufacturer photos, so the one we ship is a
-  public-domain badge off Wikimedia Commons — hand-drawn in GIMP and released
-  by its author with no conditions. Full provenance, the exact scaling command,
-  and the checksum of the file as downloaded are in assets/decor/SOURCE.txt.
+  WHY IT IS DRAWN AND NOT A REAL GIF
+  ----------------------------------
+  The obvious way to do this is the actual period artifact, and it was tried.
+  It does not survive contact with the licensing:
 
-  Read that file before adding a second one. The better-looking candidate we
-  rejected was tagged CC BY-SA on Commons and carried "NON-COMMERCIAL USE ONLY"
-  in its own embedded comments — the page and the file disagreed, and the file
-  is the one that counts.
+    * The GeoCities-era construction.gif files — the ones everybody remembers —
+      are orphan works. Everybody's homepage had one, almost nobody knows who
+      drew it, and none of them is licensed for a commercial site to
+      redistribute. That is the same rule the device guides follow for
+      manufacturer photos.
+    * Wikimedia Commons has freely-licensed ones, and the best of them is a
+      trap: a scrolling bulldozer banner tagged CC BY-SA 4.0 as own work, whose
+      own embedded GIF comments read "Guest: NON-COMMERCIAL USE ONLY" and name
+      animationlibrary.com as the archive it came from. The page and the file
+      disagreed; the file is the one that counts. This site carries affiliate
+      links, so non-commercial terms are terms we would be breaking.
 
-  REDUCED MOTION
-  --------------
-  An animated GIF ignores `prefers-reduced-motion` completely: there is no way
-  to ask it not to loop, and CSS cannot reach inside it. The only lever left is
-  to serve a different file, which is what <picture> does here — the reader who
-  asked for less motion gets a still frame of the same badge, and everyone else
-  gets the animation. The <source> must come first; the browser takes the first
-  matching child and falls through to the <img> when the query does not apply.
+  Drawing it also buys things the GIF could not: it is ~2 KB of markup and no
+  HTTP request on every page of the site, it scales to any size without going
+  mushy, and — the one that matters — the motion is CSS, so
+  `prefers-reduced-motion: reduce` can freeze it. An animated GIF ignores that
+  media query outright; the best you can do is serve a different file.
 
-  The still is frame 0, so it is the same drawing rather than a substitute
-  graphic: the sign, the digger and the lettering are all there, just not
-  cycling.
+  THE ANIMATION
+  -------------
+  Three frames, held and snapped between with `steps(1, end)` rather than eased
+  — a 90s GIF was a handful of cels on a fixed delay, and a smoothly
+  interpolated swing reads as a modern loading spinner instead of a throwback.
 
-  SIZE
-  ----
-  width/height are on the <img> and match the file exactly (120x90), so the
-  footer reserves the right box before the image arrives. DESIGN §14.2 forbids
-  layout shift, and this loads on every page of the site.
+  Two joints, because one does not look like digging. Rotating the whole upper
+  body at the hip (which was the first attempt) swings the figure upright and
+  reads as a man walking with a briefcase. Someone digging stays hunched and
+  moves the spade: the hip therefore travels a little (-5deg to +13deg) and the
+  arm a lot (-12deg to +7deg), so the blade lifts clear of the spoil heap and
+  comes back down into it. Angles are in src/input.css.
 
-  It is 2.7 KB, which is smaller than most of the SVG icons in
-  _includes/social-links.html — the 90s were good at some things.
+  Every pose is bounded by the sign it sits in. The triangle narrows fast going
+  up, and lifting the arm swings the blade further RIGHT as it approaches
+  horizontal, so a bigger raise puts the spade through the black border. The
+  three poses were checked against that edge at render size, which is why the
+  raise looks conservative on paper.
+
+  NO IDs, ANYWHERE. This badge renders twice on an unverified device guide —
+  once in the status block, once in the footer — and duplicate ids are invalid
+  HTML. Nothing here is referenced by id, so it can repeat freely.
+
+  ACCESSIBILITY. The <svg> is aria-hidden and the text beside it carries the
+  meaning, so a screen reader hears the label once rather than hearing
+  decorative artwork described. Nothing blinks: WCAG 2.2.2 caps blinking
+  content at five seconds and this badge is on every page.
 {%- endcomment -%}
 {%- assign uc_label = include.label | default: 'Under construction' -%}
 
-<picture class="lb-uc {{ include.class }}">
-  <source srcset="{{ '/assets/decor/under-construction-still.png' | relative_url }}"
-          media="(prefers-reduced-motion: reduce)" type="image/png">
-  <img src="{{ '/assets/decor/under-construction.gif' | relative_url }}"
-       alt="{{ uc_label }}" width="120" height="90"
-       loading="lazy" decoding="async" class="lb-uc__img">
-</picture>
+<span class="lb-uc {{ include.class }}">
+  {%- comment -%}
+    The sign. Both triangles are drawn as a filled path PLUS a round-joined
+    stroke of the same colour: that is what rounds the corners, and it is why
+    each has a stroke-width at all. The yellow one is the black one scaled
+    about its centroid, so the border reads as an even width all the way round.
+  {%- endcomment -%}
+  <svg class="lb-uc__art" viewBox="0 0 64 58" width="64" height="58"
+       aria-hidden="true" focusable="false">
+    <path class="lb-uc__plate" d="M32 4 59 52H5Z"
+          stroke-width="6" stroke-linejoin="round"/>
+    <path class="lb-uc__face" d="M32 11 53.1 48.5H10.9Z"
+          stroke-width="3.5" stroke-linejoin="round"/>
+
+    <!-- The spoil heap. Squashes on the frame the blade lands in it. -->
+    <path class="lb-uc__spoil" d="M31 46.4Q37.5 38.6 44 46.4Z"/>
+
+    <g class="lb-uc__ink" stroke-linecap="round">
+      {%- comment -%}
+        Legs stay put: the figure is bending over its work, not walking. They
+        are also what makes the hip read as a hinge rather than the whole
+        pictogram sliding.
+      {%- endcomment -%}
+      <path d="M23.5 36 28.5 46M23.5 36 18 46" stroke-width="3.2"/>
+
+      <g class="lb-uc__hip">
+        <path d="M23.5 36 29.5 26.5" stroke-width="5.5"/>
+        <!-- Clear of the torso end on purpose, or it reads as one blob. -->
+        <circle class="lb-uc__solid" cx="33.6" cy="21.4" r="3.4" stroke="none"/>
+
+        <g class="lb-uc__arm">
+          <!-- Three weights, thickest to thinnest: arm, shaft, then the blade
+               as a filled slab. Strokes of one width would merge into a smear
+               at the size this actually renders. -->
+          <path d="M29.5 27.5 35.5 32.5" stroke-width="2.6"/>
+          <path d="M33 30 40 37" stroke-width="1.9"/>
+          <path class="lb-uc__solid" d="M38.6 38.3 41.3 35.6 43.4 37.7 40.7 40.4Z"
+                stroke="none"/>
+        </g>
+      </g>
+    </g>
+  </svg>
+
+  <span class="lb-uc__label">{{ uc_label }}</span>
+</span>

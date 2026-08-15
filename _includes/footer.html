@@ -36,15 +36,13 @@
       let you own your own hardware is being honest and making a joke with the
       same gesture — which is the whole register Liberated Bread is written in.
 
-      Kept deliberately small: the badge ships at 120x90, scaled down from the
-      200x150 original, and sits below the disclaimers well clear of anything a
-      reader needs. It is a real period GIF rather than a redraw — provenance
-      and licence in assets/decor/SOURCE.txt — so it does not match the bread
-      palette and is not meant to. A 1996 badge that had been restyled to fit
-      the site would be a reference to the joke instead of the joke.
+      Kept deliberately small: a 64px sign at footnote size, below the
+      disclaimers, well clear of anything a reader needs. The sign itself is
+      road yellow rather than bread amber, on purpose — see the note in
+      src/input.css.
     {%- endcomment -%}
     <p class="pt-1">
-      {% include under-construction.html label="This site is under construction" %}
+      {% include under-construction.html %}
     </p>
 
     <p class="text-bread-khaki/70">&copy; {{ site.time | date: "%Y" }} Pigs Can Fly Labs LLC</p>
