@@ -1,7 +1,7 @@
 ---
 layout: device
 slug: roomba
-title: "Liberate Your Wi-Fi Roomba"
+title: "Liberate Your Wi-Fi Roomba (2024 and Earlier)"
 device_name: "iRobot Roomba (Wi-Fi models)"
 model: "690 / 890 / 960 / 980 / e5 / i3–i8 / j7 / j9 / s9"
 type: software
@@ -24,24 +24,44 @@ protocol_docs: "https://github.com/liberatedbread/liberatedbread-protocol-specs/
   reason is stated in the body rather than left for the reader to discover.
 -->
 
+## Check Which Robot You Have First
+
+**This guide is for Wi-Fi Roombas from 2024 or earlier.** Those run a full
+local API and this works on them. The 2025 line does not, and no amount of
+following these steps will change that — so it is worth thirty seconds before
+reading the rest.
+
+| Model | Local control |
+|---|---|
+| 690, 890, 960, 980, e5/e6, i3–i8, j7/j9, s9, Braava jet m6 | **Yes** — this guide applies |
+| Roomba 105, 205, Combo 405 (2025 line) | **No** — local broker removed; connecting to 8883 is refused outright |
+
+If you have one of the 2025 models, there is nothing on the robot to talk to.
+The rest of this page will not help, and it is better to know that now than
+after an evening of handshakes that cannot succeed. What you can still do is
+[keep it off the internet]({{ '/firewall/' | relative_url }}) — the firewall
+guide works on any device — but you will lose the vendor app along with the
+cloud, because on those models the app IS the cloud.
+
 ## What You're Liberating From
 
-Your Roomba already runs a full local API. It's an MQTT broker, on the robot,
-on TCP 8883 — the same channel the iRobot app uses when your phone is on the
-same Wi-Fi. It needs no account, no internet, and no permission. It has been
-there since the 980.
+Older Wi-Fi Roombas already run a full local API. It's an MQTT broker, on the
+robot, on TCP 8883 — the same channel the iRobot app uses when the phone is on
+the same Wi-Fi. It needs no account, no internet, and no permission. It has
+been there since the 980.
 
-So there's nothing to fix. What there is, is something to protect.
+So on those robots there's nothing to fix. What there is, is something to
+protect.
 
 iRobot filed Chapter 11 in December 2025 and was bought by Picea Robotics in
-January 2026. More to the point: the **2025 model line — Roomba 105, 205,
-Combo 405 — ships with the local broker removed.** Connect to 8883 on one of
-those and you get connection refused. Not a timeout. There is nothing there.
+January 2026. More to the point: the **2025 model line ships with the local
+broker removed.** That is the direction of travel, and the delivery mechanism
+for applying it to a robot that still has one is a firmware update.
 
-Your robot has something the new ones don't, and the delivery mechanism for
-taking it away is a firmware update. This guide gets the credentials out of
-your robot, gets the robot off the internet, and connects it to Home Assistant
-— in that order, for a reason.
+That is what makes this worth doing now rather than eventually. An older robot
+has something the new ones don't, and it keeps it only until it is updated.
+This guide gets the credentials off the robot, gets the robot off the internet,
+and connects it to Home Assistant — in that order, for a reason.
 
 > **This is [dorita980](https://github.com/koalazak/dorita980)'s work.**
 > [koalazak](https://github.com/koalazak) reverse-engineered every part of what
@@ -52,9 +72,7 @@ your robot, gets the robot off the internet, and connects it to Home Assistant
 
 ## Prerequisites
 
-- A **Wi-Fi Roomba from 2024 or earlier** — 690, 890, 960, 980, e5/e6, i3–i8,
-  j7/j9, s9, or a Braava jet m6. If yours is a 105, 205 or Combo 405, stop
-  here: there is no local broker to talk to.
+- A **Wi-Fi Roomba from 2024 or earlier** — see the table above.
 - The robot already on your Wi-Fi (if it's factory-fresh, use the iRobot app
   once to get it on the network, then come back).
 - A computer with Node.js, **or** the Liberated Bread app. Either can pull the
@@ -243,7 +261,7 @@ This is worth doing in two cases:
 - **More than one thing wants the robot.** One client at a time is the rule, so
   an app and a Home Assistant both connecting directly will keep evicting each
   other. One rest980, everything else pointed at it, and the problem goes away.
-- **Old firmware the phone can't reach.** If your robot only offers the
+- **Old firmware the phone can't reach.** If the robot only offers the
   `AES128-SHA256` cipher (see Troubleshooting below), Node can speak to it and a
   phone genuinely cannot. Run rest980 on a computer and the app works again
   through it.

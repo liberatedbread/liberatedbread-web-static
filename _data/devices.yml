@@ -55,7 +55,7 @@ devices:
     type: software
     difficulty: 2
     time_minutes: 30
-    short_desc: "Your Roomba already speaks a full local API. Get its password, firewall it, and keep it that way — the 2025 models ship without one."
+    short_desc: "Wi-Fi Roombas from 2024 and earlier already speak a full local API. Get the password, firewall the robot, and keep it that way — the 2025 models ship without one."
     ha_integration: "roomba"
     safety_block: false
     tags: ["irobot", "roomba", "vacuum", "wifi", "mqtt", "dorita980"]
