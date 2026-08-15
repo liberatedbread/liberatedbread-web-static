@@ -51,6 +51,24 @@
         <a href="{{ '/disclaimer/' | relative_url }}">Disclaimer</a>
       </p>
       <p>Some links may earn us a small commission. These guides are for hardware you own. Use common sense.</p>
+
+      {%- comment -%}
+        The under-construction badge, here as well as in the site-wide footer
+        (_includes/footer.html) — this page does not use that one.
+
+        It earns its place on THIS page more than on any other: while
+        `phase0: true` this is the only page anyone is pointed at, and it is
+        literally a coming-soon notice. Saying so in the idiom of 1996 is the
+        joke landing on the one page it describes exactly.
+
+        Within §9.6's constraints. That list forbids navigation, the device
+        grid, the 3-step plan, how-it-works, blog content and JavaScript; this
+        is an inline SVG and two CSS rules, adds no link, and fetches nothing.
+      {%- endcomment -%}
+      <p class="pt-1">
+        {% include under-construction.html %}
+      </p>
+
       <p>&copy; {{ site.time | date: "%Y" }} Pigs Can Fly Labs LLC</p>
     </footer>
 

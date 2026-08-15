@@ -1,0 +1,108 @@
+{%- comment -%}
+  The 1996 "under construction" badge, rebuilt for 2026.
+
+  Usage:
+    {% include under-construction.html %}
+    {% include under-construction.html label="This page is under construction" %}
+
+  Optional includes:
+    include.label  — badge text (default: "Under construction")
+    include.class  — extra classes on the wrapper (spacing at the call site;
+                     the badge itself never sets its own margins)
+
+  WHY IT IS DRAWN, NOT AN ANIMATED GIF
+  ------------------------------------
+  The obvious way to do this is the actual period artifact: a 20-frame
+  construction.gif off a GeoCities mirror. We can't ship one — those files all
+  have owners and none of them is us, which is the same rule the device pages
+  follow for manufacturer photos. So the joke is reconstructed rather than
+  copied: an inline SVG in the bread palette, animated in CSS.
+
+  Being drawn also buys three things a GIF could not:
+
+    * it is 1.5 KB of markup and no HTTP request, on every page of the site;
+    * it inherits `currentColor` and the --bread-* tokens, so it tracked the
+      2026 palette change with no re-export; and
+    * the motion is CSS, so `prefers-reduced-motion: reduce` can freeze it —
+      see the .lb-uc rules in src/input.css. An animated GIF ignores that media
+      query entirely and there is no way to ask it not to.
+
+  The animation is deliberately stepped, not eased (`steps(1, end)`): a 90s GIF
+  had a handful of discrete frames and snapped between them, and a smoothly
+  interpolated swing reads as a modern loading spinner instead of a throwback.
+
+  NO IDs, ANYWHERE. This include renders twice on an unverified device guide —
+  once in the verification block, once in the footer — and duplicate ids are
+  invalid HTML and break the very `url(#…)` references that would have needed
+  them. So the moving hazard stripes are clipped by a nested <svg> (which
+  establishes its own viewport and clips to it) rather than by a <clipPath>,
+  and nothing here is referenced by id.
+
+  ACCESSIBILITY. The <svg> is aria-hidden and the text beside it carries the
+  meaning, so a screen reader hears "Under construction" once rather than
+  hearing decorative artwork described. Nothing blinks: WCAG 2.2.2 puts a
+  5-second cap on blinking content, and this badge is on every page.
+{%- endcomment -%}
+{%- assign uc_label = include.label | default: 'Under construction' -%}
+
+<span class="lb-uc {{ include.class }}">
+  <svg class="lb-uc__art" viewBox="0 0 44 24" width="44" height="24"
+       aria-hidden="true" focusable="false">
+    {%- comment -%}
+      The digger. Stroked in currentColor so the figure takes the colour of
+      whatever text it sits next to, on the footer's base and on the device
+      block's sky-tinted card alike.
+    {%- endcomment -%}
+    <g fill="none" stroke="currentColor" stroke-width="1.7"
+       stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="5.4" r="2.6" />
+      <path d="M11 8.4v5.2" />
+      <path d="M11 13.6 8.4 18.4M11 13.6l2.6 4.8" />
+      {%- comment -%}
+        The pick. Handle stroked, head FILLED: at the size this actually
+        renders — the whole figure is about 16 CSS pixels tall — a stroked
+        outline of a pick head collapses into a squiggle, while a solid slab
+        crossing the end of the handle still reads as a tool.
+
+        Both paths are drawn in the rest pose and rotated from the shoulder at
+        (11, 10.6) by the keyframes in src/input.css. The arc they sweep is
+        wide on purpose (-45° overhead to +55° into the ground): a narrow swing
+        reads as a figure waving, not digging.
+      {%- endcomment -%}
+      <g class="lb-uc__pick">
+        <path d="M11 10.6 18.6 6.4" />
+        <path d="M16.4 3.4 21.6 8.6 19.8 9.4 15.6 5.2Z"
+              fill="currentColor" stroke="none" />
+      </g>
+    </g>
+
+    <!-- The mound being dug, sitting where the pick lands. Squashes on that
+         frame, springs back on the next. -->
+    <path class="lb-uc__dirt" d="M15.5 19q5.5-5 11 0z" />
+
+    {%- comment -%}
+      Hazard bar. The nested <svg> carries no viewBox on purpose: that gives it
+      the parent's coordinate system at the same scale (so the skewed stripes
+      are not stretched) while still clipping to its own viewport, which is
+      what lets the stripe group slide underneath it.
+
+      The group is drawn from x=-8 to x=52 — one full stripe period past each
+      edge — and animates by exactly one period, so the loop has no seam.
+    {%- endcomment -%}
+    <svg x="0" y="19" width="44" height="5">
+      <rect width="44" height="5" class="lb-uc__bar" />
+      <g class="lb-uc__stripes">
+        <path d="M-8 0h4l-5 5h-4z" />
+        <path d="M0 0h4l-5 5h-4z" />
+        <path d="M8 0h4l-5 5h-4z" />
+        <path d="M16 0h4l-5 5h-4z" />
+        <path d="M24 0h4l-5 5h-4z" />
+        <path d="M32 0h4l-5 5h-4z" />
+        <path d="M40 0h4l-5 5h-4z" />
+        <path d="M48 0h4l-5 5h-4z" />
+      </g>
+    </svg>
+  </svg>
+
+  <span class="lb-uc__label">{{ uc_label }}</span>
+</span>
