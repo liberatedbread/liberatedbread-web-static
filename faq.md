@@ -66,3 +66,9 @@ Yes. All guides, protocol specs, and the Home Assistant integration are free and
 ## What's with the name?
 
 *Liberated Bread* is an homage to Cory Doctorow's novella [*Unauthorized Bread*](https://craphound.com/unauthorizedbread/), about refugees who jailbreak locked-down appliances. The ethos: you own your devices, not the manufacturer's cloud.
+
+## Is this connected to the bread price-fixing case?
+
+No. Liberated Bread is not affiliated with, party to, or in any way involved in the [Canadian bread price-fixing scandal](https://en.wikipedia.org/wiki/Bread_price-fixing_in_Canada) — the arrangement to inflate the price of packaged bread from roughly 2001 to 2015. We fix toasters, not prices.
+
+We do think it rhymes, though. Canada Bread [pleaded guilty and was fined $50 million](https://www.ppsc-sppc.gc.ca/eng/nws-nvs/2023/21_06_23.html); Loblaw and George Weston admitted participating, got immunity for reporting it, and later agreed to a $500-million class-action settlement; the other companies named have denied wrongdoing, and those allegations remain allegations. Allegedly, then, that is how far companies will go to keep you from enjoying toast at a reasonable price — with no internet required. Add the internet and you get our beat instead: a working appliance bricked because a vendor turned off a server. See [About](/about/#not-that-bread-thing).
