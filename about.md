@@ -36,7 +36,7 @@ Liberated Bread is a project of Pigs Can Fly Labs LLC. We're a small business, n
 ## Contact
 
 - **GitHub:** [github.com/liberatedbread](https://github.com/liberatedbread)
-- **Discord:** [Pigs Can Fly Labs server](https://www.pigscanfly.ca/discord/) — `#liberated-bread` channel
+- **Discord:** [Pigs Can Fly Labs server](https://www.pigscanfly.ca/discord) — `#liberated-bread` channel
 - **Mastodon:** [@liberatedbread@hachyderm.io](https://hachyderm.io/@liberatedbread)
 - **RSS:** [liberatedbread.com/feed.xml](/feed.xml)
 

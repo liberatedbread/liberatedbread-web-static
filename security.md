@@ -49,7 +49,7 @@ We'll publish a PGP key here once our key infrastructure is set up. In the meant
 
 If you can't reach us at security@, try:
 - **GitHub:** [Privately report a security vulnerability](https://github.com/liberatedbread/liberatedbread-web-static/security/advisories/new) through GitHub's advisory system
-- **Discord:** DM a maintainer in the [Pigs Can Fly Labs server](https://www.pigscanfly.ca/discord/) — `#liberated-bread` channel
+- **Discord:** DM a maintainer in the [Pigs Can Fly Labs server](https://www.pigscanfly.ca/discord) — `#liberated-bread` channel
 
 Machine-readable version: [/.well-known/security.txt](/.well-known/security.txt) ([RFC 9116](https://www.rfc-editor.org/rfc/rfc9116)).
 

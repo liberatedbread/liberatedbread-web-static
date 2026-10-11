@@ -30,7 +30,7 @@ This website is hosted on **GitHub Pages**. GitHub may collect [technical visito
 
 ## Mailing List
 
-If you subscribe to the mailing list via [pcfweb](https://www.pigscanfly.ca/), your email address is stored by Pigs Can Fly Labs LLC. See the [pcfweb privacy policy](https://www.pigscanfly.ca/privacy/) for details. Unsubscribe any time.
+If you subscribe to the mailing list via [pcfweb](https://www.pigscanfly.ca/), your email address is stored by Pigs Can Fly Labs LLC. See the [pcfweb privacy policy](https://www.pigscanfly.ca/privacy) for details. Unsubscribe any time.
 
 ## Changes
 
