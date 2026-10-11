@@ -57,7 +57,7 @@ Absolutely. We need:
 - **Protocol specs** — help reverse-engineer device protocols
 - **Code** — improve the [Home Assistant integration](https://github.com/liberatedbread/ha-plugins)
 
-Join the `#liberated-bread` channel on the [Pigs Can Fly Labs Discord](https://www.pigscanfly.ca/discord/).
+Join the `#liberated-bread` channel on the [Pigs Can Fly Labs Discord](https://www.pigscanfly.ca/discord).
 
 ## Is Liberated Bread free?
 
