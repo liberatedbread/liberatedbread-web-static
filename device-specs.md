@@ -33,6 +33,13 @@ These are published for anyone building against the hardware, and they are
 consumed directly by tooling rather than read as prose. They are **not**
 liberation guides — for those, see [the device catalogue]({{ '/devices/' | relative_url }}).
 
+They are also **not for anything life-or-death**. A spec is reverse-engineered
+from the outside and, unless it says otherwise, has not been run against
+hardware by us; it can decode a value wrong. Build a glucose chart from one if
+you like — never an insulin dose. Specs for medical and other safety-relevant
+hardware carry a `safety_advisory` that says so where a client will show it.
+See [the disclaimer]({{ '/disclaimer/#not-for-anything-life-or-death' | relative_url }}).
+
 ## Schema and index
 
 | File | What it is |

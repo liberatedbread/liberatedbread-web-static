@@ -13,6 +13,12 @@ Liberated Bread publishes step-by-step guides for liberating abandoned IoT devic
 
 Yes. These guides are for hardware **you own**. The techniques documented here (local network control, BLE direct communication, open firmware) are standard reverse-engineering and interoperability practices. We do not distribute proprietary code, encryption keys, or copyrighted firmware.
 
+## Can I use this for anything medical or safety-critical?
+
+**No.** Nothing here — the guides, the specs, the app, the Home Assistant integration — is fit for a decision where being wrong hurts someone. It is reverse-engineered from the outside, mostly unverified on hardware, and maintained in spare time.
+
+Reading your glucose meter's history to see which breakfast spikes you? Go for it — dealer's choice. Using that same number to decide an insulin dose? Absolutely not: use the meter's own display and whatever your care team told you. The same goes for blood-pressure cuffs and oximeters (a personal log, not a clinical reading), gas alarms (the buzzer is the safety device, not a notification), motorised doors and gates, and anything on wheels. See [the disclaimer](/disclaimer/#not-for-anything-life-or-death).
+
 ## Do I need to be technical?
 
 Our guides range from difficulty level 1 (🍞 — basic router config and copy-paste YAML) to level 3 (🍞🍞🍞 — command-line tools, custom firmware, hardware mods). Start with a level-1 guide like the WeMo switch liberation and work up.
