@@ -42,4 +42,4 @@ Liberated Bread is a project of Pigs Can Fly Labs LLC. We're a small business, n
 
 ---
 
-*These guides are for hardware you own. Use common sense. Pigs Can Fly Labs LLC isn't responsible for bricked devices, voided warranties, or angry IoT cloud providers.*
+*These guides are for hardware you own. Use common sense. Pigs Can Fly Labs LLC isn't responsible for bricked devices, voided warranties, or angry IoT cloud providers. Use caution with all of it, and don't rely on it for anything safety-critical.*

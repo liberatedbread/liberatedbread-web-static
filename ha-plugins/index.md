@@ -14,6 +14,8 @@ The **Liberated Bread Home Assistant integration** (`liberated_bread`) connects 
 - **Runs entirely local** — no cloud calls, no telemetry, no internet required after setup
 - **Protocol-driven** — device support is defined in YAML specs, not hardcoded Python. Adding a device = adding its spec YAML
 
+> **Use caution, especially for anything safety-critical.** An entity this integration creates can be stale, wrong or missing, like any reverse-engineered integration, so treat every value with care. Where being wrong could hurt someone, don't rely on it at all: chart your glucose meter's history with it if you like, never let one of its numbers decide an insulin dose, and never make an automation the thing that tells you about a gas leak — the alarm's own buzzer is the safety device. See [the disclaimer](/disclaimer/#use-caution-especially-for-anything-safety-critical).
+
 ## Supported Transport Layers
 
 | Transport | Discovery | Examples |
