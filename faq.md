@@ -15,9 +15,9 @@ Yes. These guides are for hardware **you own**. The techniques documented here (
 
 ## Can I use this for anything medical or safety-critical?
 
-**No.** Nothing here — the guides, the specs, the app, the Home Assistant integration — is fit for a decision where being wrong hurts someone. It is reverse-engineered from the outside, mostly unverified on hardware, and maintained in spare time.
+**Carefully — and for anything safety-critical, no.** Everything here — the guides, the specs, the app, the Home Assistant integration — is reverse-engineered from the outside, mostly unverified on hardware, and maintained in spare time, so treat every reading and control with caution. Where being wrong could hurt someone, don't rely on it at all.
 
-Reading your glucose meter's history to see which breakfast spikes you? Go for it — dealer's choice. Using that same number to decide an insulin dose? Absolutely not: use the meter's own display and whatever your care team told you. The same goes for blood-pressure cuffs and oximeters (a personal log, not a clinical reading), gas alarms (the buzzer is the safety device, not a notification), motorised doors and gates, and anything on wheels. See [the disclaimer](/disclaimer/#not-for-anything-life-or-death).
+Reading your glucose meter's history to see which breakfast spikes you? Go for it — dealer's choice, with the usual caution that a number may be off. Using that same number to decide an insulin dose? Absolutely not: use the meter's own display and whatever your care team told you. The same goes for blood-pressure cuffs and oximeters (a personal log, not a clinical reading), gas alarms (the buzzer is the safety device, not a notification), motorised doors and gates, and anything on wheels. See [the disclaimer](/disclaimer/#use-caution-especially-for-anything-safety-critical).
 
 ## Do I need to be technical?
 

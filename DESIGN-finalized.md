@@ -1117,9 +1117,9 @@ buttons, and parts/tools tables.]
 
 We're not lawyers and we're not trying to sound like them. The standard disclaimer — on every device page and in the site footer — is:
 
-> **Heads up:** These guides are for hardware you own. Use common sense. Don't do anything illegal. Pigs Can Fly Labs LLC isn't responsible for bricked devices, voided warranties, or angry IoT cloud providers. If you're not sure about something, ask someone who knows. None of this is for life-or-death use — if a wrong reading or a missed command could hurt someone, don't rely on it.
+> **Heads up:** These guides are for hardware you own. Use common sense. Don't do anything illegal. Pigs Can Fly Labs LLC isn't responsible for bricked devices, voided warranties, or angry IoT cloud providers. If you're not sure about something, ask someone who knows. Use caution with all of it, and don't rely on it for anything safety-critical — if a wrong reading or a missed command could hurt someone, this isn't the tool.
 
-The site-wide footer carries the short form, ending in "Nothing here is for life-or-death use." `/disclaimer/` spells that sentence out in its own section ("Not for Anything Life-or-Death"): hobby work, reverse-engineered and mostly unverified, is fine for seeing which breakfast spikes your glucose and never for deciding an insulin dose — and the same line holds for gas alarms, doors, cuffs and anything on wheels.
+The site-wide footer carries the short form, ending in "Use caution with all of it, and don't rely on it for anything safety-critical." `/disclaimer/` spells that out in its own section ("Use Caution, Especially for Anything Safety-Critical"): everything here is hobby work, reverse-engineered and mostly unverified, so every reading and step deserves care, and where being wrong could hurt someone it is not the tool at all — fine for seeing which breakfast spikes your glucose, never for deciding an insulin dose, and the same line holds for gas alarms, doors, cuffs and anything on wheels.
 
 (If we ever need a real lawyer to review something, we'll hire one. Until then, plain English.)
 

@@ -338,6 +338,6 @@ PHASE0.md                  What's live at /, and how to go to Phase 1
 
 ## Licence
 
-Site content is free to read and share. Guides are for hardware you own, and
-nothing here is for life-or-death use — see
+Site content is free to read and share. Guides are for hardware you own; use
+them with caution, and never for anything safety-critical — see
 [/disclaimer/](https://liberatedbread.com/disclaimer/).
