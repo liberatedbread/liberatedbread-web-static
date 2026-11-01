@@ -1,20 +1,34 @@
 ---
 layout: default
 title: Privacy
-description: Liberated Bread privacy policy — what data we collect (none) and what we don't track.
+description: How the Liberated Bread website, mobile app, and Home Assistant integration handle data.
 permalink: /privacy/
 ---
 
 ## Our Policy in One Sentence
 
-**Liberated Bread does not collect, store, or process any personal data.** No analytics, no cookies, no trackers, no telemetry.
+**Liberated Bread does not run analytics, advertising trackers, or a telemetry service.** The mobile app does not send us your device data or precise location. The optional requests it can make to third parties are listed below.
 
 ## What We Don't Do
 
 - **No analytics.** No Google Analytics, no Plausible, no server-side analytics. We don't know how many people visit the site, which pages they read, or where they come from.
 - **No cookies.** We don't set any cookies. There's nothing to consent to because there's nothing being tracked.
 - **No third-party scripts.** Every script on this site is our own, served from our domain, and only exists to make the site work (mobile navigation menu, device catalogue filter).
-- **No telemetry.** The [Home Assistant integration](/ha-plugins/) does not phone home. It communicates only with devices on your local network.
+- **No telemetry.** The mobile app and [Home Assistant integration](/ha-plugins/) do not send us device data, usage statistics, or error reports.
+
+## What the Mobile App Does
+
+The Liberated Bread mobile app needs no Liberated Bread account and has no analytics or advertising SDK. Device control happens directly over Bluetooth or your local network, not through a Liberated Bread server. Device settings and credentials stay on your phone, using the platform's secure storage where available.
+
+The app is not offline-only. It makes these connections beyond your own devices, each optional or anonymous:
+
+- An **anonymous request to Liberated Bread** for the promotional banner configuration. The banner contains an affiliate link; it is not an advertising or tracking SDK.
+- A **device-profile pack download**, only if you install one, from GitHub or a URL you enter.
+- A connection to **your own Home Assistant server**, only if you configure it.
+- A **one-time sign-in to iRobot's cloud**, only if you choose that route for a robot vacuum instead of entering its local details yourself. Your vendor account credentials go to iRobot so the app can retrieve the robot's local password; the app does not send them to Liberated Bread or retain your vendor account password.
+- A **repeater search you start** on the Radio tab. The app reads your location once in the foreground and works out the US state or states in range on your phone. Only those state codes go to the directories you have enabled: myGMRS anonymously, and RepeaterBook with your own access token if you supplied one. Saving a RepeaterBook token also checks it with RepeaterBook once. Precise coordinates never leave your phone. The last position is stored only on your phone, rounded to about 1 km, until you tap **Forget location**.
+
+These third-party services operate under their own privacy policies. The app does not send them your device-control history.
 
 ## What the Home Assistant Integration Does
 
@@ -34,6 +48,6 @@ If you subscribe to the mailing list via [pcfweb](https://www.pigscanfly.ca/), y
 
 ## Changes
 
-If this policy ever changes, we'll announce it. It probably won't — the whole point of Liberated Bread is local-first, offline-capable, no-cloud-needed.
+If this policy ever changes, we'll announce it. The point of Liberated Bread remains local-first control without a required cloud account.
 
-*Last updated: 2026-07-28*
+*Last updated: 2026-10-31*
