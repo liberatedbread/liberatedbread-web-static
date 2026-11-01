@@ -18,6 +18,14 @@ We're not lawyers and we're not trying to sound like them. Here's the deal in pl
 - We don't host proprietary firmware, encryption keys, or copyrighted code.
 - Some device guides link to community-created "device packs" for hardware we haven't tested. We don't host or endorse those packs — they're shared by community members for their own hardware.
 
+## Safety and Device Control
+
+Use caution with every guide and every app feature, and do not rely on them for anything safety-critical. A reading or a control can be wrong, late, or missing.
+
+The app and these guides are not medical devices and are not a life-safety service. Never use them to decide medication doses, or as a substitute for blood-pressure, oxygen, gas, fire, flood, or other alarms. The device's own display, alarm, instructions, and safety interlocks govern.
+
+This also applies to doors, locks, heaters, treadmills, robots, and anything else that moves or can cause injury or damage. Keep a person present when testing, follow the manufacturer's instructions, and do not bypass safety features.
+
 ## Affiliate Links
 
 Some pages may include affiliate links to tools, parts, or services. We flag them where we can — usually with a note at the top of the links section — but we can't promise we catch every single one, so assume any link to a store could be an affiliate link:
@@ -30,4 +38,4 @@ We may not be able to officially support some devices — legal gray areas, regi
 
 ---
 
-*Last updated: July 2026*
+*Last updated: November 2026*
