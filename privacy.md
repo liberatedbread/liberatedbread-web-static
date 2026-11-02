@@ -22,7 +22,7 @@ The Liberated Bread mobile app needs no Liberated Bread account and has no analy
 
 The app is not offline-only. It makes these connections beyond your own devices, each optional or anonymous:
 
-- An **anonymous request to Liberated Bread** for the promotional banner configuration. The banner contains an affiliate link; it is not an advertising or tracking SDK.
+- An **anonymous request to liberatedbread.com** for the promotional banner configuration. Like this website, that file is served by GitHub Pages (see [Hosting](#hosting)). The banner links to our shop page, which carries affiliate links; it is not an advertising or tracking SDK.
 - A **device-profile pack download**, only if you install one, from GitHub or a URL you enter.
 - A connection to **your own Home Assistant server**, only if you configure it.
 - A **one-time sign-in to iRobot's cloud**, only if you choose that route for a robot vacuum instead of entering its local details yourself. Your vendor account credentials go to iRobot so the app can retrieve the robot's local password; the app does not send them to Liberated Bread or retain your vendor account password.
