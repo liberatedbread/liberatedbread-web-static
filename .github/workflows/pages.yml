@@ -49,7 +49,7 @@ jobs:
       pages: read
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Ruby comes from .ruby-version and nowhere else. Do NOT add a
       # `ruby-version:` input here — a pin in a workflow file drifting from
