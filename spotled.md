@@ -37,7 +37,7 @@ model name doesn't.
 | Dream LED Skin v1 | LED CHORD | **Covered** (SP107E controller): power, colour, brightness |
 | Dream LED Skin 2.0 | SPOTLED | **Covered** (SPOTLED panel): brightness, screen orientation |
 | Dream Skin 3.0, earlier units | SPOTLED | **Covered**, same as 2.0 |
-| Dream Skin 3.0, recent units (serial number reads sideways on the panel) | iLEDColor | **Not yet.** Its protocol isn't mapped |
+| Dream Skin 3.0, recent units (serial number reads sideways on the panel) | iLEDColor | **Not yet.** Its protocol is documented, but the app can't drive it yet |
 | Other SPOTLED hats, badges, bags and banner signs | SPOTLED | **Covered**: they share the same Bluetooth service |
 
 LEDs2RAVE4 switched controller boards partway through the Dream Skin 3.0 run.
